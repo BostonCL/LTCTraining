@@ -16,10 +16,10 @@
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = '/';
+        window.location.href = '/mainMenu';
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
-        window.location.href = '/';
+        window.location.href = '/mainMenu';
       }
     } catch (e: any) {
       error = e.message;
