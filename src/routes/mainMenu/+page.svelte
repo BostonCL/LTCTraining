@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { getAuth, signOut, type Auth } from 'firebase/auth';
-  import { writable } from 'svelte/store';
-  // Placeholder modules
+  import { writable, derived } from 'svelte/store';
+  // Modules with submodules for Module 1
   const modules = [
     {
       title: 'What is live coverage?',
@@ -35,6 +35,48 @@
     },
     {
       title: 'Module 1: Live Coverage Sheet',
+      submodules: [
+        {
+          title: 'Real Time',
+          content: `Real Time is the scheduled start time for a show or game. For example, if a game is scheduled to begin at 8AM, you write down 8:00:00 next to Real Time, regardless of when it actually begins.`
+        },
+        {
+          title: 'Start Time',
+          content: `Start Time is when the event actually begins. For example, if the game is delayed and starts at 8:03:30 AM, you write that down next to Start Time.`
+        },
+        {
+          title: 'Hit Time',
+          content: `Hit Time is a mock schedule used for planning. These aren't the real times commercials air, just estimated placeholders.`
+        },
+        {
+          title: 'Event Type',
+          content: `Event Type tells you what kind of content it is (like a commercial, promo, local ad, or DR). You can also find this info elsewhere if needed.`
+        },
+        {
+          title: 'Length',
+          content: `Length is how long the commercial actually is. How long is each break?`
+        },
+        {
+          title: 'Title',
+          content: `Title gives details about the specific commercial.`
+        },
+        {
+          title: 'Advertiser',
+          content: `Advertiser is who the ad is from.`
+        },
+        {
+          title: 'House Number',
+          content: `House Number is a unique ID for the commercial. This is how Master Control identifies which ad you're talking about. Since one advertiser (like Geico) can have several different ads, the house number is key for clarity.`
+        },
+        {
+          title: 'Ordered As',
+          content: `Ordered As shows or games the commercial was sold to air with.`
+        },
+        {
+          title: 'Spot End Time',
+          content: `Spot End Time is the latest time that specific ad can air.`
+        }
+      ],
       content: `<div class="space-y-6">
         <p class="text-gray-800">This is what a live coverage sheet looks like.</p>
         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center text-gray-500 italic mb-4">
@@ -71,24 +113,58 @@
     }
   }
 
-  // Sidebar state
+  // Sidebar and navigation state
   let sidebarOpen = true;
-  const currentModule = writable(0);
+  const mainIdx = writable(0); // index in modules
+  const subIdx = writable(0); // index in submodules (if any)
+  let submodulesOpen = true; // controls collapse/expand of Module 1 submodules
+
+  // Derived store for current module/submodule
+  const current = derived([mainIdx, subIdx], ([$mainIdx, $subIdx]) => {
+    const mod = modules[$mainIdx];
+    if (mod.submodules) {
+      return { ...mod.submodules[$subIdx], isSub: true, main: mod, mainIdx: $mainIdx, subIdx: $subIdx, subCount: mod.submodules.length };
+    }
+    return { ...mod, isSub: false, mainIdx: $mainIdx };
+  });
 
   function goToModule(idx: number) {
-    currentModule.set(idx);
+    mainIdx.set(idx);
+    subIdx.set(0);
   }
-  function nextModule(idx: number) {
-    if (idx < modules.length - 1) currentModule.set(idx + 1);
+  function goToSubModule(idx: number) {
+    subIdx.set(idx);
   }
-  function prevModule(idx: number) {
-    if (idx > 0) currentModule.set(idx - 1);
+  function next() {
+    let $mainIdx: number = 0, $subIdx: number = 0;
+    mainIdx.subscribe(v => $mainIdx = v)();
+    subIdx.subscribe(v => $subIdx = v)();
+    const mod = modules[$mainIdx];
+    if (mod.submodules && $subIdx < mod.submodules.length - 1) {
+      subIdx.set($subIdx + 1);
+    } else if ($mainIdx < modules.length - 1) {
+      mainIdx.set($mainIdx + 1);
+      subIdx.set(0);
+    }
+  }
+  function prev() {
+    let $mainIdx: number = 0, $subIdx: number = 0;
+    mainIdx.subscribe(v => $mainIdx = v)();
+    subIdx.subscribe(v => $subIdx = v)();
+    const mod = modules[$mainIdx];
+    if (mod.submodules && $subIdx > 0) {
+      subIdx.set($subIdx - 1);
+    } else if ($mainIdx > 0) {
+      mainIdx.set($mainIdx - 1);
+      const prevMod = modules[$mainIdx - 1];
+      subIdx.set(prevMod.submodules ? prevMod.submodules.length - 1 : 0);
+    }
   }
 </script>
 
 <!-- Progress Bar -->
 <div class="w-full bg-gray-200 h-2">
-  <div class="bg-blue-600 h-2 transition-all" style="width: {($currentModule + 1) / modules.length * 100}%"></div>
+  <div class="bg-blue-600 h-2 transition-all" style="width: {($mainIdx + 1) / modules.length * 100}%"></div>
 </div>
 
 <!-- Header -->
@@ -106,14 +182,37 @@
         <button on:click={() => (sidebarOpen = false)} class="text-gray-400 hover:text-gray-700 text-lg font-bold">×</button>
       </div>
       <nav class="flex flex-col divide-y divide-gray-100">
-        {#each modules as module, idx}
-          <button
-            class="text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 {($currentModule === idx) ? 'bg-blue-100 text-blue-700' : ''}"
-            on:click={() => goToModule(idx)}
-          >
-            <span class="w-2 h-2 rounded-full {($currentModule === idx) ? 'bg-blue-600' : 'bg-gray-300'}"></span>
-            {module.title}
-          </button>
+        {#each modules as mod, idx}
+          <div>
+            <button
+              class="text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 w-full {($mainIdx === idx) ? 'bg-blue-100 text-blue-700' : ''}"
+              on:click={() => goToModule(idx)}
+              style="position: relative;"
+            >
+              <span class="w-2 h-2 rounded-full {($mainIdx === idx) ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+              {mod.title}
+              {#if mod.submodules}
+                <span class="ml-auto flex items-center justify-center w-7 h-7 rounded-full transition bg-gray-100 hover:bg-blue-200">
+                  <button type="button" class="w-full h-full flex items-center justify-center text-lg text-blue-700 focus:outline-none" on:click|stopPropagation={() => submodulesOpen = !submodulesOpen} aria-label="Toggle submodules">
+                    <svg class="w-5 h-5 transition-transform duration-200" style="transform: rotate({submodulesOpen && $mainIdx === idx ? 90 : 0}deg);" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                </span>
+              {/if}
+            </button>
+            {#if mod.submodules && $mainIdx === idx && submodulesOpen}
+              <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
+                {#each mod.submodules as sub, sidx}
+                  <button
+                    class="text-left px-3 py-2 text-sm hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 rounded {($subIdx === sidx) ? 'bg-blue-200 text-blue-800 font-semibold' : ''}"
+                    on:click={() => goToSubModule(sidx)}
+                  >
+                    <span class="w-2 h-2 rounded-full {($subIdx === sidx) ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+                    {sub.title}
+                  </button>
+                {/each}
+              </div>
+            {/if}
+          </div>
         {/each}
       </nav>
     </aside>
@@ -126,29 +225,48 @@
 
   <!-- Main Content -->
   <main class="flex-1 flex flex-col items-center justify-center p-8">
-    {#each modules as module, idx}
-      {#if $currentModule === idx}
-        <div class="w-full max-w-2xl mx-auto">
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">{module.title}</h2>
-          <div class="text-gray-700 text-lg mb-8">{@html module.content}</div>
-          <div class="flex justify-between mt-8">
-            <button
-              class="px-5 py-2 rounded bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 disabled:opacity-50"
-              on:click={() => prevModule(idx)}
-              disabled={idx === 0}
-            >
-              Back
-            </button>
-            <button
-              class="px-5 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
-              on:click={() => nextModule(idx)}
-              disabled={idx === modules.length - 1}
-            >
-              Next
-            </button>
-          </div>
+    {#if $current.isSub}
+      <div class="w-full max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">{$current.title}</h2>
+        <div class="text-gray-700 text-lg mb-8">{$current.content}</div>
+        <div class="flex justify-between mt-8">
+          <button
+            class="px-5 py-2 rounded bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 disabled:opacity-50"
+            on:click={prev}
+            disabled={$mainIdx === 0 && $subIdx === 0}
+          >
+            Back
+          </button>
+          <button
+            class="px-5 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+            on:click={next}
+            disabled={($mainIdx === modules.length - 1) && (!$current.isSub || ('subIdx' in $current && 'subCount' in $current && $current.subIdx === $current.subCount - 1))}
+          >
+            Next
+          </button>
         </div>
-      {/if}
-    {/each}
+      </div>
+    {:else}
+      <div class="w-full max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">{$current.title}</h2>
+        <div class="text-gray-700 text-lg mb-8">{@html $current.content}</div>
+        <div class="flex justify-between mt-8">
+          <button
+            class="px-5 py-2 rounded bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 disabled:opacity-50"
+            on:click={prev}
+            disabled={$mainIdx === 0}
+          >
+            Back
+          </button>
+          <button
+            class="px-5 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+            on:click={next}
+            disabled={$mainIdx === modules.length - 1 && !$current.isSub}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    {/if}
   </main>
 </div> 
