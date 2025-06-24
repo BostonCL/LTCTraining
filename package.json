@@ -33,6 +33,7 @@
 		"vitest": "^3.2.3"
 	},
 	"dependencies": {
+		"@google-cloud/text-to-speech": "^6.1.0",
 		"firebase": "^11.9.1"
 	}
 }

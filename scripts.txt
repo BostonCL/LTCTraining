@@ -1,0 +1,16 @@
+# --- Main Introduction ---
+intro_01|What is live coverage?
+intro_02|Covering live traffic means you will be monitoring commercial inventory while ensuring airing criteria and guidelines are met. In short, watching different sporting events and making sure the commercials air properly.
+intro_03|Managing and airing all inventory (commercials) during live games.
+intro_04|Communicating with the network (through the phone and email) with the producers and Master control. We refer to Master control as MC, they are the people that send the commercial to air, we communicate with them the most.
+intro_05|Writing down airing times.
+intro_06|Proper management of inventory is crucial for the financial success of CBS Sports Network.
+intro_07|The network operates on a 24-hour clock from 6 AM to 6 AM so our goal is to time out the commercials and organize them in that 24-hour period!
+intro_08|The role may appear intimidating at first but don't worry it will become comprehensible after this training course.
+intro_09|Keep in mind there will be practice questions throughout the course and there will be a test you must get 70% or higher on.
+intro_10|Participants must take notes and prepare questions for a follow-up Zoom call.
+
+# --- Module 1 ---
+module1_intro|Welcome to Module 1. In this section, we will cover the basics of live traffic reporting.
+module1_realtime|First, let's talk about the Real Time field. This indicates if the data is live or delayed.
+main_introduction|Welcome to the CBS Live Traffic Coverage Training program. Use the menu on the left to navigate through the modules. 

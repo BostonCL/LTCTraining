@@ -2,47 +2,25 @@
   import { onMount } from 'svelte';
   import { getAuth, signOut, type Auth } from 'firebase/auth';
   import { writable, derived } from 'svelte/store';
+  import Introduction from './introduction/Introduction.svelte';
+  import Module1Intro from './module-1/Module1Intro.svelte';
+  import StartTimeRealTime from './module-1/StartTimeRealTime.svelte';
+  import HitTime from './module-1/HitTime.svelte';
+  import EventType from './module-1/EventType.svelte';
+  import Length from './module-1/Length.svelte';
+  import Title from './module-1/Title.svelte';
+  import Advertiser from './module-1/Advertiser.svelte';
+  import HouseNumber from './module-1/HouseNumber.svelte';
+  import OrderedAs from './module-1/OrderedAs.svelte';
+  import SpotEndTime from './module-1/SpotEndTime.svelte';
   // Modules with submodules for Module 1
   const modules = [
-    {
-      title: 'What is live coverage?',
-      content: `<div class="space-y-6">
-        <div>
-          <span class='inline-block bg-blue-100 text-blue-800 font-semibold px-3 py-1 rounded-full mb-2'>Ball Speaks</span>
-          <p class='text-gray-800'>"Covering live traffic means you will be monitoring commercial inventory while ensuring airing criteria and guidelines are met. In short, watching different sporting events and making sure the commercials air properly."</p>
-        </div>
-        <div>
-          <span class='inline-block bg-gray-200 text-gray-700 font-semibold px-3 py-1 rounded-full mb-2'>Voice Over</span>
-          <p class='text-gray-700'>White board:</p>
-          <ul class='list-disc ml-6 text-gray-700'>
-            <li>Managing and airing all inventory (commercials) during live games. <span class='italic text-blue-700'>[White board text: airing commercials]</span></li>
-            <li>Communicating with the network (through the phone and email) with the producers and Master control. (MC = Master control, the people that send the commercial to air, we communicate with them the most) <span class='italic text-blue-700'>[White board text: Communicating through the phone and email]</span></li>
-            <li>Writing down airing times <span class='italic text-blue-700'>[White board text: Writing down airing times]</span></li>
-          </ul>
-        </div>
-        <div>
-          <span class='inline-block bg-blue-100 text-blue-800 font-semibold px-3 py-1 rounded-full mb-2'>Ball Speaks</span>
-          <ul class='list-disc ml-6 text-gray-800'>
-            <li>Proper management of inventory is crucial for the financial success of CBS Sports Network.</li>
-            <li>Network operates on a 24-hour clock from 6 AM to 6 AM so our goal is to time out the commercials and organize them in that 24-hour period!</li>
-            <li>The role may appear intimidating at first but don't worry it will become comprehensible after this training course.</li>
-            <li>Keep in mind there will be practice questions throughout the course and there will be a test you must get 70% or higher on.</li>
-            <li>Participants must take notes and prepare questions for a follow-up Zoom call.</li>
-          </ul>
-          <p class='mt-2 text-sm text-gray-500 italic'>This will be presented as an AI voiceover with a basketball avatar.</p>
-        </div>
-      </div>`
-    },
     {
       title: 'Module 1: Live Coverage Sheet',
       submodules: [
         {
-          title: 'Real Time',
-          content: `Real Time is the scheduled start time for a show or game. For example, if a game is scheduled to begin at 8AM, you write down 8:00:00 next to Real Time, regardless of when it actually begins.`
-        },
-        {
-          title: 'Start Time',
-          content: `Start Time is when the event actually begins. For example, if the game is delayed and starts at 8:03:30 AM, you write that down next to Start Time.`
+          title: 'Start Time & Real Time',
+          content: `Start Time & Real Time are two key timing fields. Real Time is the scheduled start time for a show or game (what was planned), while Start Time is when the event actually begins (what actually happened). For example, if a game is scheduled for 8AM but starts at 8:03:30 AM due to a delay, you write 8:00:00 in Real Time and 8:03:30 in Start Time.`
         },
         {
           title: 'Hit Time',
@@ -115,57 +93,58 @@
 
   // Sidebar and navigation state
   let sidebarOpen = true;
-  const mainIdx = writable(0); // index in modules
-  const subIdx = writable(0); // index in submodules (if any)
-  let submodulesOpen = true; // controls collapse/expand of Module 1 submodules
+  let mainSection = 'introduction'; // 'introduction', 'module1', 'module1sub', or 'other'
+  let module1SubIdx = 0;
+  let submodulesOpen = true;
 
-  // Derived store for current module/submodule
-  const current = derived([mainIdx, subIdx], ([$mainIdx, $subIdx]) => {
-    const mod = modules[$mainIdx];
-    if (mod.submodules) {
-      return { ...mod.submodules[$subIdx], isSub: true, main: mod, mainIdx: $mainIdx, subIdx: $subIdx, subCount: mod.submodules.length };
-    }
-    return { ...mod, isSub: false, mainIdx: $mainIdx };
-  });
+  // Define the content map for easier rendering
+  const module1Submodules = [
+    { title: 'Start Time & Real Time', component: StartTimeRealTime },
+    { title: 'Hit Time', component: HitTime },
+    { title: 'Event Type', component: EventType },
+    { title: 'Length', component: Length },
+    { title: 'Title', component: Title },
+    { title: 'Advertiser', component: Advertiser },
+    { title: 'House Number', component: HouseNumber },
+    { title: 'Ordered As', component: OrderedAs },
+    { title: 'Spot End Time', component: SpotEndTime }
+  ];
 
-  function goToModule(idx: number) {
-    mainIdx.set(idx);
-    subIdx.set(0);
+  function goToIntroduction() {
+    mainSection = 'introduction';
   }
-  function goToSubModule(idx: number) {
-    subIdx.set(idx);
+  function goToModule1Intro() {
+    mainSection = 'module1';
+  }
+  function goToModule1Sub(idx: number) {
+    mainSection = 'module1sub';
+    module1SubIdx = idx;
   }
   function next() {
-    let $mainIdx: number = 0, $subIdx: number = 0;
-    mainIdx.subscribe(v => $mainIdx = v)();
-    subIdx.subscribe(v => $subIdx = v)();
-    const mod = modules[$mainIdx];
-    if (mod.submodules && $subIdx < mod.submodules.length - 1) {
-      subIdx.set($subIdx + 1);
-    } else if ($mainIdx < modules.length - 1) {
-      mainIdx.set($mainIdx + 1);
-      subIdx.set(0);
+    if (mainSection === 'introduction') {
+      goToModule1Intro();
+    } else if (mainSection === 'module1') {
+      goToModule1Sub(0);
+    } else if (mainSection === 'module1sub') {
+      if (module1SubIdx < module1Submodules.length - 1) {
+        goToModule1Sub(module1SubIdx + 1);
+      } else {
+        // TODO: go to next module
+      }
     }
   }
   function prev() {
-    let $mainIdx: number = 0, $subIdx: number = 0;
-    mainIdx.subscribe(v => $mainIdx = v)();
-    subIdx.subscribe(v => $subIdx = v)();
-    const mod = modules[$mainIdx];
-    if (mod.submodules && $subIdx > 0) {
-      subIdx.set($subIdx - 1);
-    } else if ($mainIdx > 0) {
-      mainIdx.set($mainIdx - 1);
-      const prevMod = modules[$mainIdx - 1];
-      subIdx.set(prevMod.submodules ? prevMod.submodules.length - 1 : 0);
+    if (mainSection === 'module1sub') {
+      if (module1SubIdx > 0) {
+        goToModule1Sub(module1SubIdx - 1);
+      } else {
+        goToModule1Intro();
+      }
+    } else if (mainSection === 'module1') {
+      goToIntroduction();
     }
   }
 </script>
-
-<!-- Progress Bar -->
-<div class="w-full bg-gray-200 h-2">
-  <div class="bg-blue-600 h-2 transition-all" style="width: {($mainIdx + 1) / modules.length * 100}%"></div>
-</div>
 
 <!-- Header -->
 <header class="w-full flex items-center justify-between py-4 px-8 bg-white shadow-sm border-b">
@@ -182,91 +161,72 @@
         <button on:click={() => (sidebarOpen = false)} class="text-gray-400 hover:text-gray-700 text-lg font-bold">×</button>
       </div>
       <nav class="flex flex-col divide-y divide-gray-100">
-        {#each modules as mod, idx}
-          <div>
-            <button
-              class="text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 w-full {($mainIdx === idx) ? 'bg-blue-100 text-blue-700' : ''}"
-              on:click={() => goToModule(idx)}
-              style="position: relative;"
-            >
-              <span class="w-2 h-2 rounded-full {($mainIdx === idx) ? 'bg-blue-600' : 'bg-gray-300'}"></span>
-              {mod.title}
-              {#if mod.submodules}
-                <span class="ml-auto flex items-center justify-center w-7 h-7 rounded-full transition bg-gray-100 hover:bg-blue-200">
-                  <button type="button" class="w-full h-full flex items-center justify-center text-lg text-blue-700 focus:outline-none" on:click|stopPropagation={() => submodulesOpen = !submodulesOpen} aria-label="Toggle submodules">
-                    <svg class="w-5 h-5 transition-transform duration-200" style="transform: rotate({submodulesOpen && $mainIdx === idx ? 90 : 0}deg);" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                  </button>
-                </span>
-              {/if}
-            </button>
-            {#if mod.submodules && $mainIdx === idx && submodulesOpen}
-              <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
-                {#each mod.submodules as sub, sidx}
-                  <button
-                    class="text-left px-3 py-2 text-sm hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 rounded {($subIdx === sidx) ? 'bg-blue-200 text-blue-800 font-semibold' : ''}"
-                    on:click={() => goToSubModule(sidx)}
-                  >
-                    <span class="w-2 h-2 rounded-full {($subIdx === sidx) ? 'bg-blue-600' : 'bg-gray-300'}"></span>
-                    {sub.title}
-                  </button>
-                {/each}
-              </div>
-            {/if}
+        <button on:click={goToIntroduction} class="text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 w-full {mainSection === 'introduction' ? 'bg-blue-100 text-blue-700' : ''}">
+          <span class="w-2 h-2 rounded-full {mainSection === 'introduction' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+          Introduction
+        </button>
+        <div class="flex items-center">
+          <button on:click={goToModule1Intro} class="flex-1 text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 {mainSection === 'module1' ? 'bg-blue-100 text-blue-700' : ''}">
+            <span class="w-2 h-2 rounded-full {mainSection === 'module1' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+            Module 1: Live Coverage Sheet
+          </button>
+          <button
+            type="button"
+            class="ml-2 flex items-center justify-center w-7 h-7 rounded-full transition bg-gray-100 hover:bg-blue-200"
+            on:click={() => submodulesOpen = !submodulesOpen}
+            aria-label="Toggle submodules"
+          >
+            <svg class="w-5 h-5 transition-transform duration-200" style="transform: rotate({submodulesOpen ? 90 : 0}deg);" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+        {#if submodulesOpen}
+          <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
+            {#each module1Submodules as sub, idx (sub.title)}
+              {@const i: number = idx}
+              <button on:click={() => goToModule1Sub(i)} class="text-left px-3 py-2 text-sm hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 rounded {mainSection === 'module1sub' && module1SubIdx === i ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">
+                <span class="w-2 h-2 rounded-full {mainSection === 'module1sub' && module1SubIdx === i ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+                {sub.title}
+              </button>
+            {/each}
           </div>
-        {/each}
+        {/if}
       </nav>
     </aside>
   {:else}
     <!-- Floating menu button -->
-    <button on:click={() => (sidebarOpen = true)} class="fixed top-24 left-4 z-30 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg p-3 focus:outline-none">
+    <button on:click={() => (sidebarOpen = true)} class="fixed top-24 left-4 z-30 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg p-3 focus:outline-none" aria-label="Open sidebar menu">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
   {/if}
 
   <!-- Main Content -->
   <main class="flex-1 flex flex-col items-center justify-center p-8">
-    {#if $current.isSub}
-      <div class="w-full max-w-2xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">{$current.title}</h2>
-        <div class="text-gray-700 text-lg mb-8">{$current.content}</div>
-        <div class="flex justify-between mt-8">
-          <button
-            class="px-5 py-2 rounded bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 disabled:opacity-50"
-            on:click={prev}
-            disabled={$mainIdx === 0 && $subIdx === 0}
-          >
-            Back
-          </button>
-          <button
-            class="px-5 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
-            on:click={next}
-            disabled={($mainIdx === modules.length - 1) && (!$current.isSub || ('subIdx' in $current && 'subCount' in $current && $current.subIdx === $current.subCount - 1))}
-          >
-            Next
-          </button>
-        </div>
-      </div>
-    {:else}
-      <div class="w-full max-w-2xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">{$current.title}</h2>
-        <div class="text-gray-700 text-lg mb-8">{@html $current.content}</div>
-        <div class="flex justify-between mt-8">
-          <button
-            class="px-5 py-2 rounded bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 disabled:opacity-50"
-            on:click={prev}
-            disabled={$mainIdx === 0}
-          >
-            Back
-          </button>
-          <button
-            class="px-5 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
-            on:click={next}
-            disabled={$mainIdx === modules.length - 1 && !$current.isSub}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+    {#if mainSection === 'introduction'}
+      <Introduction />
+    {:else if mainSection === 'module1'}
+      <Module1Intro />
+    {:else if mainSection === 'module1sub'}
+      {#if module1Submodules[module1SubIdx]}
+        <svelte:component this={module1Submodules[module1SubIdx].component} />
+      {/if}
     {/if}
+    <div class="flex justify-between mt-8 w-full max-w-2xl mx-auto">
+      <button
+        class="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 text-gray-700 font-semibold shadow hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        on:click={prev}
+        disabled={mainSection === 'introduction'}
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <button
+        class="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        on:click={next}
+        disabled={mainSection === 'module1sub' && module1SubIdx === module1Submodules.length - 1}
+      >
+        Next
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
   </main>
 </div> 
