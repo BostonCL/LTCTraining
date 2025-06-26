@@ -55,11 +55,8 @@
 
   function handleAudioEnd() {
     audioStore.update(state => ({ ...state, isPlaying: false }));
-    
-    if (currentIdx < scripts.length - 1) {
-      currentIdx++;
-      playCurrent();
-    } else {
+    // Do not auto-advance. Only call onComplete if at the last clip.
+    if (currentIdx === scripts.length - 1) {
       isDone = true;
       onComplete();
     }
@@ -103,17 +100,6 @@
         </div>
         <!-- Smile -->
         <svg class="absolute left-1/2 top-1/2 -translate-x-1/2" style="margin-top:28px;" width="30" height="10"><path d="M5 5 Q15 15 25 5" stroke="#222" stroke-width="2" fill="none"/></svg>
-      </div>
-      <!-- Speech Bubble -->
-      <div class="relative mt-4">
-        <div class="bg-white border border-gray-200 rounded-xl px-6 py-4 shadow text-lg text-gray-800 max-w-md">
-          {#if scripts[currentIdx]}
-            {scripts[currentIdx].text}
-          {/if}
-        </div>
-        <div class="absolute left-1/2 -bottom-3 -translate-x-1/2 w-6 h-6">
-          <svg viewBox="0 0 24 24" class="w-6 h-6"><polygon points="12,24 0,0 24,0" fill="white"/></svg>
-        </div>
       </div>
     </div>
   </div>

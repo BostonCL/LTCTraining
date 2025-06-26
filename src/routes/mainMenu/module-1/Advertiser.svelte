@@ -1,6 +1,14 @@
-<div class="w-full max-w-2xl mx-auto">
-  <h2 class="text-2xl font-bold text-gray-900 mb-4">Advertiser</h2>
-  <div class="text-gray-700 text-lg mb-8">
-    Advertiser is who the ad is from.
-  </div>
-</div> 
+<script lang="ts">
+import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
+
+const script = [
+  { text: 'Advertiser is who the ad is from.', audio: '/audio/module1_advertiser_01.mp3' }
+];
+
+const videoInfo = {
+  title: 'Advertiser',
+  description: 'Understand the importance of the Advertiser field in commercial logs.'
+};
+</script>
+
+<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} /> 
