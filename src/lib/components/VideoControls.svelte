@@ -1,11 +1,14 @@
 <script lang="ts">
   import { audioStore, playPause, replay, seekTo, setVolume, toggleMute, nextClip, previousClip } from '$lib/stores/audioStore';
+  import { captionEnabled } from '$lib/stores/audioStore';
+  export let onToggleFullscreen: () => void;
+  export let fullscreen = false;
 
   let progressBar: HTMLElement;
   let volumeSlider: HTMLInputElement;
 
   function handleProgressClick(event: MouseEvent) {
-    if (!progressBar) return;
+    if (!progressBar || !canSeek) return;
     
     const rect = progressBar.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
@@ -29,6 +32,12 @@
   $: audioState = $audioStore;
   $: canGoNext = audioState.currentIndex < audioState.totalClips - 1 && audioState.progress >= 95;
   $: canGoPrevious = audioState.currentIndex > 0;
+  $: canSeek = !audioState.isPlaying && audioState.progress >= 99;
+  $: ccEnabled = $captionEnabled;
+
+  function toggleCC() {
+    captionEnabled.update(v => !v);
+  }
 </script>
 
 <div class="bg-black bg-opacity-80 text-white p-4 rounded-b-lg">
@@ -39,6 +48,7 @@
       class="w-full h-2 bg-gray-600 rounded-full cursor-pointer relative"
       on:click={handleProgressClick}
       on:keydown={(e) => {
+        if (!canSeek) return;
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleProgressClick(e as any);
@@ -50,6 +60,7 @@
       aria-valuemin="0"
       aria-valuemax="100"
       aria-valuenow={audioState.progress}
+      style="opacity: {canSeek ? 1 : 0.6}; cursor: {canSeek ? 'pointer' : 'not-allowed'};"
     >
       <div 
         class="h-full bg-red-600 rounded-full transition-all duration-100"
@@ -154,11 +165,21 @@
             aria-label="Volume control"
           />
         </div>
+
+        <!-- Closed Caption Button -->
+        <button
+          class="ml-2 px-3 py-1 rounded-full border border-black bg-white text-black text-xs font-bold focus:outline-none transition-colors duration-150 hover:bg-gray-200"
+          aria-label="Closed captions"
+          on:click={toggleCC}
+          style="line-height: 1.1;"
+        >
+          CC
+        </button>
       </div>
     </div>
 
     <!-- Right Controls -->
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-4 ml-auto">
       <!-- Time Display -->
       <div class="text-sm text-gray-300">
         {formatTime(audioState.currentTime)} / {formatTime(audioState.duration)}
@@ -168,6 +189,26 @@
       <div class="text-sm text-gray-300">
         {audioState.currentIndex + 1} / {audioState.totalClips}
       </div>
+
+      <!-- Fullscreen Button -->
+      <button
+        class="ml-4 p-1 rounded focus:outline-none hover:bg-gray-700 transition-colors flex items-center justify-center"
+        aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+        on:click={onToggleFullscreen}
+        style="width: 2.25rem; height: 2.25rem;"
+      >
+        {#if fullscreen}
+          <!-- Exit Fullscreen Icon (L-corners outward) -->
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h6M4 4v6M20 4h-6M20 4v6M4 20h6M4 20v-6M20 20h-6M20 20v-6"/>
+          </svg>
+        {:else}
+          <!-- Enter Fullscreen Icon (L-corners inward) -->
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9L4 4M15 9l5-5M9 15l-5 5M15 15l5 5"/>
+          </svg>
+        {/if}
+      </button>
     </div>
   </div>
 </div>

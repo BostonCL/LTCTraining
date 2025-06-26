@@ -22,6 +22,10 @@ export const audioStore = writable<AudioState>({
   totalClips: 0
 });
 
+export const captionEnabled = writable(false);
+
+export const fullscreenEnabled = writable(false);
+
 // Audio control functions
 export let audioElement: HTMLAudioElement | null = null;
 
