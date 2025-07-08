@@ -11,6 +11,20 @@ intro_09|Keep in mind there will be practice questions throughout the course and
 intro_10|Participants must take notes and prepare questions for a follow-up Zoom call.
 
 # --- Module 1 ---
-module1_intro|Welcome to Module 1. In this section, we will cover the basics of live traffic reporting.
+module-1/01-intro/module1_intro|Welcome to module 1! Now, let's begin!
+module-1/01-intro/module1_01|This is an example of a Live Coverage Sheet. Before each shift, you will receive an email containing a Live Coverage Sheet. This spreadsheet tells us when specific Commercials will air. It is separated by columns that we will break down later on in this module.
+module-1/01-intro/module1_02|Pause here for a moment so that you can take it all in...
+module-1/01-intro/module1_03|Thoroughly understanding the Live Coverage Sheet is crucial to ensuring that you can effectively manage Unit placement during live games, where adjustments are often necessary due to Unit cuts. Each column contains critical information that determines whether a Unit can or cannot be assigned to a specific place on the Live Coverage Sheet.
+module-1/01-intro/module1_04|Let's start at the Program line
 module1_realtime|First, let's talk about the Real Time field. This indicates if the data is live or delayed.
-main_introduction|Welcome to the CBS Live Traffic Coverage Training program. Use the menu on the left to navigate through the modules. 
+main_introduction|Welcome to the CBS Live Traffic Coverage Training program. Use the menu on the left to navigate through the modules.
+module1_starttimerealtime_00.mp3|This is the start of the Real Time & Start Time section.
+module1_starttimerealtime_01.mp3|Here we will discuss Real Time and Start Time:
+module1_starttimerealtime_02.mp3|Real Time: Real Time is the scheduled time that the game or show is supposed to begin.
+module1_starttimerealtime_03.mp3|Start Time: Start Time is the actual time the game or show begins.
+module1_starttimerealtime_04.mp3|For example: If a show or game is scheduled to begin at 8AM, that is the Real Time. So, you write down 8:00:00 next to Real Time regardless of when it actually begins.
+module1_starttimerealtime_05.mp3|But for Start Time, let's say the game is delayed and starts at 8:03:30 AM. You would write 8:03:30 AM down next to Start Time.
+module1_starttimerealtime_06.mp3|This is how the Real Time/ Start Time column would appear in this example: 
+module-1/program-line/module1_programline_01|The Program line is the gray line that appears before and after each commercial break.
+module-1/program-line/module1_programline_02|The main details to focus on are, show title and segment number. In this case the show title is "That Other Pregame Show" and the segment number is circled in red. The segment number represents which commercial break you're about to enter and is always listed directly above that break.
+module-1/program-line/module1_programline_03|For example, if you're making swaps right below the 'SEG 2' program line, you're working in Break 2. 

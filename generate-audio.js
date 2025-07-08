@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 // --- Configuration ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const credentialsPath = path.join(__dirname, 'gcp-credentials.json');
+const credentialsPath = path.join(__dirname, 'ltctraining-b3b3e6e4eb5b.json');
 const inputFile = path.join(__dirname, 'scripts.txt');
 const outputDir = path.join(__dirname, 'static/audio');
 // -------------------
@@ -24,6 +24,10 @@ const client = new textToSpeech.TextToSpeechClient({
     keyFilename: credentialsPath,
 });
 
+// Get CLI arguments (filenames to generate, without extension)
+const args = process.argv.slice(2);
+const filterFilenames = args.length > 0 ? new Set(args) : null;
+
 async function generateAudio() {
     console.log('Starting audio generation process...');
 
@@ -39,14 +43,18 @@ async function generateAudio() {
             }
 
             const [filename, text] = parts;
-            const outputPath = path.join(outputDir, `${filename.trim()}.mp3`);
+            const trimmedFilename = filename.trim().replace(/\.mp3$/, '');
+            if (filterFilenames && !filterFilenames.has(trimmedFilename)) {
+                continue; // Skip files not requested
+            }
+            const outputPath = path.join(outputDir, `${trimmedFilename}.mp3`);
             
-            console.log(`Generating: ${filename.trim()}.mp3`);
+            console.log(`Generating: ${trimmedFilename}.mp3`);
 
             const request = {
                 input: { text: text.trim() },
                 // See https://cloud.google.com/text-to-speech/docs/voices for more voice options
-                voice: { languageCode: 'en-US', name: 'en-US-Studio-M' },
+                voice: { languageCode: 'en-US', name: 'en-US-Chirp3-HD-Leda' },
                 audioConfig: { audioEncoding: 'MP3' },
             };
 

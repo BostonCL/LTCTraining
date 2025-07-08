@@ -22,13 +22,13 @@ let isComplete = false;
 $: audioState = $audioStore;
 
 $: if (!isComplete && audioState.currentIndex === module1Script.length - 1) {
-  if (audioState.progress >= 70) {
+  if (audioState.progress >= 99) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: -1 });
   } else if (!audioState.isPlaying && audioState.progress > 0) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: -1 });
-  } else if (audioState.progress >= 50) {
+  } else if (audioState.progress >= 99) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: -1 });
   }
@@ -45,11 +45,6 @@ function goNext() {
   description={videoInfo.description}
   image="/images/module-1/intro/LiveCoverageCleanWide-0.png"
   showAvatar={false}
-/>
-{#if isComplete}
-  <div class="flex justify-end mt-8">
-    <button class="px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition" on:click={goNext}>
-      Next →
-    </button>
-  </div>
-{/if} 
+  isSubmoduleComplete={isComplete}
+  onNextSubmodule={goNext}
+/> 

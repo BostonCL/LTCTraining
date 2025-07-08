@@ -5,6 +5,9 @@ import { createEventDispatcher } from 'svelte';
 
 const dispatch = createEventDispatcher();
 
+// Props
+export let isCompleted: boolean = false;
+
 // Placeholder script, audio, and image. Replace with real content later.
 const script = [
   { text: 'The Program line is the gray line that appears before and after each commercial break.', audio: '/audio/module-1/program-line/module1_programline_01.mp3' },
@@ -21,22 +24,25 @@ const videoInfo = {
 $: audioState = $audioStore;
 let isComplete = false;
 
+// Use the passed isCompleted prop or determine from local state
+$: finalIsComplete = isCompleted || isComplete;
+
 // Check if user has reached the end of the module - multiple conditions
 $: if (!isComplete && audioState.currentIndex === script.length - 1) {
   // Condition 1: Progress-based completion
-  if (audioState.progress >= 70) {
+  if (audioState.progress >= 99) {
     isComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 1 }); // Update index as needed
+    dispatch('moduleCompleted', { submoduleIndex: 0 });
   }
   // Condition 2: Audio finished playing
   else if (!audioState.isPlaying && audioState.progress > 0) {
     isComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 1 }); // Update index as needed
+    dispatch('moduleCompleted', { submoduleIndex: 0 });
   }
   // Condition 3: User has been on last clip for a while
-  else if (audioState.progress >= 50) {
+  else if (audioState.progress >= 99) {
     isComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 1 }); // Update index as needed
+    dispatch('moduleCompleted', { submoduleIndex: 0 });
   }
 }
 
@@ -51,4 +57,4 @@ $: currentImage =
     : '/images/module-1/program-line/Segmentscreen.png';
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image={currentImage} isSubmoduleComplete={isComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image={currentImage} isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 
