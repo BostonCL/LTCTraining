@@ -1,6 +1,7 @@
 <script lang="ts">
   import { audioStore, playPause, replay, seekTo, setVolume, toggleMute, nextClip, previousClip } from '$lib/stores/audioStore';
   import { captionEnabled } from '$lib/stores/audioStore';
+  import { DEV_FEATURES } from '$lib/config/dev';
   export let onToggleFullscreen: () => void;
   export let fullscreen = false;
 
@@ -40,12 +41,12 @@
   }
 </script>
 
-<div class="bg-black bg-opacity-80 text-white p-4 rounded-b-lg">
+<div class="bg-black bg-opacity-70 text-white p-2 rounded-b-md border-t border-gray-700">
   <!-- Progress Bar -->
-  <div class="mb-3">
+  <div class="mb-2">
     <div 
       bind:this={progressBar}
-      class="w-full h-2 bg-gray-600 rounded-full cursor-pointer relative"
+      class="w-full h-1 bg-gray-500 rounded cursor-pointer relative"
       on:click={handleProgressClick}
       on:keydown={(e) => {
         if (!canSeek) return;
@@ -63,23 +64,23 @@
       style="opacity: {canSeek ? 1 : 0.6}; cursor: {canSeek ? 'pointer' : 'not-allowed'};"
     >
       <div 
-        class="h-full bg-red-600 rounded-full transition-all duration-100"
+        class="h-full bg-red-500 rounded transition-all duration-100"
         style="width: {audioState.progress}%"
       ></div>
       <div 
-        class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-red-600 rounded-full border-2 border-white shadow-lg"
-        style="left: calc({audioState.progress}% - 8px)"
+        class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-red-500 rounded-full border border-white"
+        style="left: calc({audioState.progress}% - 6px)"
       ></div>
     </div>
   </div>
 
   <!-- Controls Row -->
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between text-sm">
     <!-- Left Controls -->
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-2">
       <!-- Play/Pause Button -->
       <button 
-        class="text-white hover:text-gray-300 transition-colors"
+        class="text-white hover:text-gray-300 transition-colors p-1"
         on:click={playPause}
         aria-label={audioState.isPlaying ? 'Pause' : 'Play'}
       >
@@ -96,7 +97,7 @@
 
       <!-- Replay Button -->
       <button 
-        class="text-white hover:text-gray-300 transition-colors"
+        class="text-white hover:text-gray-300 transition-colors p-1"
         on:click={replay}
         aria-label="Replay"
       >
@@ -105,34 +106,37 @@
         </svg>
       </button>
 
-      <!-- Previous Button -->
-      <button 
-        class="text-white hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click={previousClip}
-        disabled={!canGoPrevious}
-        aria-label="Previous clip"
-      >
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-        </svg>
-      </button>
+      <!-- Development Navigation Buttons -->
+      {#if DEV_FEATURES.showVideoNavigationButtons}
+        <!-- Previous Button -->
+        <button 
+          class="text-white hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed p-1"
+          on:click={previousClip}
+          disabled={!canGoPrevious}
+          aria-label="Previous clip"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+          </svg>
+        </button>
 
-      <!-- Next Button -->
-      <button 
-        class="text-white hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click={nextClip}
-        disabled={!canGoNext}
-        aria-label="Next clip"
-      >
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-        </svg>
-      </button>
+        <!-- Next Button -->
+        <button 
+          class="text-white hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed p-1"
+          on:click={nextClip}
+          disabled={!canGoNext}
+          aria-label="Next clip"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+          </svg>
+        </button>
+      {/if}
 
       <!-- Volume Control -->
-      <div class="relative flex items-center group">
+      <div class="relative flex items-center group ml-1">
         <button 
-          class="text-white hover:text-gray-300 transition-colors"
+          class="text-white hover:text-gray-300 transition-colors p-1"
           on:click={toggleMute}
           aria-label={audioState.isMuted || audioState.volume === 0 ? 'Unmute' : 'Mute'}
         >
@@ -152,7 +156,7 @@
         </button>
 
         <!-- Volume Slider -->
-        <div class="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div class="ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <input
             bind:this={volumeSlider}
             type="range"
@@ -161,14 +165,14 @@
             step="0.01"
             value={audioState.volume}
             on:input={handleVolumeChange}
-            class="w-16 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+            class="w-14 h-1 bg-gray-500 rounded appearance-none cursor-pointer slider"
             aria-label="Volume control"
           />
         </div>
 
         <!-- Closed Caption Button -->
         <button
-          class="ml-2 px-3 py-1 rounded-full border border-black bg-white text-black text-xs font-bold focus:outline-none transition-colors duration-150 hover:bg-gray-200"
+          class="ml-2 px-2 py-0.5 rounded border border-gray-400 bg-white text-black text-xs font-semibold focus:outline-none transition-colors duration-150 hover:bg-gray-200"
           aria-label="Closed captions"
           on:click={toggleCC}
           style="line-height: 1.1;"
@@ -179,20 +183,20 @@
     </div>
 
     <!-- Right Controls -->
-    <div class="flex items-center space-x-4 ml-auto">
+    <div class="flex items-center space-x-2 ml-auto">
       <!-- Time Display -->
-      <div class="text-sm text-gray-300">
+      <div class="text-xs text-gray-300">
         {formatTime(audioState.currentTime)} / {formatTime(audioState.duration)}
       </div>
 
       <!-- Progress Text -->
-      <div class="text-sm text-gray-300">
+      <div class="text-xs text-gray-300">
         {audioState.currentIndex + 1} / {audioState.totalClips}
       </div>
 
       <!-- Fullscreen Button -->
       <button
-        class="ml-4 p-1 rounded focus:outline-none hover:bg-gray-700 transition-colors flex items-center justify-center"
+        class="ml-2 p-1 rounded focus:outline-none hover:bg-gray-700 transition-colors flex items-center justify-center"
         aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         on:click={onToggleFullscreen}
         style="width: 2.25rem; height: 2.25rem;"

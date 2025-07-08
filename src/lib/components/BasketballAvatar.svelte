@@ -6,11 +6,11 @@
   // The component now expects the audio file path along with the text
   export let scripts: { text: string; audio: string }[] = [];
   export let onComplete: () => void = () => {};
+  export let showAvatar: boolean = true;
 
   let currentIdx = 0;
   let isDone = false;
   let audio: HTMLAudioElement | null = null;
-  let showAvatar = true;
 
   function playCurrent() {
     if (!scripts[currentIdx]) return;
@@ -82,7 +82,7 @@
 </script>
 
 {#if showAvatar}
-  <div class="flex flex-col items-center justify-center" in:fly={{ y: 40, duration: 400 }} out:fly={{ y: 40, duration: 400 }}>
+  <div class="flex flex-col items-center justify-center transform translate-x-14 translate-y-15" in:fly={{ y: 40, duration: 400 }} out:fly={{ y: 40, duration: 400 }}>
     <!-- Basketball SVG Avatar -->
     <div class="relative flex flex-col items-center">
       <div class="animate-bounce" transition:scale={{ duration: 300 }}>
