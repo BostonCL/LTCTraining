@@ -5,8 +5,13 @@ import { createEventDispatcher } from 'svelte';
 
 const dispatch = createEventDispatcher();
 
+// Props
+export let isCompleted: boolean = false;
+
 const script = [
-  { text: 'Event Type tells you what kind of content it is (like a commercial, promo, local ad, or DR). You can also find this info elsewhere if needed.', audio: '/audio/module-1/08-event-type/module1_eventtype_01.mp3' }
+  { text: "The Event Type column represents the type of any given Unit.", audio: '/audio/module-1/08-event-type/module1_eventtype_01.mp3' },
+  { text: "The different types of Units are: Commercial, Promo, Local, DRs (Direct Response), and PSAs (Public Service Announcements).", audio: '/audio/module-1/08-event-type/module1_eventtype_02.mp3' },
+  { text: "Unit Prioritization will be discussed further in Module 2.", audio: '/audio/module-1/08-event-type/module1_eventtype_03.mp3' }
 ];
 
 const videoInfo = {
@@ -19,10 +24,13 @@ $: audioState = $audioStore;
 
 let isComplete = false;
 
+// Use the passed isCompleted prop or determine from local state
+$: finalIsComplete = isCompleted || isComplete;
+
 // Check if user has reached the end of the module - multiple conditions
 $: if (!isComplete && audioState.currentIndex === script.length - 1) {
   // Condition 1: Progress-based completion
-  if (audioState.progress >= 70) {
+  if (audioState.progress >= 99) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: 3 });
   }
@@ -32,7 +40,7 @@ $: if (!isComplete && audioState.currentIndex === script.length - 1) {
     dispatch('moduleCompleted', { submoduleIndex: 3 });
   }
   // Condition 3: User has been on last clip for a while
-  else if (audioState.progress >= 50) {
+  else if (audioState.progress >= 99) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: 3 });
   }
@@ -43,4 +51,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/event-type/EventTypesheet.png" isSubmoduleComplete={isComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/event-type/EventTypesheet.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 

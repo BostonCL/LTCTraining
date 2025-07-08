@@ -4,7 +4,6 @@
   import { writable, derived } from 'svelte/store';
   import Introduction from './introduction/Introduction.svelte';
   import Module1Intro from './module-1/Module1Intro.svelte';
-  import StartTimeRealTime from './module-1/StartTimeRealTime.svelte';
   import HitTime from './module-1/HitTime.svelte';
   import EventType from './module-1/EventType.svelte';
   import Length from './module-1/Length.svelte';
@@ -13,6 +12,12 @@
   import HouseNumber from './module-1/HouseNumber.svelte';
   import OrderedAs from './module-1/OrderedAs.svelte';
   import SpotEndTime from './module-1/SpotEndTime.svelte';
+  import StartTimeRealTime from './module-1/StartTimeRealTime.svelte';
+  import StartTimeRealTimeQuiz from './module-1/StartTimeRealTimeQuiz.svelte';
+  import ProgramLine from './module-1/ProgramLine.svelte';
+  import LengthQuiz from './module-1/LengthQuiz.svelte';
+  import HouseNumberQuiz from './module-1/HouseNumberQuiz.svelte';
+  import Module3 from './Module3.svelte';
   // Modules with submodules for Module 1
   const modules = [
     {
@@ -70,8 +75,16 @@
       content: 'Learn about the tools and technology used in live traffic reporting.'
     },
     {
-      title: 'Module 3: Best Practices',
-      content: 'Discover best practices for effective and accurate coverage.'
+      title: 'Module 3: Marking down commercial times and Moving Units',
+      content: `<div class="space-y-6">
+        <h2 class="text-xl font-bold text-gray-800">Before we begin this module, here are a few rules when moving units that you need to understand:</h2>
+        <ul class="list-disc pl-6 text-gray-700">
+          <li>Rule 1: [Add your rule here]</li>
+          <li>Rule 2: [Add your rule here]</li>
+          <li>Rule 3: [Add your rule here]</li>
+        </ul>
+        <p class="text-blue-700 font-semibold">Let’s get started with Module 3!</p>
+      </div>`
     }
   ];
 
@@ -93,12 +106,40 @@
 
   // Sidebar and navigation state
   let sidebarOpen = true;
-  let mainSection = 'introduction'; // 'introduction', 'module1', 'module1sub', or 'other'
+  let mainSection = 'introduction'; // 'introduction', 'module1', 'module1sub', 'quiz', or 'other'
   let module1SubIdx = 0;
   let submodulesOpen = true;
+  
+  // Track completion of submodules
+  let completedSubmodules = new Set<number>();
+  
+  // Mark submodule as completed
+  function markSubmoduleCompleted(idx: number) {
+    console.log('Marking submodule as completed:', idx);
+    completedSubmodules.add(idx);
+    console.log('Completed submodules:', Array.from(completedSubmodules));
+    // Force reactivity update
+    completedSubmodules = completedSubmodules;
+  }
+  
+
+  
+  // Check if Start Time & Real Time is completed (index 1)
+  $: startTimeRealTimeCompleted = completedSubmodules.has(1);
+  // Check if Length is completed (index 4)
+  $: lengthCompleted = completedSubmodules.has(4);
+  // Check if House Number is completed (index 7)
+  $: houseNumberCompleted = completedSubmodules.has(7);
+  
+  // Check if any submodule is completed
+  $: isSubmoduleCompleted = (idx: number) => completedSubmodules.has(idx);
+  
+  // Check if Module 1 is fully completed (all 10 submodules)
+  $: module1Completed = completedSubmodules.size === 10;
 
   // Define the content map for easier rendering
   const module1Submodules = [
+    { title: 'Program Line', component: ProgramLine },
     { title: 'Start Time & Real Time', component: StartTimeRealTime },
     { title: 'Hit Time', component: HitTime },
     { title: 'Event Type', component: EventType },
@@ -120,6 +161,14 @@
     mainSection = 'module1sub';
     module1SubIdx = idx;
   }
+  function goToQuiz() {
+    mainSection = 'quiz';
+  }
+  
+  function goToNextSubmodule() {
+    // Navigate to the next submodule after quiz completion
+    goToModule1Sub(2); // Hit Time is index 2
+  }
   function next() {
     if (mainSection === 'introduction') {
       goToModule1Intro();
@@ -131,10 +180,15 @@
       } else {
         // TODO: go to next module
       }
+    } else if (mainSection === 'quiz') {
+      // After quiz, go back to main menu or next module
+      goToModule1Intro();
     }
   }
   function prev() {
-    if (mainSection === 'module1sub') {
+    if (mainSection === 'quiz') {
+      goToModule1Sub(0); // Go back to first submodule
+    } else if (mainSection === 'module1sub') {
       if (module1SubIdx > 0) {
         goToModule1Sub(module1SubIdx - 1);
       } else {
@@ -169,6 +223,11 @@
           <button on:click={goToModule1Intro} class="flex-1 text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 {mainSection === 'module1' ? 'bg-blue-100 text-blue-700' : ''}">
             <span class="w-2 h-2 rounded-full {mainSection === 'module1' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
             Module 1: Live Coverage Sheet
+            {#if module1Completed}
+              <svg class="w-4 h-4 text-green-600 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+            {/if}
           </button>
           <button
             type="button"
@@ -182,14 +241,57 @@
         {#if submodulesOpen}
           <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
             {#each module1Submodules as sub, idx (sub.title)}
-              {@const i: number = idx}
-              <button on:click={() => goToModule1Sub(i)} class="text-left px-3 py-2 text-sm hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 rounded {mainSection === 'module1sub' && module1SubIdx === i ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">
-                <span class="w-2 h-2 rounded-full {mainSection === 'module1sub' && module1SubIdx === i ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+              <button on:click={() => goToModule1Sub(idx)} class="text-left px-3 py-2 text-sm hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 rounded {mainSection === 'module1sub' && module1SubIdx === idx ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">
+                <span class="w-2 h-2 rounded-full {mainSection === 'module1sub' && module1SubIdx === idx ? 'bg-blue-600' : 'bg-gray-300'}"></span>
                 {sub.title}
+                {#if completedSubmodules.has(idx)}
+                  <svg class="w-4 h-4 text-green-600 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                {/if}
               </button>
+              <!-- Show quiz link under Start Time & Real Time -->
+              {#if sub.title === 'Start Time & Real Time'}
+                <button 
+                  on:click={goToQuiz} 
+                  class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'quiz' ? 'bg-green-200 text-green-800 font-semibold' : startTimeRealTimeCompleted ? 'hover:bg-green-100 focus:bg-green-200 text-green-700' : 'text-gray-400 cursor-not-allowed'}"
+                  disabled={!startTimeRealTimeCompleted}
+                >
+                  <span class="w-2 h-2 rounded-full {mainSection === 'quiz' ? 'bg-green-600' : startTimeRealTimeCompleted ? 'bg-green-300' : 'bg-gray-300'}"></span>
+                  📝 Quiz {startTimeRealTimeCompleted ? '' : '(Complete module first)'}
+                </button>
+              {/if}
+              <!-- Show quiz link under Length -->
+              {#if sub.title === 'Length'}
+                <button 
+                  on:click={() => { mainSection = 'lengthQuiz'; }} 
+                  class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'lengthQuiz' ? 'bg-green-200 text-green-800 font-semibold' : lengthCompleted ? 'hover:bg-green-100 focus:bg-green-200 text-green-700' : 'text-gray-400 cursor-not-allowed'}"
+                  disabled={!lengthCompleted}
+                >
+                  <span class="w-2 h-2 rounded-full {mainSection === 'lengthQuiz' ? 'bg-green-600' : lengthCompleted ? 'bg-green-300' : 'bg-gray-300'}"></span>
+                  📝 Quiz {lengthCompleted ? '' : '(Complete module first)'}
+                </button>
+              {/if}
+              <!-- Show quiz link under House Number -->
+              {#if sub.title === 'House Number'}
+                <button 
+                  on:click={() => { mainSection = 'houseNumberQuiz'; }} 
+                  class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'houseNumberQuiz' ? 'bg-green-200 text-green-800 font-semibold' : houseNumberCompleted ? 'hover:bg-green-100 focus:bg-green-200 text-green-700' : 'text-gray-400 cursor-not-allowed'}"
+                  disabled={!houseNumberCompleted}
+                >
+                  <span class="w-2 h-2 rounded-full {mainSection === 'houseNumberQuiz' ? 'bg-green-600' : houseNumberCompleted ? 'bg-green-300' : 'bg-gray-300'}"></span>
+                  📝 Quiz {houseNumberCompleted ? '' : '(Complete module first)'}
+                </button>
+              {/if}
             {/each}
           </div>
         {/if}
+        {#each modules.slice(1) as module, modIdx}
+          <button on:click={() => { mainSection = `module${modIdx+2}`; }} class="text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 w-full {mainSection === `module${modIdx+2}` ? 'bg-blue-100 text-blue-700' : ''}">
+            <span class="w-2 h-2 rounded-full {mainSection === `module${modIdx+2}` ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+            {module.title}
+          </button>
+        {/each}
       </nav>
     </aside>
   {:else}
@@ -204,29 +306,34 @@
     {#if mainSection === 'introduction'}
       <Introduction />
     {:else if mainSection === 'module1'}
-      <Module1Intro />
+      <Module1Intro on:navigateToNextSubmodule={() => goToModule1Sub(0)} />
     {:else if mainSection === 'module1sub'}
       {#if module1Submodules[module1SubIdx]}
-        <svelte:component this={module1Submodules[module1SubIdx].component} />
+        <svelte:component 
+          this={module1Submodules[module1SubIdx].component} 
+          isCompleted={completedSubmodules.has(module1SubIdx)}
+          on:navigateToQuiz={goToQuiz}
+          on:moduleCompleted={(event) => {
+            console.log('Received moduleCompleted event:', event.detail);
+            markSubmoduleCompleted(event.detail.submoduleIndex);
+          }}
+          on:navigateToNextSubmodule={() => {
+            markSubmoduleCompleted(module1SubIdx);
+            if (module1SubIdx < module1Submodules.length - 1) {
+              goToModule1Sub(module1SubIdx + 1);
+            }
+          }}
+        />
       {/if}
+    {:else if mainSection === 'quiz'}
+      <StartTimeRealTimeQuiz on:navigateToNextSubmodule={goToNextSubmodule} />
+    {:else if mainSection === 'lengthQuiz'}
+      <LengthQuiz on:navigateToNextSubmodule={() => goToModule1Sub(5)} />
+    {:else if mainSection === 'houseNumberQuiz'}
+      <HouseNumberQuiz on:navigateToNextSubmodule={() => goToModule1Sub(8)} />
+    {:else if mainSection === 'module3'}
+      <Module3 />
     {/if}
-    <div class="flex justify-between mt-8 w-full max-w-2xl mx-auto">
-      <button
-        class="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 text-gray-700 font-semibold shadow hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click={prev}
-        disabled={mainSection === 'introduction'}
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-        Back
-      </button>
-      <button
-        class="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click={next}
-        disabled={mainSection === 'module1sub' && module1SubIdx === module1Submodules.length - 1}
-      >
-        Next
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
+
   </main>
 </div> 

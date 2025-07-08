@@ -7,12 +7,19 @@ import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled }
 export let script: { text: string; audio: string }[] = [];
 export let title: string = '';
 export let description: string = '';
+export let image: string | undefined = undefined;
+export let showAvatar: boolean = true;
+export let isSubmoduleComplete: boolean = false;
+export let onNextSubmodule: (() => void) | undefined;
+export let completionButtonText: string | undefined = undefined;
+export let onCompletionButtonClick: (() => void) | undefined = undefined;
 
 $: ccEnabled = $captionEnabled;
 $: audioState = $audioStore;
 $: currentCaption = script[audioState.currentIndex]?.text || '';
-$: canGoNext = !audioState.isPlaying && audioState.progress >= 99 && audioState.currentIndex < script.length - 1;
-$: canGoPrevious = audioState.currentIndex > 0;
+$: canGoNext = isSubmoduleComplete || (!audioState.isPlaying && audioState.progress >= 99 && audioState.currentIndex < script.length - 1);
+$: canGoPrevious = isSubmoduleComplete || audioState.currentIndex > 0;
+$: showCompletionButton = audioState.currentIndex === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick;
 
 let playerArea: HTMLDivElement;
 $: isFullscreen = $fullscreenEnabled;
@@ -29,6 +36,14 @@ function handleToggleFullscreen() {
   }
 }
 
+function handleNextArrow() {
+  if (audioState.currentIndex === script.length - 1 && isSubmoduleComplete && onNextSubmodule) {
+    onNextSubmodule();
+  } else {
+    nextClip();
+  }
+}
+
 onMount(() => {
   const handler = () => {
     fullscreenEnabled.set(!!document.fullscreenElement);
@@ -38,29 +53,28 @@ onMount(() => {
 });
 </script>
 
-<div class="w-full max-w-3xl mx-auto px-4">
+<div class="w-full max-w-5xl mx-auto px-4">
   <!-- Video Player Area -->
   <div bind:this={playerArea} class="w-full bg-black rounded-lg overflow-hidden shadow-lg mb-6 relative">
-    <div class="relative aspect-video bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center w-full">
+    <div class="relative aspect-video bg-black w-full overflow-hidden">
+      {#if image}
+        <img 
+          src={image} 
+          alt="Module visual" 
+          class="w-full h-full z-0 bg-white object-contain" 
+          style="
+            object-fit: contain;
+            object-position: center center;
+            filter: brightness(0.98);
+            display: block;
+            margin: 0 auto;
+            background: white;
+          " 
+        />
+      {/if}
       <!-- Basketball Avatar in the center -->
-      <div class="relative z-10">
-        <BasketballAvatar scripts={script} />
-      </div>
-      <!-- Overlay Navigation Buttons -->
-      <button class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed z-20" on:click={previousClip} disabled={!canGoPrevious} aria-label="Previous">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      </button>
-      <button class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed z-20" on:click={nextClip} disabled={!canGoNext} aria-label="Next">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-      </button>
-      <!-- Play button overlay (optional) -->
-      <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-        <div class="bg-white bg-opacity-20 rounded-full p-4">
-          <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        </div>
-      </div>
+      <BasketballAvatar scripts={script} showAvatar={showAvatar} />
+      
       <!-- Closed Caption Overlay -->
       {#if ccEnabled}
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none z-20">
@@ -71,6 +85,28 @@ onMount(() => {
       {/if}
     </div>
     <!-- Video Controls at the bottom -->
+    <!-- Navigation Buttons above the duration bar -->
+    <div class="w-full flex justify-between items-center mt-0 mb-0 px-0">
+      <button class="w-12 h-12 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed" on:click={previousClip} disabled={!canGoPrevious} aria-label="Previous">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      {#if showCompletionButton}
+        <button 
+          on:click={onCompletionButtonClick}
+          class="w-32 px-0 py-3 rounded-lg bg-blue-600 bg-opacity-90 text-white font-semibold shadow hover:bg-blue-700 hover:bg-opacity-100 transition flex items-center justify-center text-lg"
+        >
+          {completionButtonText}
+        </button>
+      {:else if audioState.currentIndex === script.length - 1 && isSubmoduleComplete && audioState.progress >= 99}
+        <button class="w-32 px-0 py-3 rounded-lg bg-blue-600 bg-opacity-80 text-white font-semibold shadow hover:bg-blue-700 hover:bg-opacity-100 transition flex items-center justify-center" on:click={handleNextArrow}>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      {:else}
+        <button class="w-12 h-12 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed" on:click={handleNextArrow} disabled={!canGoNext} aria-label="Next">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      {/if}
+    </div>
     <VideoControls onToggleFullscreen={handleToggleFullscreen} fullscreen={isFullscreen} />
   </div>
   <!-- Video Title -->

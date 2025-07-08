@@ -5,8 +5,12 @@ import { createEventDispatcher } from 'svelte';
 
 const dispatch = createEventDispatcher();
 
+// Props
+export let isCompleted: boolean = false;
+
 const script = [
-  { text: "House Number is a unique ID for the commercial. This is how Master Control identifies which ad you're talking about. Since one advertiser (like Geico) can have several different ads, the house number is key for clarity.", audio: '/audio/module-1/07-house-number/module1_housenumber_01.mp3' }
+  { text: "The House Number column contains a unique ID number for each of the commercials. This is how the MC identifies which ad you're referring to.", audio: '/audio/module-1/07-house-number/module1_housenumber_01.mp3' },
+  { text: "Since one advertiser, like Geico for example, can have several different ads running during the same program, the House Number is key for identifying which specific commercial you are referencing.", audio: '/audio/module-1/07-house-number/module1_housenumber_02.mp3' }
 ];
 
 const videoInfo = {
@@ -19,10 +23,13 @@ $: audioState = $audioStore;
 
 let isComplete = false;
 
+// Use the passed isCompleted prop or determine from local state
+$: finalIsComplete = isCompleted || isComplete;
+
 // Check if user has reached the end of the module - multiple conditions
 $: if (!isComplete && audioState.currentIndex === script.length - 1) {
   // Condition 1: Progress-based completion
-  if (audioState.progress >= 70) {
+  if (audioState.progress >= 99) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: 7 });
   }
@@ -32,7 +39,7 @@ $: if (!isComplete && audioState.currentIndex === script.length - 1) {
     dispatch('moduleCompleted', { submoduleIndex: 7 });
   }
   // Condition 3: User has been on last clip for a while
-  else if (audioState.progress >= 50) {
+  else if (audioState.progress >= 99) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: 7 });
   }
@@ -41,6 +48,10 @@ $: if (!isComplete && audioState.currentIndex === script.length - 1) {
 function goNext() {
   dispatch('navigateToNextSubmodule');
 }
+
+function goToQuiz() {
+  dispatch('navigateToQuiz');
+}
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/house-number/HouseNumberscreen.png" isSubmoduleComplete={isComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/house-number/HouseNumberscreen.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} completionButtonText="📝 Take Quiz" onCompletionButtonClick={goToQuiz} /> 

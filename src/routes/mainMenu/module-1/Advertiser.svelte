@@ -5,8 +5,12 @@ import { createEventDispatcher } from 'svelte';
 
 const dispatch = createEventDispatcher();
 
+// Props
+export let isCompleted: boolean = false;
+
 const script = [
-  { text: 'Advertiser is who the ad is from.', audio: '/audio/module-1/05-advertiser/module1_advertiser_01.mp3' }
+  { text: "The Advertiser column lists the companies that have purchased time slots for commercials.", audio: '/audio/module-1/05-advertiser/module1_advertiser_01.mp3' },
+  { text: "Compared to the Title column, the Advertiser column contains more condensed information.", audio: '/audio/module-1/05-advertiser/module1_advertiser_02.mp3' }
 ];
 
 const videoInfo = {
@@ -19,10 +23,13 @@ $: audioState = $audioStore;
 
 let isComplete = false;
 
+// Use the passed isCompleted prop or determine from local state
+$: finalIsComplete = isCompleted || isComplete;
+
 // Check if user has reached the end of the module - multiple conditions
 $: if (!isComplete && audioState.currentIndex === script.length - 1) {
   // Condition 1: Progress-based completion
-  if (audioState.progress >= 70) {
+  if (audioState.progress >= 99) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: 6 });
   }
@@ -32,7 +39,7 @@ $: if (!isComplete && audioState.currentIndex === script.length - 1) {
     dispatch('moduleCompleted', { submoduleIndex: 6 });
   }
   // Condition 3: User has been on last clip for a while
-  else if (audioState.progress >= 50) {
+  else if (audioState.progress >= 99) {
     isComplete = true;
     dispatch('moduleCompleted', { submoduleIndex: 6 });
   }
@@ -43,4 +50,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/advertiser/Advertiserscreen.png" isSubmoduleComplete={isComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/advertiser/Advertiserscreen.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 
