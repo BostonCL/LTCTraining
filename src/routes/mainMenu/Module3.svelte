@@ -5,11 +5,27 @@
 
   // Placeholder for navigation logic
   let showStep1 = false;
+  let showStep2 = false;
+  let showStep2Popup = false;
+  let showStep3 = false;
+  function goToStep3() {
+    showStep3 = true;
+  }
+  let step1Snapshot: { data: any[]; cellColors: { [key: string]: string } } | null = null;
   function goToStep1() {
     showStep1 = true;
   }
   function goBackInstructions() {
     showStep1 = false;
+  }
+  function goToStep2() {
+    // Deep copy data and cellColors
+    step1Snapshot = {
+      data: JSON.parse(JSON.stringify(data)),
+      cellColors: JSON.parse(JSON.stringify(cellColors))
+    };
+    showStep2 = true;
+    showStep2Popup = false;
   }
 
   let container: HTMLDivElement;
@@ -83,9 +99,115 @@
     }
     if (allCorrect) {
       checkResult = '✅ Correct! You found and marked the unsold green promos to CUT.';
+      // No popup, just show button in instructions
     } else {
       checkResult = '❌ Not quite! Make sure you wrote CUT in column A and filled the rest of the row in red for both green promo rows in SEG. 3.';
     }
+  }
+
+  let checkResult2 = '';
+  function checkStep2() {
+    // Find the two target rows by their unique values
+    const targets = [
+      { time: '09:32:00 PM', title: 'BRACKET BREAKDOWN FRIDAY 3 REV. 1' },
+      { time: '09:33:40 PM', title: 'MM SWEET 16 THURSDAY' }
+    ];
+    let allCorrect = true;
+    for (const target of targets) {
+      const rowIdx = data.findIndex(row => row[1] === target.time && row[2] && row[2].toLowerCase() === 'promo' && row[4] && row[4].toLowerCase() === target.title.toLowerCase());
+      if (rowIdx === -1) {
+        allCorrect = false;
+        break;
+      }
+      // Check column A for 'CUT' (case insensitive, trimmed)
+      if (!data[rowIdx][0] || data[rowIdx][0].trim().toLowerCase() !== 'cut') {
+        allCorrect = false;
+        break;
+      }
+      // Check if all columns except A are filled red
+      for (let col = 1; col < data[rowIdx].length; col++) {
+        const cellKey = `${rowIdx}-${col}`;
+        const color = (cellColors[cellKey] || '').toLowerCase();
+        if (
+          color !== '#e53e3e' &&
+          color !== '#ff0000' &&
+          color !== '#E53E3E'.toLowerCase() &&
+          color !== '#FF0000'.toLowerCase() &&
+          color !== 'rgb(229,62,62)' &&
+          color !== 'rgb(255,0,0)'
+        ) {
+          allCorrect = false;
+          break;
+        }
+      }
+      if (!allCorrect) break;
+    }
+    if (allCorrect) {
+      checkResult2 = '✅ Correct! You found and marked the two target promos to CUT.';
+      setTimeout(() => { goToStep3(); }, 800); // Navigate to step 3 after short delay
+    } else {
+      checkResult2 = '❌ Not quite! Make sure you wrote CUT in column A and filled the rest of the row in red for both target promo rows.';
+    }
+  }
+
+  let checkResult3 = '';
+  function checkStep3() {
+    // Find the source row to copy
+    const source = {
+      time: '09:23:02 PM',
+      eventType: 'Commercial',
+      title: 'OLD TRAPPER : CAMPING CATASTROPHES',
+      advertiser: 'OLD TRAPPER',
+      houseNumber: '602584',
+      orderedAs: 'ROS 24 HOUR',
+      spotEndTime: '05:59:00 AM'
+    };
+    // Find the row to insert after
+    const afterRowIdx = data.findIndex(row => row[1] === '09:33:40 PM' && row[2] && row[2].toLowerCase() === 'promo' && row[4] && row[4].toLowerCase() === 'mm sweet 16 thursday');
+    if (afterRowIdx === -1) {
+      checkResult3 = '❌ Could not find the MM SWEET 16 THURSDAY row.';
+      return;
+    }
+    // The new row should be after afterRowIdx
+    const newRowIdx = afterRowIdx + 1;
+    // Check if the new row matches the source data (except for possible column A, which could be blank or CUT)
+    const newRow = data[newRowIdx];
+    if (!newRow) {
+      checkResult3 = '❌ No new row found after MM SWEET 16 THURSDAY.';
+      return;
+    }
+    // Check columns 1-8 (skip column 0)
+    const matches =
+      newRow[1] === source.time &&
+      newRow[2] && newRow[2].toLowerCase() === source.eventType.toLowerCase() &&
+      newRow[3] === '00:00:30' &&
+      newRow[4] && newRow[4].toLowerCase() === source.title.toLowerCase() &&
+      newRow[5] && newRow[5].toLowerCase() === source.advertiser.toLowerCase() &&
+      newRow[6] === source.houseNumber &&
+      newRow[7] === source.orderedAs &&
+      newRow[8] === source.spotEndTime;
+    if (!matches) {
+      checkResult3 = '❌ The new row does not match the copied OLD TRAPPER row.';
+      return;
+    }
+    // Check if all cells in the new row are filled blue
+    let allBlue = true;
+    for (let col = 0; col < newRow.length; col++) {
+      const cellKey = `${newRowIdx}-${col}`;
+      const color = (cellColors[cellKey] || '').toLowerCase();
+      if (
+        color !== '#0070c0' &&
+        color !== 'rgb(0,112,192)'
+      ) {
+        allBlue = false;
+        break;
+      }
+    }
+    if (!allBlue) {
+      checkResult3 = '❌ The new row is not filled blue.';
+      return;
+    }
+    checkResult3 = '✅ Correct! You copied and pasted the row and filled it blue.';
   }
 
   // Fill color functions
@@ -458,6 +580,8 @@
   });
 </script>
 
+<!-- Remove Step 2 Navigation Popup -->
+
 <div class="excel-wrapper">
   <div class="excel-header">
     <h1 class="excel-title">Interactive Live Coverage Sheet</h1>
@@ -466,7 +590,7 @@
   </div>
   
   <div class="excel-instructions">
-    {#if !showStep1}
+    {#if !showStep1 && !showStep2 && !showStep3}
       <button class="excel-instructions-nav" aria-label="Go to Step 1" on:click={goToStep1}>
         <span class="excel-instructions-nav-arrow">→</span>
       </button>
@@ -474,7 +598,7 @@
       <div class="excel-instructions-body">
         The producer wants to cut 1 minute from break 3. Perform the actions to do this on the interactive excel sheet!
       </div>
-    {:else}
+    {:else if showStep1 && !showStep2 && !showStep3}
       <button class="excel-instructions-nav" aria-label="Back to Instructions" on:click={goBackInstructions}>
         <span class="excel-instructions-nav-arrow">←</span>
       </button>
@@ -484,6 +608,36 @@
         <button class="excel-check-btn" on:click={checkStep1}>Check</button>
         {#if checkResult}
           <div class="excel-check-result">{checkResult}</div>
+          {#if checkResult.startsWith('✅')}
+            <button class="excel-step2-next-btn" on:click={goToStep2} style="margin-top: 16px;">Go to Step 2</button>
+          {/if}
+        {/if}
+      </div>
+    {:else if showStep2 && !showStep3}
+      <h2 class="excel-instructions-title">Step 2</h2>
+      <div class="excel-instructions-body">
+        <div class="excel-step-hint">
+          Find <b>30 more seconds</b> to cut, still focusing on the event type <span class="excel-green">Promo</span>.<br>
+          <br>
+          <b>Instructions:</b> CUT two more promos by filling them in <span class="excel-red">Red</span> and writing <span class="excel-red">CUT</span> next to them in column A.
+        </div>
+        <button class="excel-check-btn" on:click={checkStep2}>Check</button>
+        {#if checkResult2}
+          <div class="excel-check-result">{checkResult2}</div>
+        {/if}
+      </div>
+    {:else if showStep3}
+      <h2 class="excel-instructions-title">Step 3</h2>
+      <div class="excel-instructions-body">
+        <div class="excel-step-hint">
+          Copy the row with <b>09:23:02 PM</b> Commercial <i>OLD TRAPPER : CAMPING CATASTROPHES</i>.<br>
+          Add a new row directly under <b>09:33:40 PM</b> Promo <i>MM SWEET 16 THURSDAY</i>.<br>
+          Paste the copied row’s data into the new row.<br>
+          Fill the new row <span style="color:#0070c0;font-weight:bold">Blue</span>.
+        </div>
+        <button class="excel-check-btn" on:click={checkStep3}>Check</button>
+        {#if checkResult3}
+          <div class="excel-check-result">{checkResult3}</div>
         {/if}
       </div>
     {/if}
@@ -863,5 +1017,20 @@
     margin-top: 12px;
     font-size: 1.08rem;
     font-weight: 500;
+  }
+  .excel-step2-next-btn {
+    background: #0074D9;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 16px 8px 0 0;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .excel-step2-next-btn:hover {
+    background: #005fa3;
   }
 </style> 
