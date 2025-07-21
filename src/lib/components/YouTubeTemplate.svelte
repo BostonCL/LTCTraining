@@ -2,11 +2,11 @@
 import { onMount } from 'svelte';
 import BasketballAvatar from '$lib/components/BasketballAvatar.svelte';
 import VideoControls from '$lib/components/VideoControls.svelte';
-import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled } from '$lib/stores/audioStore';
+import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
+import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips } from '$lib/stores/audioStore';
 
-export let script: { text: string; audio: string }[] = [];
+export let script: ({ text: string; audio: string; whiteboardText?: string[]; image?: string })[] = [];
 export let title: string = '';
-export let description: string = '';
 export let image: string | undefined = undefined;
 export let showAvatar: boolean = true;
 export let isSubmoduleComplete: boolean = false;
@@ -16,10 +16,23 @@ export let onCompletionButtonClick: (() => void) | undefined = undefined;
 
 $: ccEnabled = $captionEnabled;
 $: audioState = $audioStore;
-$: currentCaption = script[audioState.currentIndex]?.text || '';
-$: canGoNext = isSubmoduleComplete || (!audioState.isPlaying && audioState.progress >= 99 && audioState.currentIndex < script.length - 1);
-$: canGoPrevious = isSubmoduleComplete || audioState.currentIndex > 0;
+$: currentIdx = $audioStore.currentIndex;
+$: currentScript = script[currentIdx] || script[0];
+$: currentCaption = currentScript?.text || '';
+$: canGoNext = (
+  isSubmoduleComplete ||
+  (
+    audioState.currentIndex < script.length - 1 &&
+    (!audioState.isPlaying && audioState.progress >= 99)
+  )
+);
+$: canGoPrevious = audioState.currentIndex > 0;
 $: showCompletionButton = audioState.currentIndex === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick;
+
+$: accumulatedWhiteboardText = script
+  .slice(0, currentIdx + 1)
+  .map(s => s.whiteboardText && s.whiteboardText[0])
+  .filter((line): line is string => Boolean(line));
 
 let playerArea: HTMLDivElement;
 $: isFullscreen = $fullscreenEnabled;
@@ -45,19 +58,45 @@ function handleNextArrow() {
 }
 
 onMount(() => {
+  setTotalClips(script.length);
   const handler = () => {
     fullscreenEnabled.set(!!document.fullscreenElement);
   };
   document.addEventListener('fullscreenchange', handler);
   return () => document.removeEventListener('fullscreenchange', handler);
 });
+
+$: setTotalClips(script.length);
 </script>
 
-<div class="w-full max-w-5xl mx-auto px-4">
+<div class="w-full max-w-5xl px-4 mx-auto">
   <!-- Video Player Area -->
   <div bind:this={playerArea} class="w-full bg-black rounded-lg overflow-hidden shadow-lg mb-6 relative">
     <div class="relative aspect-video bg-black w-full overflow-hidden">
-      {#if image}
+      {#if accumulatedWhiteboardText.length > 0}
+        <!-- Whiteboard Animation -->
+        <div class="absolute inset-0 z-10 bg-white">
+          <WhiteboardAnimation 
+            textLines={accumulatedWhiteboardText}
+            animateIndex={accumulatedWhiteboardText.length - 1}
+            drawSpeed={0.03}
+          />
+        </div>
+      {:else if currentScript.image}
+        <img 
+          src={currentScript.image} 
+          alt="Module visual" 
+          class="w-full h-full z-0 bg-white object-contain" 
+          style="
+            object-fit: contain;
+            object-position: center center;
+            filter: brightness(0.98);
+            display: block;
+            margin: 0 auto;
+            background: white;
+          " 
+        />
+      {:else if image && image !== undefined}
         <img 
           src={image} 
           alt="Module visual" 
@@ -73,8 +112,7 @@ onMount(() => {
         />
       {/if}
       <!-- Basketball Avatar in the center -->
-      <BasketballAvatar scripts={script} showAvatar={showAvatar} />
-      
+      <BasketballAvatar scripts={script} currentIdx={currentIdx} showAvatar={showAvatar} />
       <!-- Closed Caption Overlay -->
       {#if ccEnabled}
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none z-20">
@@ -98,7 +136,7 @@ onMount(() => {
           {completionButtonText}
         </button>
       {:else if audioState.currentIndex === script.length - 1 && isSubmoduleComplete && audioState.progress >= 99}
-        <button class="w-32 px-0 py-3 rounded-lg bg-blue-600 bg-opacity-80 text-white font-semibold shadow hover:bg-blue-700 hover:bg-opacity-100 transition flex items-center justify-center" on:click={handleNextArrow}>
+        <button class="w-32 px-0 py-3 rounded-lg bg-blue-600 bg-opacity-80 text-white font-semibold shadow hover:bg-blue-700 hover:bg-opacity-100 transition flex items-center justify-center" on:click={handleNextArrow} aria-label="Next submodule">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </button>
       {:else}
@@ -112,5 +150,5 @@ onMount(() => {
   <!-- Video Title -->
   <h1 class="w-full text-2xl font-bold text-gray-900 mb-2">{title}</h1>
   <!-- Video Description -->
-  <p class="w-full text-gray-700 mb-4">{description}</p>
+  <p class="w-full text-gray-700 mb-4">{currentScript.text}</p>
 </div> 
