@@ -1,4 +1,7 @@
 <script lang="ts">
+import { onMount } from 'svelte';
+import { audioStore } from '$lib/stores/audioStore';
+import { createEventDispatcher } from 'svelte';
 import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 
 const module1Script = [
@@ -13,6 +16,26 @@ const videoInfo = {
   title: 'Module 1: Live Coverage Sheet',
   description: 'This module introduces the live coverage sheet, explains its structure, and prepares you for the details in the following lessons.'
 };
+
+const dispatch = createEventDispatcher();
+
+export let progressId: string;
+
+$: audioState = $audioStore;
+$: isComplete = audioState.currentIndex === module1Script.length - 1 && audioState.progress >= 99;
+
+function handleNext() {
+  dispatch('navigateToNextSubmodule');
+}
 </script>
 
-<YouTubeTemplate script={module1Script} title={videoInfo.title} description={videoInfo.description} /> 
+<div style="position: relative; min-height: 60vh;">
+  <YouTubeTemplate
+    script={module1Script}
+    title={videoInfo.title}
+    image="/images/module-1/intro/LiveCoverageCleanWide-0.png"
+    isSubmoduleComplete={isComplete}
+    onNextSubmodule={handleNext}
+    progressId="module1_intro"
+  />
+</div> 

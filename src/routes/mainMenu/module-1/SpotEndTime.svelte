@@ -8,6 +8,7 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let isCompleted: boolean = false;
+export let progressId: string;
 
 const script = [
   { text: "The Spot End Time indicates the latest possible time a specific commercial can air.", audio: '/audio/module-1/10-spot-end-time/module1_spotendtime_01.mp3' },
@@ -43,4 +44,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/spot-end-time/SpotEndTimescreen.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/spot-end-time/SpotEndTimescreen.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} progressId={progressId} /> 

@@ -4,7 +4,6 @@
 
   export let textLines: string[] = [];
   export let drawSpeed: number = 0.05; // Speed of text drawing (seconds per character)
-  export let animateIndex: number = -1; // Index of the line to animate (default: last line)
 
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
@@ -17,10 +16,29 @@
   // Whiteboard styling
   const backgroundColor = '#ffffff';
   const textColor = '#2c3e50';
-  const fontSize = 24;
-  const lineHeight = 60; // Increased from 35 to 60 for more space
+  const fontSize = 32; // Increased from 24 to 32
+  const lineHeight = 60; // Keep as is for now
   const padding = 40;
   const fontFamily = 'Comic Sans MS, cursive, sans-serif';
+
+  // Helper: Word wrap a single string into multiple lines
+  function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+    const words = text.split(' ');
+    let lines: string[] = [];
+    let currentLine = '';
+    for (let i = 0; i < words.length; i++) {
+      const testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && currentLine) {
+        lines.push(currentLine);
+        currentLine = words[i];
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  }
 
   function initCanvas() {
     if (!canvas) return;
@@ -94,45 +112,58 @@
     }
     
     ctx.fillStyle = textColor;
+    ctx.font = `${fontSize}px ${fontFamily}`;
+    ctx.textBaseline = 'top';
 
-    // Determine which line to animate
-    const animIdx = animateIndex === -1 ? textLines.length - 1 : animateIndex;
-
-    // Instantly draw all lines before the one being animated
-    for (let i = 0; i < animIdx; i++) {
-      const y = padding + (i * lineHeight);
-      if(textLines[i]) ctx.fillText(textLines[i], padding, y);
+    // Draw all lines except the last instantly
+    let y = padding;
+    for (let i = 0; i < textLines.length - 1; i++) {
+      if (textLines[i]) {
+        const wrapped = wrapText(ctx, textLines[i], canvas.width - 2 * padding);
+        for (let w = 0; w < wrapped.length; w++) {
+          const line = wrapped[w];
+          const x = i === 0 && w === 0 ? (canvas.width - ctx.measureText(line).width) / 2 : padding;
+          ctx.fillText(line, x, y);
+          y += lineHeight;
+        }
+      }
     }
 
-    // Animate just the target line
-    if (animIdx >= 0 && animIdx < textLines.length) {
-      const y = padding + (animIdx * lineHeight);
+    // Animate only the last line
+    if (textLines.length > 0) {
+      const lastIdx = textLines.length - 1;
+      const lineToAnimate = textLines[lastIdx];
+      const wrapped = wrapText(ctx, lineToAnimate, canvas.width - 2 * padding);
       const elapsedTime = (currentTime - animationStartTime) / 1000;
-      const line = textLines[animIdx];
-      if (line) {
-        let charCount = Math.floor(elapsedTime / drawSpeed);
-        if (charCount > line.length) charCount = line.length;
-        
-        ctx.fillText(line.substring(0, charCount), padding, y);
-        
-        if (charCount < line.length) {
-          animationFrame = requestAnimationFrame(animate);
-        } else {
-          isAnimating = false;
+      const totalCharsInLine = wrapped.join('').length;
+      let charCount = Math.floor(elapsedTime / drawSpeed);
+      if (charCount > totalCharsInLine) charCount = totalCharsInLine;
+      let charsDrawnInLine = 0;
+      for (let w = 0; w < wrapped.length; w++) {
+        const lineText = wrapped[w];
+        const charsToDrawNow = charCount - charsDrawnInLine;
+        if (charsToDrawNow > 0) {
+          const sub = lineText.substring(0, charsToDrawNow);
+          const x = lastIdx === 0 && w === 0 ? (canvas.width - ctx.measureText(lineText).width) / 2 : padding;
+          ctx.fillText(sub, x, y);
         }
-      } else {
-        isAnimating = false;
+        y += lineHeight;
+        charsDrawnInLine += lineText.length;
       }
-    } else {
-      isAnimating = false;
+      if (charCount >= totalCharsInLine) {
+        isAnimating = false;
+      } else {
+        animationFrame = requestAnimationFrame(animate);
+      }
     }
   }
 
   function startAnimation() {
     if (isAnimating) return;
-    
     isAnimating = true;
-    animationStartTime = performance.now();
+    if (currentLineIndex === 0) {
+       animationStartTime = performance.now();
+    }
     animationFrame = requestAnimationFrame(animate);
   }
 
@@ -156,8 +187,18 @@
   // When the slide changes (textLines is updated), reset the animation state
   $: if (JSON.stringify(textLines) !== JSON.stringify(prevTextLines)) {
     prevTextLines = [...textLines];
-    animationStarted = false;
     resetAnimation();
+    animationStarted = false;
+    initCanvas(); // Ensure canvas is ready
+    function tryStart() {
+      if (ctx) {
+        startAnimation();
+        animationStarted = true;
+      } else {
+        setTimeout(tryStart, 50);
+      }
+    }
+    tryStart();
   }
 
   // Start animation as soon as audio starts, but only once per slide
@@ -167,11 +208,7 @@
   }
 
   onMount(() => {
-    // Delay to ensure container is properly sized
-    setTimeout(() => {
-      initCanvas();
-    }, 300);
-    
+    initCanvas();
     // Handle window resize
     const handleResize = () => {
       initCanvas();

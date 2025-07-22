@@ -7,6 +7,7 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let isCompleted: boolean = false;
+export let progressId: string;
 
 const script = [
   { text: "The Advertiser column lists the companies that have purchased time slots for commercials.", audio: '/audio/module-1/05-advertiser/module1_advertiser_01.mp3' },
@@ -50,4 +51,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/advertiser/Advertiserscreen.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/advertiser/Advertiserscreen.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} progressId={progressId} /> 

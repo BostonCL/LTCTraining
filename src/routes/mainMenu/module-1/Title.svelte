@@ -7,16 +7,23 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let isCompleted: boolean = false;
+export let progressId: string;
 
 const script = [
-  { text: "The Title column displays the show title and details about specific commercials.", audio: '/audio/module-1/06-title/module1_title_01.mp3' },
-  { text: "For example, there could be a note saying 'Obligation,' which means 'IT MUST AIR NO MATTER WHAT.' Or maybe there's a note saying 'Not NFL approved,' meaning it may not air with anything that contains NFL content.", audio: '/audio/module-1/06-title/module1_title_02.mp3' },
-  { text: "This column is used to find Advertiser Conflicts, which provide additional information about the advertisers. Advertiser Conflicts will be explored in greater depth in Module 3.", audio: '/audio/module-1/06-title/module1_title_03.mp3' }
+	{
+		text: 'The Title column is where you will see the title of the commercial that is scheduled to air.',
+		audio: '/audio/module-1/06-title/module1_title_01.mp3',
+		image: '/images/module-1/title/Titlescreen.png'
+	},
+	{
+		text: 'This is a very important column because this is how we will time out the rest of the show.',
+		audio: '/audio/module-1/06-title/module1_title_02.mp3',
+		image: '/images/module-1/title/Titlescreen.png'
+	}
 ];
 
 const videoInfo = {
-  title: 'Title',
-  description: 'Learn what information is included in the Title field for commercials.'
+	title: 'Title'
 };
 
 // Track completion
@@ -25,7 +32,7 @@ $: audioState = $audioStore;
 let isComplete = false;
 
 // Use the passed isCompleted prop or determine from local state
-$: finalIsComplete = isCompleted || isComplete;
+$: isComplete = audioState.currentIndex === script.length - 1 && audioState.progress >= 99;
 
 // Check if user has reached the end of the module - multiple conditions
 $: if (!isComplete && audioState.currentIndex === script.length - 1) {
@@ -46,9 +53,15 @@ $: if (!isComplete && audioState.currentIndex === script.length - 1) {
   }
 }
 
-function goNext() {
-  dispatch('navigateToNextSubmodule');
+function handleNext() {
+	dispatch('navigateToNextSubmodule');
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/title/Titlescreen.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate
+	script={script}
+	title={videoInfo.title}
+	isSubmoduleComplete={isComplete}
+	onNextSubmodule={handleNext}
+	progressId={progressId}
+/> 

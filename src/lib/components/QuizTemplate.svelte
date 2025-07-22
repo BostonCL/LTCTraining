@@ -13,7 +13,7 @@
   export let title: string = 'Module Quiz';
   export let description: string = 'Test your knowledge with these questions.';
   export let passingScore: number = 70;
-  export let showResults: boolean = true;
+  export const showResults: boolean = true;
 
   const dispatch = createEventDispatcher();
 
@@ -68,7 +68,7 @@
 </script>
 
 <div class="flex justify-center items-center min-h-[80vh] bg-gradient-to-br from-slate-50 to-blue-100">
-  <div class="w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden relative bg-gradient-to-br from-white/90 to-blue-50/80 border border-slate-100">
+  <div class="w-full max-w-2xl rounded-3xl overflow-hidden relative bg-gradient-to-br from-white/90 to-blue-50/80">
     <div class="p-6 sm:p-10">
       <h1 class="text-2xl font-extrabold text-slate-900 mb-1 tracking-tight">{title}</h1>
       <p class="text-slate-500 mb-6">{description}</p>
