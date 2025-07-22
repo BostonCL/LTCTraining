@@ -2,75 +2,71 @@
   import { onMount, onDestroy } from 'svelte';
   import { fly, scale } from 'svelte/transition';
   import { audioStore, setAudioElement, setDuration, setCurrentIndex, setTotalClips, updateProgress } from '$lib/stores/audioStore';
+  import { browser } from '$app/environment';
 
-  // The component now expects the audio file path along with the text
   export let scripts: { text: string; audio: string }[] = [];
+  export let currentIdx: number = 0;
   export let onComplete: () => void = () => {};
   export let showAvatar: boolean = true;
 
-  let currentIdx = 0;
   let isDone = false;
   let audio: HTMLAudioElement | null = null;
 
   function playCurrent() {
-    if (!scripts[currentIdx]) return;
-
-    // Stop any previously playing audio
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!browser) return;
+    if (!scripts[currentIdx]) {
+      return;
     }
-
-    // Create a new Audio object with the static path
-    audio = new Audio(scripts[currentIdx].audio);
-    
-    // Set up audio event listeners
-    audio.onended = handleAudioEnd;
-    audio.onloadedmetadata = () => {
+    try {
       if (audio) {
-        setDuration(audio.duration);
+        audio.pause();
+        audio.currentTime = 0;
       }
-    };
-    audio.ontimeupdate = () => {
-      updateProgress();
-    };
-    audio.onplay = () => {
-      audioStore.update(state => ({ ...state, isPlaying: true }));
-    };
-    audio.onpause = () => {
-      audioStore.update(state => ({ ...state, isPlaying: false }));
-    };
-
-    // Set the audio element in the store
-    setAudioElement(audio);
-    setCurrentIndex(currentIdx);
-    setTotalClips(scripts.length);
-    
-    // Set initial volume
-    audio.volume = 1;
-    
-    // Start playing
-    audio.play();
+      audio = new Audio(scripts[currentIdx].audio);
+      audio.onended = handleAudioEnd;
+      audio.onloadedmetadata = () => {
+        if (audio) {
+          setDuration(audio.duration);
+        }
+      };
+      audio.ontimeupdate = () => {
+        updateProgress();
+      };
+      audio.onplay = () => {
+        audioStore.update(state => ({ ...state, isPlaying: true }));
+      };
+      audio.onpause = () => {
+        audioStore.update(state => ({ ...state, isPlaying: false }));
+      };
+      setAudioElement(audio);
+      setTotalClips(scripts.length);
+      audio.volume = 1;
+      audio.play().catch(e => {
+        if (e.name === 'AbortError') {
+          // Audio play aborted - this is normal when navigating quickly
+        } else {
+          throw e;
+        }
+      });
+    } catch (e) {
+      console.error('Error in playCurrent:', e);
+    }
   }
 
   function handleAudioEnd() {
     audioStore.update(state => ({ ...state, isPlaying: false }));
-    // Do not auto-advance. Only call onComplete if at the last clip.
     if (currentIdx === scripts.length - 1) {
       isDone = true;
       onComplete();
     }
   }
 
-  // Watch for changes in the current index from the store
-  $: storeState = $audioStore;
-  $: if (storeState.currentIndex !== currentIdx && storeState.currentIndex >= 0 && storeState.currentIndex < scripts.length) {
-    currentIdx = storeState.currentIndex;
+  $: if (browser && scripts.length && typeof currentIdx === 'number') {
     playCurrent();
   }
 
   onMount(() => {
-    playCurrent();
+    if (browser) playCurrent();
     return () => {
       if (audio) audio.pause();
     };

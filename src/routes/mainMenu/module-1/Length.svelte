@@ -7,6 +7,7 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let isCompleted: boolean = false;
+export let progressId: string;
 
 const script = [
   { text: "The Length column tells you the duration of time for each Unit.", audio: '/audio/module-1/04-length/module1_length_01.mp3' },
@@ -56,4 +57,4 @@ function goToQuiz() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/length/Lengthsheet.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} completionButtonText="📝 Take Quiz" onCompletionButtonClick={goToQuiz} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/length/Lengthsheet.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} completionButtonText="📝 Take Quiz" onCompletionButtonClick={goToQuiz} progressId={progressId} /> 

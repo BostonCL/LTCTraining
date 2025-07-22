@@ -42,6 +42,8 @@
 		title: 'Introduction to Live Traffic Coverage Training',
 		description: 'Welcome to the CBS Live Traffic Coverage Training program. This comprehensive introduction covers the fundamentals of live traffic reporting, including what live coverage means, the key responsibilities involved, and what to expect throughout this training course.'
 	};
+
+	function dummyNext() {}
 </script>
 
-<YouTubeTemplate script={introScript} title={videoInfo.title} description={videoInfo.description} image="/images/introduction/basketballBackground.png" /> 
+<YouTubeTemplate script={introScript} title={videoInfo.title} image="/images/introduction/basketballBackground.png" onNextSubmodule={dummyNext} progressId="introduction_intro" /> 

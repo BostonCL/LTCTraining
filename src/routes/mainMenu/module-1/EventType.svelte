@@ -7,48 +7,43 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let isCompleted: boolean = false;
+export let progressId: string;
 
 const script = [
-  { text: "The Event Type column represents the type of any given Unit.", audio: '/audio/module-1/08-event-type/module1_eventtype_01.mp3' },
-  { text: "The different types of Units are: Commercial, Promo, Local, DRs (Direct Response), and PSAs (Public Service Announcements).", audio: '/audio/module-1/08-event-type/module1_eventtype_02.mp3' },
-  { text: "Unit Prioritization will be discussed further in Module 2.", audio: '/audio/module-1/08-event-type/module1_eventtype_03.mp3' }
+	{
+		text: "Now let's talk about the Event Type column.",
+		audio: '/audio/module-1/08-event-type/module1_eventtype_01.mp3',
+		image: '/images/module-1/event-type/EventTypesheet.png'
+	},
+	{
+		text: 'The event type column is where you will see what type of event is scheduled to air.',
+		audio: '/audio/module-1/08-event-type/module1_eventtype_02.mp3',
+		image: '/images/module-1/event-type/EventTypesheet.png'
+	},
+	{
+		text: 'This is a very important column because this is how we will time out the rest of the show.',
+		audio: '/audio/module-1/08-event-type/module1_eventtype_03.mp3',
+		image: '/images/module-1/event-type/EventTypesheet.png'
+	}
 ];
 
 const videoInfo = {
-  title: 'Event Type',
-  description: 'Learn about the different event types and how to identify them.'
+	title: 'Event Type'
 };
 
 // Track completion
 $: audioState = $audioStore;
+$: isComplete = audioState.currentIndex === script.length - 1 && audioState.progress >= 99;
 
-let isComplete = false;
-
-// Use the passed isCompleted prop or determine from local state
-$: finalIsComplete = isCompleted || isComplete;
-
-// Check if user has reached the end of the module - multiple conditions
-$: if (!isComplete && audioState.currentIndex === script.length - 1) {
-  // Condition 1: Progress-based completion
-  if (audioState.progress >= 99) {
-    isComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 3 });
-  }
-  // Condition 2: Audio finished playing
-  else if (!audioState.isPlaying && audioState.progress > 0) {
-    isComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 3 });
-  }
-  // Condition 3: User has been on last clip for a while
-  else if (audioState.progress >= 99) {
-    isComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 3 });
-  }
-}
-
-function goNext() {
-  dispatch('navigateToNextSubmodule');
+function handleNext() {
+	dispatch('navigateToNextSubmodule');
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/event-type/EventTypesheet.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate
+	script={script}
+	title={videoInfo.title}
+	isSubmoduleComplete={isComplete}
+	onNextSubmodule={handleNext}
+	progressId={progressId}
+/> 

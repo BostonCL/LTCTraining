@@ -7,6 +7,7 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let isCompleted: boolean = false;
+export let progressId: string;
 
 // Placeholder script, audio, and image. Replace with real content later.
 const script = [
@@ -57,4 +58,4 @@ $: currentImage =
     : '/images/module-1/program-line/Segmentscreen.png';
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image={currentImage} isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image={currentImage} isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} progressId={progressId} /> 

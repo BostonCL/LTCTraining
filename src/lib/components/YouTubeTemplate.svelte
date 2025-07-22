@@ -3,7 +3,7 @@ import { onMount } from 'svelte';
 import BasketballAvatar from '$lib/components/BasketballAvatar.svelte';
 import VideoControls from '$lib/components/VideoControls.svelte';
 import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
-import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips } from '$lib/stores/audioStore';
+import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips, setCurrentIndex, loadProgress, saveProgress } from '$lib/stores/audioStore';
 
 export let script: ({ text: string; audio: string; whiteboardText?: string[]; image?: string })[] = [];
 export let title: string = '';
@@ -13,26 +13,52 @@ export let isSubmoduleComplete: boolean = false;
 export let onNextSubmodule: (() => void) | undefined;
 export let completionButtonText: string | undefined = undefined;
 export let onCompletionButtonClick: (() => void) | undefined = undefined;
+export let progressId: string;
 
 $: ccEnabled = $captionEnabled;
 $: audioState = $audioStore;
-$: currentIdx = $audioStore.currentIndex;
+let currentIdx = 0;
+
+onMount(() => {
+  setTotalClips(script.length);
+  // Restore progress for this module/submodule
+  currentIdx = loadProgress(progressId);
+  const handler = () => {
+    fullscreenEnabled.set(!!document.fullscreenElement);
+  };
+  document.addEventListener('fullscreenchange', handler);
+  return () => document.removeEventListener('fullscreenchange', handler);
+});
+
+function goToNextSlide() {
+  if (currentIdx < script.length - 1) {
+    currentIdx += 1;
+    saveProgress(progressId, currentIdx);
+  } else if (isSubmoduleComplete && onNextSubmodule) {
+    onNextSubmodule();
+  }
+}
+
+function goToPreviousSlide() {
+  if (currentIdx > 0) {
+    currentIdx -= 1;
+    saveProgress(progressId, currentIdx);
+  }
+}
+
 $: currentScript = script[currentIdx] || script[0];
 $: currentCaption = currentScript?.text || '';
 $: canGoNext = (
   isSubmoduleComplete ||
   (
-    audioState.currentIndex < script.length - 1 &&
+    currentIdx < script.length - 1 &&
     (!audioState.isPlaying && audioState.progress >= 99)
   )
 );
-$: canGoPrevious = audioState.currentIndex > 0;
-$: showCompletionButton = audioState.currentIndex === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick;
+$: canGoPrevious = currentIdx > 0;
+$: showCompletionButton = currentIdx === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick;
 
-$: accumulatedWhiteboardText = script
-  .slice(0, currentIdx + 1)
-  .map(s => s.whiteboardText && s.whiteboardText[0])
-  .filter((line): line is string => Boolean(line));
+$: accumulatedWhiteboardText = currentScript.whiteboardText || [];
 
 let playerArea: HTMLDivElement;
 $: isFullscreen = $fullscreenEnabled;
@@ -50,23 +76,24 @@ function handleToggleFullscreen() {
 }
 
 function handleNextArrow() {
-  if (audioState.currentIndex === script.length - 1 && isSubmoduleComplete && onNextSubmodule) {
+  if (currentIdx === script.length - 1 && isSubmoduleComplete && onNextSubmodule) {
     onNextSubmodule();
   } else {
-    nextClip();
+    goToNextSlide();
   }
 }
 
-onMount(() => {
-  setTotalClips(script.length);
-  const handler = () => {
-    fullscreenEnabled.set(!!document.fullscreenElement);
-  };
-  document.addEventListener('fullscreenchange', handler);
-  return () => document.removeEventListener('fullscreenchange', handler);
-});
+// Save progress whenever currentIdx changes
+$: if (progressId && typeof currentIdx === 'number') {
+  saveProgress(progressId, currentIdx);
+}
 
-$: setTotalClips(script.length);
+$: if (progressId) {
+  const saved = loadProgress(progressId);
+  if (typeof saved === 'number' && saved !== currentIdx) {
+    currentIdx = saved;
+  }
+}
 </script>
 
 <div class="w-full max-w-5xl px-4 mx-auto">
@@ -78,7 +105,6 @@ $: setTotalClips(script.length);
         <div class="absolute inset-0 z-10 bg-white">
           <WhiteboardAnimation 
             textLines={accumulatedWhiteboardText}
-            animateIndex={accumulatedWhiteboardText.length - 1}
             drawSpeed={0.03}
           />
         </div>
@@ -125,7 +151,7 @@ $: setTotalClips(script.length);
     <!-- Video Controls at the bottom -->
     <!-- Navigation Buttons above the duration bar -->
     <div class="w-full flex justify-between items-center mt-0 mb-0 px-0">
-      <button class="w-12 h-12 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed" on:click={previousClip} disabled={!canGoPrevious} aria-label="Previous">
+      <button class="w-12 h-12 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed" on:click={goToPreviousSlide} disabled={!canGoPrevious} aria-label="Previous">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
       </button>
       {#if showCompletionButton}
@@ -135,7 +161,7 @@ $: setTotalClips(script.length);
         >
           {completionButtonText}
         </button>
-      {:else if audioState.currentIndex === script.length - 1 && isSubmoduleComplete && audioState.progress >= 99}
+      {:else if currentIdx === script.length - 1 && isSubmoduleComplete && audioState.progress >= 99}
         <button class="w-32 px-0 py-3 rounded-lg bg-blue-600 bg-opacity-80 text-white font-semibold shadow hover:bg-blue-700 hover:bg-opacity-100 transition flex items-center justify-center" on:click={handleNextArrow} aria-label="Next submodule">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </button>
@@ -145,7 +171,7 @@ $: setTotalClips(script.length);
         </button>
       {/if}
     </div>
-    <VideoControls onToggleFullscreen={handleToggleFullscreen} fullscreen={isFullscreen} />
+    <VideoControls onToggleFullscreen={handleToggleFullscreen} fullscreen={isFullscreen} currentIdx={currentIdx} onNext={goToNextSlide} onPrevious={goToPreviousSlide} />
   </div>
   <!-- Video Title -->
   <h1 class="w-full text-2xl font-bold text-gray-900 mb-2">{title}</h1>

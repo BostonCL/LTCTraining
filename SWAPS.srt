@@ -1,0 +1,544 @@
+1
+00:00:03,060 --> 00:00:05,260
+Welcome to module three.
+
+2
+00:00:05,640 --> 00:00:12,760
+So now we're going to dive into actual swapping of units since we understand what's going
+
+3
+00:00:12,760 --> 00:00:14,060
+on on the live coverage sheet.
+
+4
+00:00:14,640 --> 00:00:22,940
+So let's say that we're reaching the end of this game and the producer says we need to
+
+5
+00:00:22,940 --> 00:00:26,820
+cut 30 seconds from break 11.
+
+6
+00:00:27,260 --> 00:00:32,900
+Remember the break segment 11 underneath that would be break 11.
+
+7
+00:00:33,900 --> 00:00:39,280
+So if they say we need to cut 30 seconds, immediately we know that this Jersey Mike
+
+8
+00:00:39,280 --> 00:00:46,500
+is what needs to be cut because Major League Fishing, it is sold specifically to this show,
+
+9
+00:00:46,560 --> 00:00:50,240
+even though in this ordered as column, it says sports spectacular.
+
+10
+00:00:50,240 --> 00:00:55,720
+If you look in the fine print details, it says Major League Fishing, so we cannot go
+
+11
+00:00:55,720 --> 00:00:59,200
+in any other show for the rest of the day.
+
+12
+00:01:00,020 --> 00:01:02,700
+So if one of these units got cut, it would not be good.
+
+13
+00:01:02,780 --> 00:01:08,360
+We would have to add on another commercial break or somehow fit in that 30 seconds to
+
+14
+00:01:08,360 --> 00:01:08,980
+this show.
+
+15
+00:01:09,780 --> 00:01:15,600
+So and it's very difficult to move a local and remember the producer needs to suggest
+
+16
+00:01:15,600 --> 00:01:16,760
+to cut a local.
+
+17
+00:01:17,660 --> 00:01:21,920
+So we would cut this 30 second Jersey Mike unit.
+
+18
+00:01:22,480 --> 00:01:27,460
+We would say it over the phone speaker and it would also be in emails, but we'll show
+
+19
+00:01:27,460 --> 00:01:29,060
+you how to do the emails later on.
+
+20
+00:01:31,140 --> 00:01:35,900
+So I move units, everybody on the traffic team does it a little bit differently, but
+
+21
+00:01:35,900 --> 00:01:40,840
+I like to notate next to everything as I go so that I don't get confused.
+
+22
+00:01:40,840 --> 00:01:47,640
+So we always say moved to and first we look in the ordered as column.
+
+23
+00:01:47,800 --> 00:01:49,540
+It's a sports spec unit.
+
+24
+00:01:50,340 --> 00:01:50,800
+Then.
+
+25
+00:01:53,580 --> 00:01:57,200
+We look in the.
+
+26
+00:01:59,020 --> 00:02:00,740
+Spot end time.
+
+27
+00:02:02,560 --> 00:02:08,780
+So first, we look in the ordered as it's sports spectacular and we see sports
+
+28
+00:02:08,780 --> 00:02:11,100
+spectacular units in the next show.
+
+29
+00:02:11,260 --> 00:02:13,920
+So we know that it can go there.
+
+30
+00:02:14,540 --> 00:02:21,760
+Hypothetically, it cannot go anywhere else if we needed to move it because, oh,
+
+31
+00:02:23,080 --> 00:02:28,000
+we see sports back units here, so we know we can put it in this show.
+
+32
+00:02:28,760 --> 00:02:32,880
+There are no sports back units in this show, so it cannot go here.
+
+33
+00:02:32,880 --> 00:02:39,540
+And then once again, we see sports spectacular sports spectacular units in this show,
+
+34
+00:02:39,580 --> 00:02:41,840
+so we also know that we can move it here.
+
+35
+00:02:41,940 --> 00:02:44,440
+So it's a pretty versatile unit right now.
+
+36
+00:02:44,620 --> 00:02:50,260
+There are many shows airing sports spec, so it's a good option slash your only option to cut.
+
+37
+00:02:51,600 --> 00:03:00,620
+So when something is not airing in a break, we turn it red because this signifies, OK,
+
+38
+00:03:00,620 --> 00:03:03,620
+it is not airing here.
+
+39
+00:03:06,600 --> 00:03:13,300
+And then you look in the fine print next to it, and it could either say cut if it says
+
+40
+00:03:13,300 --> 00:03:18,440
+cut next to it, and then you do no fill like that.
+
+41
+00:03:18,820 --> 00:03:23,700
+It means this break, this commercial did not air at all.
+
+42
+00:03:24,300 --> 00:03:25,440
+So we don't want that.
+
+43
+00:03:25,500 --> 00:03:27,340
+We want to make sure that we save it.
+
+44
+00:03:27,340 --> 00:03:31,880
+So let's write moved to, and we're going to move it.
+
+45
+00:03:32,420 --> 00:03:37,840
+So remember, one of the main things we're keeping track of is we need to make sure that
+
+46
+00:03:37,840 --> 00:03:38,760
+it can go in the show.
+
+47
+00:03:38,940 --> 00:03:40,180
+We look in the ordered as column.
+
+48
+00:03:40,340 --> 00:03:43,280
+It can go in the 2 p.m. show.
+
+49
+00:03:44,600 --> 00:03:47,080
+Then we look at spot end time.
+
+50
+00:03:47,500 --> 00:03:49,840
+It needs to air before 1 a.m.
+
+51
+00:03:50,100 --> 00:03:53,540
+We're good because this is just 2 p.m. this show.
+
+52
+00:03:54,480 --> 00:03:59,240
+And then we need to look at the length.
+
+53
+00:03:59,640 --> 00:04:01,260
+It's 30 seconds.
+
+54
+00:04:01,580 --> 00:04:04,880
+So we need to keep in mind brand SEP.
+
+55
+00:04:05,180 --> 00:04:13,020
+If you recall, brand SEP is the rule that a 30 second commercial cannot air within 30
+
+56
+00:04:13,020 --> 00:04:16,080
+minutes of its previously aired partner.
+
+57
+00:04:17,000 --> 00:04:20,940
+And then we look at the actual brand.
+
+58
+00:04:21,100 --> 00:04:22,260
+It's Jersey Mike.
+
+59
+00:04:22,260 --> 00:04:31,000
+So we know Jersey Mike is a restaurant unit, a restaurant company, and it is food.
+
+60
+00:04:31,500 --> 00:04:37,100
+So we want to make sure that this restaurant is not paired in another break with another
+
+61
+00:04:37,100 --> 00:04:37,740
+restaurant.
+
+62
+00:04:38,520 --> 00:04:39,820
+Well, sorry, that's so condescending.
+
+63
+00:04:40,140 --> 00:04:46,040
+We want to make sure that this that this restaurant is not paired with another restaurant.
+
+64
+00:04:46,740 --> 00:04:49,100
+So let's start our journey.
+
+65
+00:04:50,100 --> 00:04:59,000
+If it is a 30 second commercial, you have to cut 30 seconds of inventory units.
+
+66
+00:04:59,880 --> 00:05:08,180
+So we would cut you cut green, which are, remember, DRs, promos, or PSAs.
+
+67
+00:05:08,760 --> 00:05:12,540
+So I see 30 seconds right here in break one.
+
+68
+00:05:15,860 --> 00:05:17,680
+So let's see if it can go there.
+
+69
+00:05:17,680 --> 00:05:21,740
+So we have mattress.
+
+70
+00:05:24,360 --> 00:05:27,160
+There are no restaurant units here.
+
+71
+00:05:27,160 --> 00:05:34,360
+So it doesn't have any brand conflict within this break one of the 2 p.m.
+
+72
+00:05:34,540 --> 00:05:34,840
+window.
+
+73
+00:05:35,600 --> 00:05:37,320
+So let's put it here.
+
+74
+00:05:37,320 --> 00:05:37,940
+Potentially.
+
+75
+00:05:37,940 --> 00:05:41,440
+I like to make notes next to everything because I'll remember.
+
+76
+00:05:41,720 --> 00:05:42,880
+Okay, I'm looking at this one.
+
+77
+00:05:42,880 --> 00:05:44,000
+This is my top slot.
+
+78
+00:05:44,880 --> 00:05:51,300
+Now, let's make sure that it doesn't break set with anything within this 2 p.m.
+
+79
+00:05:51,440 --> 00:05:51,760
+window.
+
+80
+00:05:52,660 --> 00:05:57,260
+So there are no Jersey Mike units here.
+
+81
+00:05:57,900 --> 00:06:00,300
+There are no Jersey Mike units here.
+
+82
+00:06:00,300 --> 00:06:02,960
+And there are no Jersey Mike units here.
+
+83
+00:06:03,140 --> 00:06:04,860
+So we're good to place it here.
+
+84
+00:06:05,580 --> 00:06:07,480
+So remember, red.
+
+85
+00:06:08,420 --> 00:06:14,200
+So now remember, red means it is not airing at all.
+
+86
+00:06:14,500 --> 00:06:18,420
+This unit is 100% well, sorry.
+
+87
+00:06:18,860 --> 00:06:27,400
+Now, remember, red with the words cut next to it shows that these 2 units were cut completely.
+
+88
+00:06:27,540 --> 00:06:31,060
+They will not air at all within the day.
+
+89
+00:06:31,220 --> 00:06:34,680
+You did not save them and they are dead.
+
+90
+00:06:35,480 --> 00:06:38,480
+So that is showing that.
+
+91
+00:06:38,940 --> 00:06:46,360
+Now, we are going to show that we moved this Jersey Mike unit to break one.
+
+92
+00:06:46,940 --> 00:06:48,680
+So we press here.
+
+93
+00:06:49,160 --> 00:06:50,580
+We insert a line.
+
+94
+00:06:51,140 --> 00:06:55,100
+It doesn't really matter where in the break you put this line.
+
+95
+00:06:55,200 --> 00:06:59,440
+You could put it there or you could put it at the bottom.
+
+96
+00:07:00,620 --> 00:07:01,300
+Insert.
+
+97
+00:07:02,940 --> 00:07:05,480
+Or you could put it at the very bottom.
+
+98
+00:07:05,800 --> 00:07:14,080
+So I right click, insert line, and then you copy and you paste it in that line.
+
+99
+00:07:15,020 --> 00:07:17,800
+Now, we let's finish up up here.
+
+100
+00:07:18,140 --> 00:07:30,260
+So moved to you write B one, which B stands for break of the 2 p.m. of the 2 p.m. window.
+
+101
+00:07:31,120 --> 00:07:42,740
+So then we right here moved from the 11 of the let's see what game this is.
+
+102
+00:07:42,740 --> 00:07:51,740
+It started at 12 p.m. of the 12 p.m. show or game.
+
+103
+00:07:52,380 --> 00:07:58,420
+And now if you're looking at this, you can see here, okay, this unit at first glance might be,
+
+104
+00:07:58,600 --> 00:07:59,740
+oh, no, is this unit cut?
+
+105
+00:07:59,740 --> 00:08:01,400
+No, we look next to it.
+
+106
+00:08:01,400 --> 00:08:02,220
+We see this comment.
+
+107
+00:08:02,220 --> 00:08:02,580
+All right.
+
+108
+00:08:02,580 --> 00:08:05,740
+It's moved to be one of the 2 p.m.
+
+109
+00:08:06,120 --> 00:08:06,520
+Okay.
+
+110
+00:08:06,780 --> 00:08:07,920
+So we go to 2 p.m.
+
+111
+00:08:08,040 --> 00:08:08,340
+All right.
+
+112
+00:08:08,340 --> 00:08:10,580
+This is the correct amount of time cut.
+
+113
+00:08:10,680 --> 00:08:14,160
+If you cut 30 seconds, you can add in 30 seconds.
+
+114
+00:08:14,680 --> 00:08:17,460
+But oh, no, this what does this mean?
+
+115
+00:08:17,660 --> 00:08:18,720
+It's still red.
+
+116
+00:08:19,000 --> 00:08:21,380
+So now we turn it blue.
+
+117
+00:08:21,920 --> 00:08:27,420
+So now we turn it blue, which shows, oh, okay.
+
+118
+00:08:27,420 --> 00:08:30,520
+Blue means I aired in this break.
+
+119
+00:08:32,000 --> 00:08:33,580
+There we go.
+
+120
+00:08:33,880 --> 00:08:39,640
+Red means it did not air or it was cut because see here it's red.
+
+121
+00:08:39,860 --> 00:08:43,400
+It did not air, but it wasn't cut because we have this comment here.
+
+122
+00:08:43,800 --> 00:08:47,720
+Then here it's red, but it is cut completely dead.
+
+123
+00:08:47,820 --> 00:08:49,660
+These units will never air.
+
+124
+00:08:50,020 --> 00:08:55,400
+And then in its place of this 30 second is this 30 second Jersey Mike commercial.
+
+125
+00:08:55,940 --> 00:08:59,080
+So remember, we look at the ordered as column.
+
+126
+00:08:59,520 --> 00:09:05,320
+We make sure that this 2 p.m. game allows sports spec units.
+
+127
+00:09:05,900 --> 00:09:07,340
+Then we look at the time.
+
+128
+00:09:07,880 --> 00:09:14,140
+We make sure that the spot end time it's airing before it's spot end time.
+
+129
+00:09:14,720 --> 00:09:19,380
+Then we look at the length of the commercial to make sure.
+
+130
+00:09:19,380 --> 00:09:22,900
+Remember to make sure that we're following brand SEP.
+
+131
+00:09:23,640 --> 00:09:33,900
+And then we look at the title, which gives us the details about the advertiser
+
+132
+00:09:33,900 --> 00:09:39,340
+so that we make sure we're not violating brand SEP.
+
+133
+00:09:39,980 --> 00:09:44,380
+And that is how we move a unit on the live coverage sheet.
+
+134
+00:09:45,240 --> 00:09:51,480
+Now, there is a way that we write this down for master control
+
+135
+00:09:51,480 --> 00:09:54,760
+because all of this is sent via email.
+
+136
+00:09:55,620 --> 00:09:58,460
+And I will show you how to notate it right now.
+

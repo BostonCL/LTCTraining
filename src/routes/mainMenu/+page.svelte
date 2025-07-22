@@ -3,7 +3,6 @@
   import { getAuth, signOut, type Auth } from 'firebase/auth';
   import { writable, derived } from 'svelte/store';
   import Introduction from './introduction/Introduction.svelte';
-  import Module1Intro from './module-1/Module1Intro.svelte';
   import HitTime from './module-1/HitTime.svelte';
   import EventType from './module-1/EventType.svelte';
   import Length from './module-1/Length.svelte';
@@ -18,6 +17,16 @@
   import LengthQuiz from './module-1/LengthQuiz.svelte';
   import HouseNumberQuiz from './module-1/HouseNumberQuiz.svelte';
   import Module3 from './Module3.svelte';
+  import QuizTemplate from '$lib/components/QuizTemplate.svelte';
+  import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
+  import { audioStore, setCurrentIndex } from '$lib/stores/audioStore';
+  import Module1Intro from './module-1/+page.svelte';
+  import SellingTitle from './module-2/SellingTitle.svelte';
+  import TheYellowUnit from './module-2/TheYellowUnit.svelte';
+  import UnitPrioritizationDetails from './module-2/UnitPrioritizationDetails.svelte';
+  import GreenPurpleUnits from './module-2/GreenPurpleUnits.svelte';
+  import Module3Intro from './module-3/Module3Intro.svelte';
+  import CommercialTimes from './module-3/CommercialTimes.svelte';
   // Modules with submodules for Module 1
   const modules = [
     {
@@ -110,6 +119,9 @@
   let module1SubIdx = 0;
   let submodulesOpen = true;
   
+  // Add a submodulesOpen3 state for Module 3
+  let submodulesOpen3 = true;
+  
   // Track completion of submodules
   let completedSubmodules = new Set<number>();
   
@@ -173,7 +185,9 @@
     if (mainSection === 'introduction') {
       goToModule1Intro();
     } else if (mainSection === 'module1') {
-      goToModule1Sub(0);
+      // Go to first submodule (Program Line)
+      mainSection = 'module1sub';
+      module1SubIdx = 0;
     } else if (mainSection === 'module1sub') {
       if (module1SubIdx < module1Submodules.length - 1) {
         goToModule1Sub(module1SubIdx + 1);
@@ -198,6 +212,226 @@
       goToIntroduction();
     }
   }
+
+  // End of Module 1 Test questions
+  const endOfModule1MainQuestions = [
+    { id: 1, question: "What is an Advertiser?", options: [
+      "A spreadsheet used to track commercials",
+      "A program that airs commercials",
+      "An individual or organization promoting products, services, or ideas to a target audience",
+      "The same as a Commercial Break"
+    ], correctAnswer: 2 },
+    { id: 2, question: "What is another word for “Unit”?", options: [
+      "Floater",
+      "Program line",
+      "Window",
+      "Commercial"
+    ], correctAnswer: 3 },
+    { id: 3, question: "What is a Commercial Break?", options: [
+      "The time when the network stops airing commercials",
+      "A planned interval when advertisements are aired",
+      "A tab in the Live Coverage Sheet",
+      "A program segment"
+    ], correctAnswer: 1 },
+    { id: 4, question: "In Traffic, what does the term “Window” mean?", options: [
+      "A computer screen",
+      "A spreadsheet column",
+      "The time period a program or game airs",
+      "A type of commercial"
+    ], correctAnswer: 2 },
+    { id: 5, question: "What is a Live Coverage Sheet used for?", options: [
+      "To design commercials",
+      "To display a schedule for commercials/units",
+      "To record only game scores",
+      "To communicate with advertisers"
+    ], correctAnswer: 1 },
+    { id: 6, question: "What does “Swaps” mean in the Traffic Department?", options: [
+      "Creating new commercials",
+      "Making real-time changes on the Live Coverage Sheet to adjust commercial placements",
+      "Changing program titles",
+      "Moving a Window"
+    ], correctAnswer: 1 },
+    { id: 7, question: "If a unit is marked “Dead,” what does that mean?", options: [
+      "It will air next week",
+      "It will air later that day",
+      "It will not air at all that day or night",
+      "It must air during every break"
+    ], correctAnswer: 2 },
+    { id: 8, question: "Who is MC in the Traffic Department?", options: [
+      "The Marketing Coordinator",
+      "Master Control — the people who send commercials to air",
+      "Main Commercial Manager",
+      "Multi-Channel Operator"
+    ], correctAnswer: 1 },
+    { id: 9, question: "Why must you communicate with MC?", options: [
+      "They sell the commercials",
+      "They create the commercials",
+      "They ultimately send commercials to air",
+      "They monitor ratings"
+    ], correctAnswer: 2 },
+    { id: 10, question: "What is the Hit Time column used for?", options: [
+      "To show final airing time",
+      "To estimate when commercials may air for planning",
+      "To communicate with advertisers",
+      "To mark dead units"
+    ], correctAnswer: 1 },
+  ];
+  const endOfModule1ExtraQuestions = [
+    { id: 11, question: "What information does the Length column show?", options: [
+      "Program end time",
+      "How long each unit is",
+      "The advertiser’s budget",
+      "The House Number"
+    ], correctAnswer: 1 },
+    { id: 12, question: "What does the Title column show?", options: [
+      "The advertiser’s email",
+      "The show title and segment numbers",
+      "The length of the break",
+      "The Real Time of the show"
+    ], correctAnswer: 1 },
+    { id: 13, question: "Why is the House Number important?", options: [
+      "It shows how much the ad cost",
+      "It’s used by MC to identify the specific ad",
+      "It gives the brand’s phone number",
+      "It determines the Window time"
+    ], correctAnswer: 1 },
+    { id: 14, question: "What does “Ordered As” tell you?", options: [
+      "The cost of the commercial",
+      "The Window a commercial is sold to",
+      "The advertiser’s name",
+      "The float time"
+    ], correctAnswer: 1 },
+    { id: 15, question: "What does Spot End Time show?", options: [
+      "The moment a program starts",
+      "The latest possible time a commercial can air",
+      "The time a break should start",
+      "The House Number"
+    ], correctAnswer: 1 },
+    { id: 16, question: "What are Floaters?", options: [
+      "Units that will never air",
+      "Commercials that always run in the same slot",
+      "Extra sold units that need to air during the game",
+      "The same as a Program line"
+    ], correctAnswer: 2 },
+    { id: 17, question: "What is the “Key” tab on the Live Coverage Sheet mainly used for?", options: [
+      "To sell commercials",
+      "To watch live games",
+      "For reference of contingency information",
+      "To communicate with advertisers"
+    ], correctAnswer: 2 },
+  ];
+
+  let showExtraQuestions = false;
+  let quizPassed = false;
+  let quizScore = 0;
+  let showMainResults = false;
+  let showFinalSummary = false;
+
+  function handleQuizCompleted(event: CustomEvent<any>) {
+    quizScore = event.detail.score;
+    quizPassed = event.detail.passed;
+    if (showExtraQuestions) {
+      showFinalSummary = true;
+    } else {
+      showMainResults = true;
+    }
+  }
+
+  function handleContinueToExtra() {
+    showMainResults = false;
+    showExtraQuestions = true;
+  }
+
+  function handleContinueToModule2() {
+    showMainResults = false;
+    showExtraQuestions = false;
+    showFinalSummary = false;
+    mainSection = 'module2';
+  }
+
+  const endOfModule2MainQuestions = [
+    { id: 1, question: "Which color represents SOLD commercials on the Live Coverage Sheet?", options: ["Green", "Yellow", "Purple", "Blue"], correctAnswer: 1 },
+    { id: 2, question: "Which type of unit is tied to a specific show and cannot be placed elsewhere if cut?", options: ["ROS 24 Hour", "Studio Encore", "Show Specific", "DRs"], correctAnswer: 2 },
+    { id: 3, question: "What is the primary reason GREEN-coded commercials are cut first?", options: ["They’re too long", "They’re unapproved", "They’re not mandatory to air and don’t generate as much revenue", "They’re duplicate content"], correctAnswer: 2 },
+    { id: 4, question: "Which of the following has a strict time restriction of 7 PM – 12 AM?", options: ["Studio Encore", "ROS Prime", "Sports Spectacular", "PSAs"], correctAnswer: 1 },
+    { id: 5, question: "Which unit has the widest airing flexibility?", options: ["ROS 24 Hour", "ROS Prime", "Locals", "DRs"], correctAnswer: 0 },
+    { id: 6, question: "Which unit category includes commercials used during reruns and typically holds no monetary value?", options: ["Show Specific", "Studio Encore", "Sports Spectacular", "DRs"], correctAnswer: 1 },
+    { id: 7, question: "Which of the following Encore units must NOT be cut despite the usual rule?", options: ["DR Encore", "ROS Encore", "PBR Encore", "Local Encore"], correctAnswer: 2 },
+    { id: 8, question: "What color is used to represent Local units on the Live Coverage Sheet?", options: ["Yellow", "Green", "Red", "Purple"], correctAnswer: 3 },
+    { id: 9, question: "PSAs are the most important category of units and are never cut.", options: ["True", "False"], correctAnswer: 1 },
+    { id: 10, question: "DRs (Direct Response ads) are not required to air but can earn the network extra money.", options: ["True", "False"], correctAnswer: 0 },
+  ];
+  const endOfModule2ExtraQuestions = [
+    { id: 11, question: "Promos do not generate revenue but still rank higher in priority than PSAs.", options: ["True", "False"], correctAnswer: 0 },
+    { id: 12, question: "ROS Prime units are as flexible as ROS 24 Hour units.", options: ["True", "False"], correctAnswer: 1 },
+    { id: 13, question: "Local units are always 90 seconds long, no exceptions.", options: ["True", "False"], correctAnswer: 0 },
+    { id: 14, question: "Sports Spectacular units are mandatory but can run in other Sports Spectacular windows.", options: ["True", "False"], correctAnswer: 0 },
+    { id: 15, question: "Green-coded units include PSAs, Promos, and DRs.", options: ["True", "False"], correctAnswer: 0 },
+    { id: 16, question: "Studio Encore units are typically the first sold units to be cut.", options: ["True", "False"], correctAnswer: 0 },
+  ];
+  let showExtraQuestions2 = false;
+  let quizPassed2 = false;
+  let quizScore2 = 0;
+  let showMainResults2 = false;
+  let showFinalSummary2 = false;
+  function handleQuizCompleted2(event: CustomEvent<any>) {
+    quizScore2 = event.detail.score;
+    quizPassed2 = event.detail.passed;
+    if (showExtraQuestions2) {
+      showFinalSummary2 = true;
+    } else {
+      showMainResults2 = true;
+    }
+  }
+  function handleContinueToExtra2() {
+    showMainResults2 = false;
+    showExtraQuestions2 = true;
+  }
+  function handleContinueToModule3() {
+    showMainResults2 = false;
+    showExtraQuestions2 = false;
+    showFinalSummary2 = false;
+    mainSection = 'module3';
+  }
+
+  $: audioState = $audioStore;
+  // Module 2 intro logic (place near other script-level logic)
+  let isModule2IntroComplete = false;
+  function handleModule2Next() {
+    mainSection = 'module2test';
+  }
+  $: isModule2IntroComplete = mainSection === 'module2' && audioState.currentIndex === module2Script.length - 1 && audioState.progress >= 99;
+  $: module2AudioComplete = (
+    audioState.currentIndex === module2Script.length - 1 &&
+    audioState.progress >= 99 &&
+    !audioState.isPlaying
+  );
+
+  const module2Script = [
+    {
+      text: "In the Ordered As column you'll see many different types of units. In this module we will go over what they all are. When moving around units this is the first column you will look at.",
+      audio: '/audio/module-2/module2_intro.mp3'
+    },
+    {
+      text: "The sold commercials are color coordinated:",
+      audio: '/audio/module-2/01-intro/module2_01_part1.mp3'
+    },
+    {
+      text: "Sold commercials (the important stuff) are in YELLOW",
+      audio: '/audio/module-2/01-intro/module2_01_part2.mp3',
+      whiteboardText: ["YELLOW are the SOLD commercials."]
+    },
+    {
+      text: "Local units are PURPLE",
+      audio: '/audio/module-2/01-intro/module2_01_part3.mp3',
+      whiteboardText: ["Locals are PURPLE"]
+    },
+    {
+      text: "Anything in GREEN is cuttable and is not mandatory to air, these will be Drs, PSAs and Promos.",
+      audio: '/audio/module-2/01-intro/module2_01_part4.mp3',
+      whiteboardText: ["GREEN is the first to be cut because they are not worth as much."]
+    }
+  ];
 </script>
 
 <!-- Header -->
@@ -215,83 +449,62 @@
         <button on:click={() => (sidebarOpen = false)} class="text-gray-400 hover:text-gray-700 text-lg font-bold">×</button>
       </div>
       <nav class="flex flex-col divide-y divide-gray-100">
-        <button on:click={goToIntroduction} class="text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 w-full {mainSection === 'introduction' ? 'bg-blue-100 text-blue-700' : ''}">
-          <span class="w-2 h-2 rounded-full {mainSection === 'introduction' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+        <button on:click={goToIntroduction} class="text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 text-sm w-full {mainSection === 'introduction' ? 'bg-blue-100 text-blue-700' : ''}">
+          <span class="block w-2 h-2 rounded-full {mainSection === 'introduction' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
           Introduction
         </button>
-        <div class="flex items-center">
-          <button on:click={goToModule1Intro} class="flex-1 text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 {mainSection === 'module1' ? 'bg-blue-100 text-blue-700' : ''}">
-            <span class="w-2 h-2 rounded-full {mainSection === 'module1' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
-            Module 1: Live Coverage Sheet
-            {#if module1Completed}
-              <svg class="w-4 h-4 text-green-600 ml-auto" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-            {/if}
-          </button>
-          <button
-            type="button"
-            class="ml-2 flex items-center justify-center w-7 h-7 rounded-full transition bg-gray-100 hover:bg-blue-200"
-            on:click={() => submodulesOpen = !submodulesOpen}
-            aria-label="Toggle submodules"
-          >
-            <svg class="w-5 h-5 transition-transform duration-200" style="transform: rotate({submodulesOpen ? 90 : 0}deg);" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-          </button>
-        </div>
+        <!-- Module 1 intro -->
+        <button on:click={goToModule1Intro} class="text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 text-sm w-full {mainSection === 'module1' ? 'bg-blue-100 text-blue-700' : ''}">
+          <span class="block w-2 h-2 rounded-full {mainSection === 'module1' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+          Module 1: Live Coverage Sheet
+        </button>
         {#if submodulesOpen}
           <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
-            {#each module1Submodules as sub, idx (sub.title)}
-              <button on:click={() => goToModule1Sub(idx)} class="text-left px-3 py-2 text-sm hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 rounded {mainSection === 'module1sub' && module1SubIdx === idx ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">
-                <span class="w-2 h-2 rounded-full {mainSection === 'module1sub' && module1SubIdx === idx ? 'bg-blue-600' : 'bg-gray-300'}"></span>
-                {sub.title}
-                {#if completedSubmodules.has(idx)}
-                  <svg class="w-4 h-4 text-green-600 ml-auto" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
-                {/if}
-              </button>
-              <!-- Show quiz link under Start Time & Real Time -->
-              {#if sub.title === 'Start Time & Real Time'}
-                <button 
-                  on:click={goToQuiz} 
-                  class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'quiz' ? 'bg-green-200 text-green-800 font-semibold' : startTimeRealTimeCompleted ? 'hover:bg-green-100 focus:bg-green-200 text-green-700' : 'text-gray-400 cursor-not-allowed'}"
-                  disabled={!startTimeRealTimeCompleted}
-                >
-                  <span class="w-2 h-2 rounded-full {mainSection === 'quiz' ? 'bg-green-600' : startTimeRealTimeCompleted ? 'bg-green-300' : 'bg-gray-300'}"></span>
-                  📝 Quiz {startTimeRealTimeCompleted ? '' : '(Complete module first)'}
-                </button>
-              {/if}
-              <!-- Show quiz link under Length -->
-              {#if sub.title === 'Length'}
-                <button 
-                  on:click={() => { mainSection = 'lengthQuiz'; }} 
-                  class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'lengthQuiz' ? 'bg-green-200 text-green-800 font-semibold' : lengthCompleted ? 'hover:bg-green-100 focus:bg-green-200 text-green-700' : 'text-gray-400 cursor-not-allowed'}"
-                  disabled={!lengthCompleted}
-                >
-                  <span class="w-2 h-2 rounded-full {mainSection === 'lengthQuiz' ? 'bg-green-600' : lengthCompleted ? 'bg-green-300' : 'bg-gray-300'}"></span>
-                  📝 Quiz {lengthCompleted ? '' : '(Complete module first)'}
-                </button>
-              {/if}
-              <!-- Show quiz link under House Number -->
-              {#if sub.title === 'House Number'}
-                <button 
-                  on:click={() => { mainSection = 'houseNumberQuiz'; }} 
-                  class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'houseNumberQuiz' ? 'bg-green-200 text-green-800 font-semibold' : houseNumberCompleted ? 'hover:bg-green-100 focus:bg-green-200 text-green-700' : 'text-gray-400 cursor-not-allowed'}"
-                  disabled={!houseNumberCompleted}
-                >
-                  <span class="w-2 h-2 rounded-full {mainSection === 'houseNumberQuiz' ? 'bg-green-600' : houseNumberCompleted ? 'bg-green-300' : 'bg-gray-300'}"></span>
-                  📝 Quiz {houseNumberCompleted ? '' : '(Complete module first)'}
-                </button>
-              {/if}
-            {/each}
+            <button on:click={() => goToModule1Sub(0)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 0 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Program Line</button>
+            <button on:click={() => goToModule1Sub(1)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 1 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Start Time & Real Time</button>
+            <button on:click={() => mainSection = 'quiz'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'quiz' ? 'bg-green-200 text-green-800 font-semibold' : ''}">📝 Start Time & Real Time Quiz</button>
+            <button on:click={() => goToModule1Sub(2)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 2 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Hit Time</button>
+            <button on:click={() => goToModule1Sub(3)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 3 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Event Type</button>
+            <button on:click={() => goToModule1Sub(4)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 4 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Length</button>
+            <button on:click={() => mainSection = 'lengthQuiz'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'lengthQuiz' ? 'bg-green-200 text-green-800 font-semibold' : ''}">📝 Length Quiz</button>
+            <button on:click={() => goToModule1Sub(5)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 5 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Title</button>
+            <button on:click={() => goToModule1Sub(6)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 6 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Advertiser</button>
+            <button on:click={() => goToModule1Sub(7)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 7 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">House Number</button>
+            <button on:click={() => mainSection = 'houseNumberQuiz'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'houseNumberQuiz' ? 'bg-green-200 text-green-800 font-semibold' : ''}">📝 House Number Quiz</button>
+            <button on:click={() => goToModule1Sub(8)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 8 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Ordered As</button>
+            <button on:click={() => goToModule1Sub(9)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 9 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Spot End Time</button>
+            <button on:click={() => mainSection = 'module1test'} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module1test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''}">
+              <span class="block w-2 h-2 rounded-full {mainSection === 'module1test' ? 'bg-purple-600' : 'bg-purple-300'}"></span>
+              📝 End of Module 1 Test
+            </button>
           </div>
         {/if}
         {#each modules.slice(1) as module, modIdx}
-          <button on:click={() => { mainSection = `module${modIdx+2}`; }} class="text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 w-full {mainSection === `module${modIdx+2}` ? 'bg-blue-100 text-blue-700' : ''}">
-            <span class="w-2 h-2 rounded-full {mainSection === `module${modIdx+2}` ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+          <button on:click={() => mainSection = `module${modIdx+2}`} class="text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 text-sm w-full {mainSection === `module${modIdx+2}` ? 'bg-blue-100 text-blue-700' : ''}">
+            <span class="block w-2 h-2 rounded-full {mainSection === `module${modIdx+2}` ? 'bg-blue-600' : 'bg-gray-300'}"></span>
             {module.title}
           </button>
+          {#if modIdx === 0}
+            <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
+              <button on:click={() => mainSection = 'module2_sellingtitle'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_sellingtitle' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Selling Title</button>
+              <button on:click={() => mainSection = 'module2_yellowunit'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_yellowunit' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">The Yellow Unit</button>
+              <button on:click={() => mainSection = 'module2_unitprioritizationdetails'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_unitprioritizationdetails' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Unit Prioritization Details</button>
+              <button on:click={() => mainSection = 'module2_greenpurpleunits'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_greenpurpleunits' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Green & Purple Units</button>
+              <!-- Add more submodules here as needed -->
+            </div>
+            <button on:click={() => mainSection = 'module2test'} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module2test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''}">
+              <span class="block w-2 h-2 rounded-full {mainSection === 'module2test' ? 'bg-purple-600' : 'bg-purple-300'}"></span>
+              📝 End of Module 2 Test
+            </button>
+          {/if}
         {/each}
+        {#if submodulesOpen3}
+          <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
+            <button on:click={() => mainSection = 'module3_excelsheet'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_excelsheet' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Interactive Excel Sheet</button>
+            <button on:click={() => mainSection = 'module3_commercialtimes'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_commercialtimes' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Commercial Times</button>
+            <!-- Add more submodules here as needed -->
+          </div>
+        {/if}
       </nav>
     </aside>
   {:else}
@@ -306,33 +519,124 @@
     {#if mainSection === 'introduction'}
       <Introduction />
     {:else if mainSection === 'module1'}
-      <Module1Intro on:navigateToNextSubmodule={() => goToModule1Sub(0)} />
+      <Module1Intro on:navigateToNextSubmodule={next} progressId="module1_intro" />
     {:else if mainSection === 'module1sub'}
-      {#if module1Submodules[module1SubIdx]}
-        <svelte:component 
-          this={module1Submodules[module1SubIdx].component} 
-          isCompleted={completedSubmodules.has(module1SubIdx)}
-          on:navigateToQuiz={goToQuiz}
-          on:moduleCompleted={(event) => {
-            console.log('Received moduleCompleted event:', event.detail);
-            markSubmoduleCompleted(event.detail.submoduleIndex);
-          }}
-          on:navigateToNextSubmodule={() => {
-            markSubmoduleCompleted(module1SubIdx);
-            if (module1SubIdx < module1Submodules.length - 1) {
-              goToModule1Sub(module1SubIdx + 1);
-            }
-          }}
-        />
-      {/if}
+      <svelte:component
+        this={module1Submodules[module1SubIdx].component}
+        isCompleted={isSubmoduleCompleted(module1SubIdx)}
+        on:navigateToNextSubmodule={next}
+        on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)}
+        progressId={`module1_${module1Submodules[module1SubIdx].title.replace(/\s+/g, '').toLowerCase()}`}
+      />
     {:else if mainSection === 'quiz'}
       <StartTimeRealTimeQuiz on:navigateToNextSubmodule={goToNextSubmodule} />
     {:else if mainSection === 'lengthQuiz'}
       <LengthQuiz on:navigateToNextSubmodule={() => goToModule1Sub(5)} />
     {:else if mainSection === 'houseNumberQuiz'}
       <HouseNumberQuiz on:navigateToNextSubmodule={() => goToModule1Sub(8)} />
+    {:else if mainSection === 'module1test'}
+      <div class="w-full max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold mb-4">End of Module 1 Test</h2>
+        {#if !showMainResults && !showExtraQuestions && !showFinalSummary}
+          <QuizTemplate
+            questions={endOfModule1MainQuestions}
+            title="End of Module 1 Test"
+            description="Test your knowledge of Module 1. You must score at least 70% to pass."
+            passingScore={70}
+            on:quizCompleted={handleQuizCompleted}
+          />
+        {:else if showMainResults}
+          <div class="quiz-summary">
+            <h2 class="text-2xl font-bold mb-2">Test Complete!</h2>
+            <p class="mb-2">Your score: {quizScore} / 100</p>
+            {#if quizPassed}
+              <div class="text-green-700 font-bold mb-4">Congratulations! You passed!</div>
+              <button class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 mt-4" on:click={handleContinueToModule2}>Continue to Module 2</button>
+            {:else}
+              <div class="text-red-700 font-bold mb-4">You did not pass. Try these extra questions to reinforce your learning.</div>
+              <button class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 mt-4" on:click={handleContinueToExtra}>Continue to Extra Questions</button>
+            {/if}
+          </div>
+        {:else if showExtraQuestions && !showFinalSummary}
+          <QuizTemplate
+            questions={endOfModule1ExtraQuestions}
+            title="Extra Questions"
+            description="You did not pass the main test. Try these extra questions to reinforce your learning."
+            passingScore={100}
+            on:quizCompleted={handleQuizCompleted}
+          />
+        {:else if showFinalSummary}
+          <div class="quiz-summary">
+            <h2 class="text-2xl font-bold mb-2">Extra Questions Complete!</h2>
+            <p class="mb-2">Thank you for completing the extra questions.</p>
+            <div class="text-blue-700 font-bold mb-4">Review your answers and revisit the module if needed.</div>
+            <button class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 mt-4" on:click={handleContinueToModule2}>Continue to Module 2</button>
+          </div>
+        {/if}
+      </div>
+    {:else if mainSection === 'module2'}
+      <YouTubeTemplate
+        script={module2Script}
+        title="Module 2: Tools & Technology"
+        image="/images/introduction/basketballBackground.png"
+        isSubmoduleComplete={isModule2IntroComplete}
+        onNextSubmodule={handleModule2Next}
+        progressId="module2_intro"
+      />
+    {:else if mainSection === 'module2test'}
+      <div class="w-full max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold mb-4">End of Module 2 Test</h2>
+        {#if !showMainResults2 && !showExtraQuestions2 && !showFinalSummary2}
+          <QuizTemplate
+            questions={endOfModule2MainQuestions}
+            title="End of Module 2 Test"
+            description="Test your knowledge of Module 2. You must score at least 70% to pass."
+            passingScore={70}
+            on:quizCompleted={handleQuizCompleted2}
+          />
+        {:else if showMainResults2}
+          <div class="quiz-summary">
+            <h2 class="text-2xl font-bold mb-2">Test Complete!</h2>
+            <p class="mb-2">Your score: {quizScore2} / 100</p>
+            {#if quizPassed2}
+              <div class="text-green-700 font-bold mb-4">Congratulations! You passed!</div>
+              <button class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 mt-4" on:click={handleContinueToModule3}>Continue to Module 3</button>
+            {:else}
+              <div class="text-red-700 font-bold mb-4">You did not pass. Try these extra questions to reinforce your learning.</div>
+              <button class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 mt-4" on:click={handleContinueToExtra2}>Continue to Extra Questions</button>
+            {/if}
+          </div>
+        {:else if showExtraQuestions2 && !showFinalSummary2}
+          <QuizTemplate
+            questions={endOfModule2ExtraQuestions}
+            title="Extra Questions"
+            description="You did not pass the main test. Try these extra questions to reinforce your learning."
+            passingScore={100}
+            on:quizCompleted={handleQuizCompleted2}
+          />
+        {:else if showFinalSummary2}
+          <div class="quiz-summary">
+            <h2 class="text-2xl font-bold mb-2">Extra Questions Complete!</h2>
+            <p class="mb-2">Thank you for completing the extra questions.</p>
+            <div class="text-blue-700 font-bold mb-4">Review your answers and revisit the module if needed.</div>
+            <button class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 mt-4" on:click={handleContinueToModule3}>Continue to Module 3</button>
+          </div>
+        {/if}
+      </div>
+    {:else if mainSection === 'module2_sellingtitle'}
+      <SellingTitle progressId="module2_sellingtitle" />
+    {:else if mainSection === 'module2_yellowunit'}
+      <TheYellowUnit progressId="module2_yellowunit" />
+    {:else if mainSection === 'module2_unitprioritizationdetails'}
+      <UnitPrioritizationDetails progressId="module2_unitprioritizationdetails" />
+    {:else if mainSection === 'module2_greenpurpleunits'}
+      <GreenPurpleUnits progressId="module2_greenpurpleunits" />
     {:else if mainSection === 'module3'}
+      <Module3Intro progressId="module3_intro" />
+    {:else if mainSection === 'module3_excelsheet'}
       <Module3 />
+    {:else if mainSection === 'module3_commercialtimes'}
+      <CommercialTimes progressId="module3_commercialtimes" />
     {/if}
 
   </main>
