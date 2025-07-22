@@ -4,6 +4,9 @@
   import { DEV_FEATURES } from '$lib/config/dev';
   export let onToggleFullscreen: () => void;
   export let fullscreen = false;
+  export let currentIdx: number = 0;
+  export let onNext: (() => void) | undefined;
+  export let onPrevious: (() => void) | undefined;
 
   let progressBar: HTMLElement;
   let volumeSlider: HTMLInputElement;
@@ -35,6 +38,8 @@
   $: canGoPrevious = audioState.currentIndex > 0;
   $: canSeek = !audioState.isPlaying && audioState.progress >= 99;
   $: ccEnabled = $captionEnabled;
+  $: progressCurrent = typeof currentIdx === 'number' && currentIdx > 0 ? currentIdx + 1 : audioState.currentIndex + 1;
+  $: progressTotal = audioState.totalClips;
 
   function toggleCC() {
     captionEnabled.update(v => !v);
@@ -111,7 +116,7 @@
         <!-- Previous Button -->
         <button 
           class="text-white hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed p-1"
-          on:click={previousClip}
+          on:click={onPrevious ? onPrevious : previousClip}
           disabled={!canGoPrevious}
           aria-label="Previous clip"
         >
@@ -123,7 +128,7 @@
         <!-- Next Button -->
         <button 
           class="text-white hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed p-1"
-          on:click={nextClip}
+          on:click={onNext ? onNext : nextClip}
           disabled={!canGoNext}
           aria-label="Next clip"
         >
@@ -191,7 +196,7 @@
 
       <!-- Progress Text -->
       <div class="text-xs text-gray-300">
-        {audioState.currentIndex + 1} / {audioState.totalClips}
+        {progressCurrent} / {progressTotal}
       </div>
 
       <!-- Fullscreen Button -->

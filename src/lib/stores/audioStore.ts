@@ -113,8 +113,38 @@ export function setDuration(duration: number) {
   audioStore.update(state => ({ ...state, duration }));
 }
 
-export function setCurrentIndex(index: number) {
+// --- Progress Persistence ---
+
+// Key: progress_{id} (e.g., progress_module1_sub2)
+export function saveProgress(id: string, index: number) {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(`progress_${id}`, index.toString());
+  }
+}
+
+export function loadProgress(id: string): number {
+  if (typeof localStorage !== 'undefined') {
+    const val = localStorage.getItem(`progress_${id}`);
+    if (val !== null) {
+      const parsed = parseInt(val, 10);
+      if (!isNaN(parsed)) return parsed;
+    }
+  }
+  return 0;
+}
+
+export function resetProgress(id: string) {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem(`progress_${id}`);
+  }
+}
+
+// Overload setCurrentIndex to optionally take a progress id
+export function setCurrentIndex(index: number, progressId?: string) {
   audioStore.update(state => ({ ...state, currentIndex: index }));
+  if (progressId) {
+    saveProgress(progressId, index);
+  }
 }
 
 export function setTotalClips(total: number) {
@@ -122,8 +152,6 @@ export function setTotalClips(total: number) {
 }
 
 export function nextClip() {
-  if (!audioElement) return;
-  
   audioStore.update(state => {
     const nextIndex = Math.min(state.currentIndex + 1, state.totalClips - 1);
     return { ...state, currentIndex: nextIndex };
@@ -131,8 +159,7 @@ export function nextClip() {
 }
 
 export function previousClip() {
-  if (!audioElement) return;
-  
+  // Removed audioElement guard to allow navigation for non-audio slides
   audioStore.update(state => {
     const prevIndex = Math.max(state.currentIndex - 1, 0);
     return { ...state, currentIndex: prevIndex };

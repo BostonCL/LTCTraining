@@ -7,6 +7,7 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let isCompleted: boolean = false;
+export let progressId: string;
 
 const script = [
   { text: "right next door is the Hit Time column, this will determine a Mock Schedule. We use Mock Schedules for planning placement of Commercials.", audio: '/audio/module-1/03-hit-time/module1_hittime_01.mp3' },
@@ -51,4 +52,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} description={videoInfo.description} image="/images/module-1/hit-time/HitTimesheet.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/hit-time/HitTimesheet.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} progressId={progressId} /> 

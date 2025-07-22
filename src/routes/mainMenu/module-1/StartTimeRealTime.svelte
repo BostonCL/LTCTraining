@@ -2,91 +2,63 @@
 import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
+import { onMount } from 'svelte';
 
 const dispatch = createEventDispatcher();
 
-// Props
-export let isCompleted: boolean = false;
-
 const script = [
-  { text: "Let's navigate to the left most column of the live coverage sheet, Here we will discuss the difference Real Time and Start Time", audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_01.mp3' },
-  { text: 'Real Time is the scheduled time that the game or show is supposed to begin.', audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_02.mp3' },
-  { text: 'Start Time is the actual time the game or show begins.', audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_03.mp3' },
-  { text: 'For example: If a show or game is scheduled to begin at 8AM, that is the Real Time. So, you write down 8:00:00 next to Real Time regardless of when it actually begins.', audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_04.mp3' },
-  { text: "But for Start Time, let's say the game is delayed and starts at 8:03:30 AM. You would write 8:03:30 AM down next to Start Time.", audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_05.mp3' },
-  { text: 'This is how the Real Time/ Start Time column would appear in this example', audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_06.mp3' }
+	{
+		text: 'The first columns we are going to look at are the Start Time and Real Time columns. The start time column is the time the show is scheduled to start and the real time column is for the time the show actually starts.',
+		audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_01.mp3',
+		image: '/images/module-1/start-time-real-time/LCSheetRS.png'
+	},
+	{
+		text: 'Since this is a live event, there is a good chance that the show will not start at its scheduled time, it could start early or it could start late. The real time column is where you will write down the time the show actually starts.',
+		audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_02.mp3',
+		image: '/images/module-1/start-time-real-time/LCSheetRS.png'
+	},
+	{
+		text: 'This is an important column because this is how we will time out the rest of the show.',
+		audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_03.mp3',
+		image: '/images/module-1/start-time-real-time/LCSheetRS.png'
+	},
+	{
+		text: 'The start time will always be at the top of the page in the second column.',
+		audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_04.mp3',
+		image: '/images/module-1/start-time-real-time/LCSheetRS.png'
+	},
+	{
+		text: 'The real time will be right next to it, where you see the red arrow. This is where you will write down the time the show actually starts.',
+		audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_05.mp3',
+		image: '/images/module-1/start-time-real-time/LCSheetRS.png'
+	},
+	{
+		text: 'So, for example, if the show is scheduled to start at 1:00 PM but it actually starts at 1:02 PM, you will write down 1:02 PM in the real time column.',
+		audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_06.mp3',
+		image: '/images/module-1/start-time-real-time/LCSheetRS.png'
+	}
 ];
 
 const videoInfo = {
-  title: 'Start Time & Real Time',
-  description: 'Real Time is the scheduled time that the game or show is supposed to begin. Start Time is the actual time the game or show begins. For example: If a show or game is scheduled to begin at 8AM, that is the Real Time. So, you write down 8:00:00 next to Real Time regardless of when it actually begins. But for Start Time, let\'s say the game is delayed and starts at 8:03:30 AM. You would write 8:03:30 AM down next to Start Time.'
+  title: 'Start Time & Real Time'
 };
 
-let currentIndex = 0;
-let isModuleComplete = false;
+export let progressId: string;
 
-// Subscribe to audio store
 $: audioState = $audioStore;
-$: currentIndex = audioState.currentIndex;
+$: isComplete = audioState.currentIndex === script.length - 1 && audioState.progress >= 99;
 
-// Use the passed isCompleted prop or determine from local state
-$: finalIsComplete = isCompleted || isModuleComplete;
-
-// Debug logging to see what's happening
-$: console.log('Audio state:', {
-  currentIndex: audioState.currentIndex,
-  progress: audioState.progress,
-  isPlaying: audioState.isPlaying,
-  scriptLength: script.length,
-  isLastClip: audioState.currentIndex === script.length - 1,
-  isModuleComplete
-});
-
-// Check if user has reached the end of the module - multiple conditions
-$: if (!isModuleComplete && audioState.currentIndex === script.length - 1) {
-  // Condition 1: Progress-based completion
-  if (audioState.progress >= 99) {
-    console.log('Module completed via progress! Dispatching event...');
-    isModuleComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 1 });
-  }
-  // Condition 2: Audio finished playing
-  else if (!audioState.isPlaying && audioState.progress > 0) {
-    console.log('Module completed via audio end! Dispatching event...');
-    isModuleComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 1 });
-  }
-  // Condition 3: User has been on last clip for a while
-  else if (audioState.progress >= 99) {
-    console.log('Module completed via partial progress! Dispatching event...');
-    isModuleComplete = true;
-    dispatch('moduleCompleted', { submoduleIndex: 1 });
-  }
+function handleNext() {
+  dispatch('navigateToNextSubmodule');
 }
-
-// Always use the same image for all slides
-$: image = '/images/module-1/start-time-real-time/LCSheetRS.png';
-
-function goToQuiz() {
-  dispatch('navigateToQuiz');
-}
-
-function dummyNext() {
-  // This function is not used since we show the quiz button instead
-  // but it's required by the YouTubeTemplate interface
-}
-
 </script>
 
-<div class="relative">
-  <YouTubeTemplate
-    script={script}
-    title={videoInfo.title}
-    description={videoInfo.description}
-    image={image}
-    showAvatar={false}
-    onNextSubmodule={dummyNext}
-    completionButtonText="📝 Take Quiz"
-    onCompletionButtonClick={goToQuiz}
-  />
+<div class="flex flex-col items-center justify-center p-4">
+	<YouTubeTemplate
+		script={script}
+		title={videoInfo.title}
+		isSubmoduleComplete={isComplete}
+		onNextSubmodule={handleNext}
+		progressId={progressId}
+	/>
 </div> 

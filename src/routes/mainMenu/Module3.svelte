@@ -11,6 +11,10 @@
   function goToStep3() {
     showStep3 = true;
   }
+  let showStep4 = false;
+  function goToStep4() {
+    showStep4 = true;
+  }
   let step1Snapshot: { data: any[]; cellColors: { [key: string]: string } } | null = null;
   function goToStep1() {
     showStep1 = true;
@@ -197,7 +201,9 @@
       const color = (cellColors[cellKey] || '').toLowerCase();
       if (
         color !== '#0070c0' &&
-        color !== 'rgb(0,112,192)'
+        color !== 'rgb(0,112,192)' &&
+        color !== '#00b0f0' &&
+        color !== 'rgb(0,176,240)'
       ) {
         allBlue = false;
         break;
@@ -208,6 +214,33 @@
       return;
     }
     checkResult3 = '✅ Correct! You copied and pasted the row and filled it blue.';
+    setTimeout(() => { goToStep4(); }, 800); // Navigate to step 4 after short delay
+  }
+
+  let checkResult4 = '';
+  function checkStep4() {
+    // Find the original OLD TRAPPER row
+    const origIdx = data.findIndex(row => row[1] === '09:23:02 PM' && row[2] && row[2].toLowerCase() === 'commercial' && row[4] && row[4].toLowerCase() === 'old trapper : camping catastrophes');
+    // Find the blue row (should be after MM SWEET 16 THURSDAY)
+    const afterRowIdx = data.findIndex(row => row[1] === '09:33:40 PM' && row[2] && row[2].toLowerCase() === 'promo' && row[4] && row[4].toLowerCase() === 'mm sweet 16 thursday');
+    const blueIdx = afterRowIdx + 1;
+    if (origIdx === -1 || !data[blueIdx]) {
+      checkResult4 = '❌ Could not find the required rows.';
+      return;
+    }
+    // Check column A of original row
+    const origA = (data[origIdx][0] || '').trim().toLowerCase();
+    if (origA !== 'moved to b1 of 9:30') {
+      checkResult4 = '❌ In the original OLD TRAPPER row, column A must say: moved to B1 of 9:30';
+      return;
+    }
+    // Check column A of blue row
+    const blueA = (data[blueIdx][0] || '').trim().toLowerCase();
+    if (blueA !== 'moved from b3 of 9p.') {
+      checkResult4 = '❌ In the new blue row, column A must say: moved from b3 of 9p.';
+      return;
+    }
+    checkResult4 = '✅ Correct! You annotated both rows as required.';
   }
 
   // Fill color functions
@@ -590,7 +623,7 @@
   </div>
   
   <div class="excel-instructions">
-    {#if !showStep1 && !showStep2 && !showStep3}
+    {#if !showStep1 && !showStep2 && !showStep3 && !showStep4}
       <button class="excel-instructions-nav" aria-label="Go to Step 1" on:click={goToStep1}>
         <span class="excel-instructions-nav-arrow">→</span>
       </button>
@@ -598,7 +631,7 @@
       <div class="excel-instructions-body">
         The producer wants to cut 1 minute from break 3. Perform the actions to do this on the interactive excel sheet!
       </div>
-    {:else if showStep1 && !showStep2 && !showStep3}
+    {:else if showStep1 && !showStep2 && !showStep3 && !showStep4}
       <button class="excel-instructions-nav" aria-label="Back to Instructions" on:click={goBackInstructions}>
         <span class="excel-instructions-nav-arrow">←</span>
       </button>
@@ -613,7 +646,7 @@
           {/if}
         {/if}
       </div>
-    {:else if showStep2 && !showStep3}
+    {:else if showStep2 && !showStep3 && !showStep4}
       <h2 class="excel-instructions-title">Step 2</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">
@@ -626,7 +659,7 @@
           <div class="excel-check-result">{checkResult2}</div>
         {/if}
       </div>
-    {:else if showStep3}
+    {:else if showStep3 && !showStep4}
       <h2 class="excel-instructions-title">Step 3</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">
@@ -638,6 +671,18 @@
         <button class="excel-check-btn" on:click={checkStep3}>Check</button>
         {#if checkResult3}
           <div class="excel-check-result">{checkResult3}</div>
+        {/if}
+      </div>
+    {:else if showStep4}
+      <h2 class="excel-instructions-title">Step 4</h2>
+      <div class="excel-instructions-body">
+        <div class="excel-step-hint">
+          In the original <b>09:23:02 PM</b> Commercial <i>OLD TRAPPER : CAMPING CATASTROPHES</i> row, write in column A: <b>moved to B1 of 9:30</b>.<br>
+          In the new blue row you added, write in column A: <b>moved from b3 of 9p.</b>
+        </div>
+        <button class="excel-check-btn" on:click={checkStep4}>Check</button>
+        {#if checkResult4}
+          <div class="excel-check-result">{checkResult4}</div>
         {/if}
       </div>
     {/if}
