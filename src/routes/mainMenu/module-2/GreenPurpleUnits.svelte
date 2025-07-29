@@ -63,7 +63,7 @@ function handleNext() {
 <YouTubeTemplate
   script={script}
   title={videoInfo.title}
-  isSubmoduleComplete={isComplete}
+
   onNextSubmodule={handleNext}
   progressId={progressId}
 /> 

@@ -7,6 +7,7 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let progressId: string;
+export let nextButtonText: string = "Next";
 
 const script = [
   {
@@ -63,7 +64,8 @@ function handleNext() {
 <YouTubeTemplate
   script={script}
   title={videoInfo.title}
-  isSubmoduleComplete={isComplete}
+
   onNextSubmodule={handleNext}
   progressId={progressId}
+  nextButtonText={nextButtonText}
 /> 

@@ -5,15 +5,21 @@ import VideoControls from '$lib/components/VideoControls.svelte';
 import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
 import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips, setCurrentIndex, loadProgress, saveProgress } from '$lib/stores/audioStore';
 
-export let script: ({ text: string; audio: string; whiteboardText?: string[]; image?: string })[] = [];
-export let title: string = '';
-export let image: string | undefined = undefined;
-export let showAvatar: boolean = true;
-export let isSubmoduleComplete: boolean = false;
-export let onNextSubmodule: (() => void) | undefined;
-export let completionButtonText: string | undefined = undefined;
-export let onCompletionButtonClick: (() => void) | undefined = undefined;
-export let progressId: string;
+  // Props
+  export let script: Array<{
+    text: string;
+    audio: string;
+    whiteboardText?: string[];
+    image?: string;
+  }> = [];
+  export let title: string = '';
+  export let image: string | undefined = undefined;
+  export let showAvatar: boolean = true;
+  export let onNextSubmodule: (() => void) | undefined;
+  export let completionButtonText: string | undefined = undefined;
+  export let onCompletionButtonClick: (() => void) | undefined = undefined;
+  export let progressId: string;
+  export let nextButtonText: string = "Next";
 
 $: ccEnabled = $captionEnabled;
 $: audioState = $audioStore;
@@ -34,8 +40,6 @@ function goToNextSlide() {
   if (currentIdx < script.length - 1) {
     currentIdx += 1;
     saveProgress(progressId, currentIdx);
-  } else if (isSubmoduleComplete && onNextSubmodule) {
-    onNextSubmodule();
   }
 }
 
@@ -49,14 +53,12 @@ function goToPreviousSlide() {
 $: currentScript = script[currentIdx] || script[0];
 $: currentCaption = currentScript?.text || '';
 $: canGoNext = (
-  isSubmoduleComplete ||
-  (
-    currentIdx < script.length - 1 &&
-    (!audioState.isPlaying && audioState.progress >= 99)
-  )
+  currentIdx < script.length - 1 &&
+  (!audioState.isPlaying && audioState.progress >= 99)
 );
 $: canGoPrevious = currentIdx > 0;
 $: showCompletionButton = currentIdx === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick;
+$: showNextButton = currentIdx === script.length - 1 && audioState.progress >= 99 && onNextSubmodule;
 
 $: accumulatedWhiteboardText = currentScript.whiteboardText || [];
 
@@ -76,7 +78,7 @@ function handleToggleFullscreen() {
 }
 
 function handleNextArrow() {
-  if (currentIdx === script.length - 1 && isSubmoduleComplete && onNextSubmodule) {
+  if (showNextButton && onNextSubmodule) {
     onNextSubmodule();
   } else {
     goToNextSlide();
@@ -161,9 +163,9 @@ $: if (progressId) {
         >
           {completionButtonText}
         </button>
-      {:else if currentIdx === script.length - 1 && isSubmoduleComplete && audioState.progress >= 99}
-        <button class="w-32 px-0 py-3 rounded-lg bg-blue-600 bg-opacity-80 text-white font-semibold shadow hover:bg-blue-700 hover:bg-opacity-100 transition flex items-center justify-center" on:click={handleNextArrow} aria-label="Next submodule">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      {:else if showNextButton}
+        <button class="w-32 px-4 py-3 rounded-lg bg-blue-600 bg-opacity-80 text-white font-semibold shadow hover:bg-blue-700 hover:bg-opacity-100 transition flex items-center justify-center" on:click={handleNextArrow} aria-label="Next">
+          {nextButtonText}
         </button>
       {:else}
         <button class="w-12 h-12 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed" on:click={handleNextArrow} disabled={!canGoNext} aria-label="Next">

@@ -6,8 +6,8 @@ import { createEventDispatcher } from 'svelte';
 const dispatch = createEventDispatcher();
 
 // Props
-export let isCompleted: boolean = false;
 export let progressId: string;
+export let nextButtonText: string = "Next";
 
 // Selling Title script (3 slides)
 const script = [
@@ -41,7 +41,7 @@ function handleNext() {
 <YouTubeTemplate
   script={script}
   title={videoInfo.title}
-  isSubmoduleComplete={isComplete}
   onNextSubmodule={handleNext}
   progressId={progressId}
+  nextButtonText={nextButtonText}
 /> 
