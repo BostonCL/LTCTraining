@@ -6,8 +6,8 @@ import { createEventDispatcher } from 'svelte';
 const dispatch = createEventDispatcher();
 
 // Props
-export let isCompleted: boolean = false;
 export let progressId: string;
+export let nextButtonText: string = "Next";
 
 const script = [
   { text: "The Length column tells you the duration of time for each Unit.", audio: '/audio/module-1/04-length/module1_length_01.mp3' },
@@ -23,11 +23,7 @@ const videoInfo = {
 
 // Track completion
 $: audioState = $audioStore;
-
 let isComplete = false;
-
-// Use the passed isCompleted prop or determine from local state
-$: finalIsComplete = isCompleted || isComplete;
 
 // Check if user has reached the end of the module - multiple conditions
 $: if (!isComplete && audioState.currentIndex === script.length - 1) {
@@ -57,4 +53,4 @@ function goToQuiz() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/length/Lengthsheet.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} completionButtonText="📝 Take Quiz" onCompletionButtonClick={goToQuiz} progressId={progressId} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/length/Lengthsheet.png" onNextSubmodule={goNext} completionButtonText="📝 Take Quiz" onCompletionButtonClick={goToQuiz} progressId={progressId} nextButtonText={nextButtonText} /> 

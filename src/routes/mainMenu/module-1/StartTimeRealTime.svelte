@@ -44,6 +44,7 @@ const videoInfo = {
 };
 
 export let progressId: string;
+export let nextButtonText: string = "Next";
 
 $: audioState = $audioStore;
 $: isComplete = audioState.currentIndex === script.length - 1 && audioState.progress >= 99;
@@ -53,12 +54,10 @@ function handleNext() {
 }
 </script>
 
-<div class="flex flex-col items-center justify-center p-4">
-	<YouTubeTemplate
-		script={script}
-		title={videoInfo.title}
-		isSubmoduleComplete={isComplete}
-		onNextSubmodule={handleNext}
-		progressId={progressId}
-	/>
-</div> 
+<YouTubeTemplate
+	script={script}
+	title={videoInfo.title}
+	onNextSubmodule={handleNext}
+	progressId={progressId}
+	nextButtonText={nextButtonText}
+/> 

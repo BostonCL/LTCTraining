@@ -53,13 +53,11 @@
   }
 </script>
 
-<div class="min-h-screen bg-gray-50 py-8 px-4">
-  <QuizTemplate
-    questions={questions}
-    title="Start Time & Real Time Quiz"
-    description="Test your understanding of Real Time vs Start Time concepts."
-    passingScore={80}
-    on:quizCompleted={handleQuizCompleted}
-    on:continue={handleContinue}
-  />
-</div> 
+<QuizTemplate
+  questions={questions}
+  title="Start Time & Real Time Quiz"
+  description="Test your understanding of Real Time vs Start Time concepts."
+  passingScore={80}
+  on:quizCompleted={handleQuizCompleted}
+  on:continue={handleContinue}
+/> 

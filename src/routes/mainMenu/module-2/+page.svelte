@@ -56,7 +56,7 @@ function handleNext() {
   <YouTubeTemplate
     script={module2Script}
     title="Module 2: Tools & Technology"
-    isSubmoduleComplete={isComplete}
+
     onNextSubmodule={handleNext}
     progressId="module2_intro"
   />

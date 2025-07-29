@@ -20,6 +20,7 @@ const videoInfo = {
 const dispatch = createEventDispatcher();
 
 export let progressId: string;
+export let nextButtonText: string = "Next";
 
 $: audioState = $audioStore;
 $: isComplete = audioState.currentIndex === module1Script.length - 1 && audioState.progress >= 99;
@@ -34,8 +35,8 @@ function handleNext() {
     script={module1Script}
     title={videoInfo.title}
     image="/images/module-1/intro/LiveCoverageCleanWide-0.png"
-    isSubmoduleComplete={isComplete}
     onNextSubmodule={handleNext}
-    progressId="module1_intro"
+    progressId={progressId}
+    nextButtonText={nextButtonText}
   />
 </div> 

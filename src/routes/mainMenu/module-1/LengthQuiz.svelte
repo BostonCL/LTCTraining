@@ -1,45 +1,63 @@
 <script lang="ts">
-import QuizTemplate from '$lib/components/QuizTemplate.svelte';
-import { createEventDispatcher } from 'svelte';
+  import QuizTemplate from '$lib/components/QuizTemplate.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import { quizStore } from '$lib/stores/quizStore';
 
-const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-const questions = [
-  {
-    id: 1,
-    question: 'How long would this commercial break be?',
-    image: '', // To be filled in with the screenshot path
-    options: [
-      '2:30 mins',
-      '2:00 mins',
-      '1:45 mins',
-      '2:15 mins'
-    ],
-    correctAnswer: 0, // A) 2:30 mins
-    explanation: 'The correct answer is 2:30 mins, based on the sum of the lengths in the provided sheet.'
+  const questions = [
+    {
+      id: 1,
+      question: "What does the Length column show on the Live Coverage Sheet?",
+      options: [
+        "The time the show starts",
+        "How long each unit is",
+        "The advertiser's name",
+        "The house number"
+      ],
+      correctAnswer: 1,
+      explanation: "The Length column shows how long each commercial unit is (e.g., 30 seconds, 60 seconds, etc.)."
+    },
+    {
+      id: 2,
+      question: "If a commercial break has three 30-second spots, what is the total length of that break?",
+      options: [
+        "30 seconds",
+        "60 seconds",
+        "90 seconds",
+        "120 seconds"
+      ],
+      correctAnswer: 2,
+      explanation: "Three 30-second spots would total 90 seconds (30 + 30 + 30 = 90)."
+    }
+  ];
+
+  function handleQuizCompleted(event: CustomEvent) {
+    const { score, passed, timeSpent, answers } = event.detail;
+    console.log(`Quiz completed! Score: ${score}%, Passed: ${passed}, Time: ${timeSpent}ms`);
+    
+    // Record the quiz result
+    quizStore.recordResult({
+      moduleId: 'length',
+      score,
+      passed,
+      timeSpent,
+      completedAt: new Date(),
+      answers
+    });
   }
-];
 
-function handleQuizCompleted(event: CustomEvent) {
-  const { score, passed, timeSpent, answers } = event.detail;
-  // Record the quiz result or trigger completion logic here
-  dispatch('quizCompleted', { score, passed, timeSpent, answers });
-}
-
-function handleContinue() {
-  // Dispatch event to navigate to the next submodule
-  dispatch('navigateToNextSubmodule');
-}
+  function handleContinue() {
+    // Dispatch event to navigate to the next submodule
+    dispatch('navigateToNextSubmodule');
+  }
 </script>
 
-<div class="min-h-screen bg-gray-50 py-8 px-4">
-  <img src="/images/LengthQuiz.png" alt="Length Quiz Screenshot" class="mx-auto mb-6 max-w-full h-auto rounded shadow" />
-  <QuizTemplate
-    questions={questions}
-    title="Length Quiz"
-    description="Test your understanding of how to calculate the total length of a commercial break."
-    passingScore={100}
-    on:quizCompleted={handleQuizCompleted}
-    on:continue={handleContinue}
-  />
-</div> 
+<QuizTemplate
+  questions={questions}
+  title="Length Quiz"
+  description="Test your understanding of the Length column and commercial break timing."
+  passingScore={80}
+  on:quizCompleted={handleQuizCompleted}
+  on:continue={handleContinue}
+/> 
