@@ -1,5 +1,5 @@
 {
-  "buildCommand": "git lfs install && git lfs pull --include=\"*.mp3,*.png,*.jpg,*.jpeg\" && npm run build",
+  "buildCommand": "npm run build",
   "outputDirectory": "build",
   "framework": "sveltekit"
 } 
