@@ -7,6 +7,7 @@ const dispatch = createEventDispatcher();
 
 // Props
 export let progressId: string;
+export let nextButtonText: string = "Next";
 
 // The Yellow Unit script (updated to a single animation slide)
 const script = [
@@ -63,7 +64,7 @@ function handleNext() {
 <YouTubeTemplate
   script={script}
   title={videoInfo.title}
-  isSubmoduleComplete={isComplete}
   onNextSubmodule={handleNext}
+  nextButtonText={nextButtonText}
   progressId={progressId}
 /> 

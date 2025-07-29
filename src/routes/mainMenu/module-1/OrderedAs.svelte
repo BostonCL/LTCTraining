@@ -9,6 +9,7 @@ const dispatch = createEventDispatcher();
 // Props
 export let isCompleted: boolean = false;
 export let progressId: string;
+export let nextButtonText: string = "Next";
 
 const script = [
   { text: "The majority of Module 2 will be dedicated to the Ordered As column.", audio: '/audio/module-1/09-ordered-as/module1_orderedas_01.mp3' },
@@ -44,4 +45,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/ordered-as/OrderedAsscreen.png" isSubmoduleComplete={finalIsComplete} onNextSubmodule={goNext} progressId={progressId} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/ordered-as/OrderedAsscreen.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 

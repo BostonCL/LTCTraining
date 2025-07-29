@@ -16,6 +16,8 @@
   import ProgramLine from './module-1/ProgramLine.svelte';
   import LengthQuiz from './module-1/LengthQuiz.svelte';
   import HouseNumberQuiz from './module-1/HouseNumberQuiz.svelte';
+  import EndTime from './module-1/EndTime.svelte';
+  import Floaters from './module-1/Floaters.svelte';
   import Module3 from './Module3.svelte';
   import QuizTemplate from '$lib/components/QuizTemplate.svelte';
   import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
@@ -27,6 +29,15 @@
   import GreenPurpleUnits from './module-2/GreenPurpleUnits.svelte';
   import Module3Intro from './module-3/Module3Intro.svelte';
   import CommercialTimes from './module-3/CommercialTimes.svelte';
+  import BrandSEP from './module-3/BrandSEP.svelte';
+  import AdvertiserConflicts from './module-3/AdvertiserConflicts.svelte';
+  import StandAloneRule from './module-3/StandAloneRule.svelte';
+  import UnitCutPractice from './module-3/UnitCutPractice.svelte';
+  import MCEmailPractice from './module-3/MCEmailPractice.svelte';
+  import TimeOutPractice from './module-3/TimeOutPractice.svelte';
+  import Swaps from './module-3/Swaps.svelte';
+  import MasterControlEmail from './module-3/MasterControlEmail.svelte';
+  import LocalSwaps from './module-3/LocalSwaps.svelte';
   // Modules with submodules for Module 1
   const modules = [
     {
@@ -146,8 +157,8 @@
   // Check if any submodule is completed
   $: isSubmoduleCompleted = (idx: number) => completedSubmodules.has(idx);
   
-  // Check if Module 1 is fully completed (all 10 submodules)
-  $: module1Completed = completedSubmodules.size === 10;
+  // Check if Module 1 is fully completed (all 12 submodules)
+  $: module1Completed = completedSubmodules.size === 12;
 
   // Define the content map for easier rendering
   const module1Submodules = [
@@ -160,8 +171,100 @@
     { title: 'Advertiser', component: Advertiser },
     { title: 'House Number', component: HouseNumber },
     { title: 'Ordered As', component: OrderedAs },
-    { title: 'Spot End Time', component: SpotEndTime }
+    { title: 'Spot End Time', component: SpotEndTime },
+    { title: 'End Time', component: EndTime },
+    { title: 'Floaters', component: Floaters }
   ];
+
+  // Navigation map - defines the flow between modules and submodules
+  const navigationMap: Record<string, any> = {
+    'introduction': { next: 'module1' },
+    'module1': { next: 'module1sub', subIndex: 0 },
+    'module1sub': {
+      0: { next: 'module1sub', subIndex: 1 }, // Program Line -> Start Time & Real Time
+      1: { next: 'quiz' }, // Start Time & Real Time -> Quiz
+      2: { next: 'module1sub', subIndex: 3 }, // Hit Time -> Event Type
+      3: { next: 'module1sub', subIndex: 4 }, // Event Type -> Length
+      4: { next: 'lengthQuiz' }, // Length -> Length Quiz
+      5: { next: 'module1sub', subIndex: 6 }, // Title -> Advertiser
+      6: { next: 'module1sub', subIndex: 7 }, // Advertiser -> House Number
+      7: { next: 'houseNumberQuiz' }, // House Number -> House Number Quiz
+      8: { next: 'module1sub', subIndex: 9 }, // Ordered As -> Spot End Time
+      9: { next: 'module1sub', subIndex: 10 }, // Spot End Time -> End Time
+      10: { next: 'module1sub', subIndex: 11 }, // End Time -> Floaters
+      11: { next: 'module1test' } // Floaters -> Module 1 Test
+    },
+    'quiz': { next: 'module1sub', subIndex: 2 }, // Start Time & Real Time Quiz -> Hit Time
+    'lengthQuiz': { next: 'module1sub', subIndex: 5 }, // Length Quiz -> Title
+    'houseNumberQuiz': { next: 'module1sub', subIndex: 8 }, // House Number Quiz -> Ordered As
+    'module1test': { next: 'module2' }, // Module 1 Test -> Module 2
+    'module2': { next: 'module2_sellingtitle' },
+    'module2_sellingtitle': { next: 'module2_yellowunit' },
+    'module2_yellowunit': { next: 'module2_unitprioritizationdetails' },
+    'module2_unitprioritizationdetails': { next: 'module2_greenpurpleunits' },
+    'module2_greenpurpleunits': { next: 'module2test' },
+    'module2test': { next: 'module3' },
+    'module3': { next: 'module3_brandsep' },
+    'module3_brandsep': { next: 'module3_advertiserconflicts' },
+    'module3_advertiserconflicts': { next: 'module3_standalonerule' },
+    'module3_standalonerule': { next: 'module3_commercialtimes' },
+    'module3_commercialtimes': { next: 'module3_swaps' },
+    'module3_swaps': { next: 'module3_mastercontrolemail' },
+    'module3_mastercontrolemail': { next: 'module3_localswaps' },
+    'module3_localswaps': { next: 'module3_excelsheet' },
+    'module3_excelsheet': { next: 'module3_unitcutpractice' },
+    'module3_unitcutpractice': { next: 'module3_mcemailpractice' },
+    'module3_mcemailpractice': { next: 'module3_timeoutpractice' },
+    'module3_timeoutpractice': { next: 'introduction' } // Back to introduction when complete
+  };
+
+  // Function to get the next destination based on current location
+  function getNextDestination(currentSection: string, currentSubIndex?: number) {
+    if (currentSection === 'module1sub' && typeof currentSubIndex === 'number') {
+      return navigationMap.module1sub[currentSubIndex];
+    }
+    return navigationMap[currentSection];
+  }
+
+  // Function to get appropriate next button text based on current location
+  function getNextButtonText(currentSection: string, currentSubIndex?: number) {
+    const nextDest = getNextDestination(currentSection, currentSubIndex);
+    if (!nextDest) return "Next";
+    
+    // Check if next destination is a test
+    if (nextDest.next === 'module1test' || nextDest.next === 'module2test') {
+      return "Take Test";
+    }
+    
+    // Check if next destination is the final module completion
+    if (nextDest.next === 'introduction') {
+      return "Complete Training";
+    }
+    
+    // Check if next destination is a new module
+    if (nextDest.next === 'module2' || nextDest.next === 'module3') {
+      return "Next Module";
+    }
+    
+    return "Next";
+  }
+
+  // Function to navigate to the next destination
+  function navigateToNext(currentSection: string, currentSubIndex?: number) {
+    const nextDest = getNextDestination(currentSection, currentSubIndex);
+    if (nextDest) {
+      if (nextDest.subIndex !== undefined) {
+        // Navigate to a specific submodule
+        mainSection = nextDest.next;
+        if (nextDest.next === 'module1sub') {
+          module1SubIdx = nextDest.subIndex;
+        }
+      } else {
+        // Navigate to a main section
+        mainSection = nextDest.next;
+      }
+    }
+  }
 
   function goToIntroduction() {
     mainSection = 'introduction';
@@ -473,6 +576,8 @@
             <button on:click={() => mainSection = 'houseNumberQuiz'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'houseNumberQuiz' ? 'bg-green-200 text-green-800 font-semibold' : ''}">📝 House Number Quiz</button>
             <button on:click={() => goToModule1Sub(8)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 8 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Ordered As</button>
             <button on:click={() => goToModule1Sub(9)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 9 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Spot End Time</button>
+            <button on:click={() => goToModule1Sub(10)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 10 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">End Time</button>
+            <button on:click={() => goToModule1Sub(11)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 11 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Floaters</button>
             <button on:click={() => mainSection = 'module1test'} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module1test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''}">
               <span class="block w-2 h-2 rounded-full {mainSection === 'module1test' ? 'bg-purple-600' : 'bg-purple-300'}"></span>
               📝 End of Module 1 Test
@@ -500,8 +605,17 @@
         {/each}
         {#if submodulesOpen3}
           <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
-            <button on:click={() => mainSection = 'module3_excelsheet'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_excelsheet' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Interactive Excel Sheet</button>
+            <button on:click={() => mainSection = 'module3_brandsep'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_brandsep' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Brand SEP</button>
+            <button on:click={() => mainSection = 'module3_advertiserconflicts'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_advertiserconflicts' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Advertiser Conflicts</button>
+            <button on:click={() => mainSection = 'module3_standalonerule'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_standalonerule' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">STAND ALONE Rule</button>
             <button on:click={() => mainSection = 'module3_commercialtimes'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_commercialtimes' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Commercial Times</button>
+            <button on:click={() => mainSection = 'module3_swaps'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_swaps' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Swaps</button>
+            <button on:click={() => mainSection = 'module3_mastercontrolemail'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_mastercontrolemail' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Master Control Email</button>
+            <button on:click={() => mainSection = 'module3_localswaps'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_localswaps' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Local Swaps</button>
+            <button on:click={() => mainSection = 'module3_excelsheet'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_excelsheet' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Interactive Excel Sheet</button>
+            <button on:click={() => mainSection = 'module3_unitcutpractice'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_unitcutpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Unit Cut Practice</button>
+            <button on:click={() => mainSection = 'module3_mcemailpractice'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_mcemailpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">MC Email Practice</button>
+            <button on:click={() => mainSection = 'module3_timeoutpractice'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_timeoutpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Time Out Practice</button>
             <!-- Add more submodules here as needed -->
           </div>
         {/if}
@@ -509,31 +623,49 @@
     </aside>
   {:else}
     <!-- Floating menu button -->
-    <button on:click={() => (sidebarOpen = true)} class="fixed top-24 left-4 z-30 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg p-3 focus:outline-none" aria-label="Open sidebar menu">
+    <button on:click={() => (sidebarOpen = true)} class="fixed top-20 left-4 z-30 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg p-3 focus:outline-none" aria-label="Open sidebar menu">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
   {/if}
 
   <!-- Main Content -->
-  <main class="flex-1 flex flex-col items-center justify-center p-8">
+  <main class="flex-1 flex flex-col items-center">
     {#if mainSection === 'introduction'}
       <Introduction />
     {:else if mainSection === 'module1'}
-      <Module1Intro on:navigateToNextSubmodule={next} progressId="module1_intro" />
+      <Module1Intro on:navigateToNextSubmodule={next} progressId="module1_intro" nextButtonText={getNextButtonText('module1')} />
     {:else if mainSection === 'module1sub'}
-      <svelte:component
-        this={module1Submodules[module1SubIdx].component}
-        isCompleted={isSubmoduleCompleted(module1SubIdx)}
-        on:navigateToNextSubmodule={next}
-        on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)}
-        progressId={`module1_${module1Submodules[module1SubIdx].title.replace(/\s+/g, '').toLowerCase()}`}
-      />
+      {#if module1SubIdx === 0}
+        <ProgramLine progressId="module1_programline" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 1}
+        <StartTimeRealTime progressId="module1_starttimerealtime" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 2}
+        <HitTime progressId="module1_hittime" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 3}
+        <EventType progressId="module1_eventtype" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 4}
+        <Length progressId="module1_length" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 5}
+        <Title progressId="module1_title" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 6}
+        <Advertiser progressId="module1_advertiser" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 7}
+        <HouseNumber progressId="module1_housenumber" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 8}
+        <OrderedAs progressId="module1_orderedas" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 9}
+        <SpotEndTime progressId="module1_spotendtime" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 10}
+        <EndTime progressId="module1_endtime" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 11}
+        <Floaters progressId="module1_floaters" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {/if}
     {:else if mainSection === 'quiz'}
-      <StartTimeRealTimeQuiz on:navigateToNextSubmodule={goToNextSubmodule} />
+      <StartTimeRealTimeQuiz on:navigateToNextSubmodule={() => navigateToNext('quiz')} />
     {:else if mainSection === 'lengthQuiz'}
-      <LengthQuiz on:navigateToNextSubmodule={() => goToModule1Sub(5)} />
+      <LengthQuiz on:navigateToNextSubmodule={() => navigateToNext('lengthQuiz')} />
     {:else if mainSection === 'houseNumberQuiz'}
-      <HouseNumberQuiz on:navigateToNextSubmodule={() => goToModule1Sub(8)} />
+      <HouseNumberQuiz on:navigateToNextSubmodule={() => navigateToNext('houseNumberQuiz')} />
     {:else if mainSection === 'module1test'}
       <div class="w-full max-w-2xl mx-auto">
         <h2 class="text-2xl font-bold mb-4">End of Module 1 Test</h2>
@@ -579,9 +711,10 @@
         script={module2Script}
         title="Module 2: Tools & Technology"
         image="/images/introduction/basketballBackground.png"
-        isSubmoduleComplete={isModule2IntroComplete}
-        onNextSubmodule={handleModule2Next}
+
+        onNextSubmodule={() => navigateToNext('module2')}
         progressId="module2_intro"
+        nextButtonText={getNextButtonText('module2')}
       />
     {:else if mainSection === 'module2test'}
       <div class="w-full max-w-2xl mx-auto">
@@ -632,11 +765,29 @@
     {:else if mainSection === 'module2_greenpurpleunits'}
       <GreenPurpleUnits progressId="module2_greenpurpleunits" />
     {:else if mainSection === 'module3'}
-      <Module3Intro progressId="module3_intro" />
+      <Module3Intro progressId="module3_intro" on:navigateToNextSubmodule={() => navigateToNext('module3')} nextButtonText={getNextButtonText('module3')} />
     {:else if mainSection === 'module3_excelsheet'}
       <Module3 />
     {:else if mainSection === 'module3_commercialtimes'}
-      <CommercialTimes progressId="module3_commercialtimes" />
+      <CommercialTimes progressId="module3_commercialtimes" on:navigateToNextSubmodule={() => navigateToNext('module3_commercialtimes')} nextButtonText={getNextButtonText('module3_commercialtimes')} />
+    {:else if mainSection === 'module3_brandsep'}
+      <BrandSEP progressId="module3_brandsep" on:navigateToNextSubmodule={() => navigateToNext('module3_brandsep')} nextButtonText={getNextButtonText('module3_brandsep')} />
+    {:else if mainSection === 'module3_advertiserconflicts'}
+      <AdvertiserConflicts progressId="module3_advertiserconflicts" on:navigateToNextSubmodule={() => navigateToNext('module3_advertiserconflicts')} nextButtonText={getNextButtonText('module3_advertiserconflicts')} />
+    {:else if mainSection === 'module3_standalonerule'}
+      <StandAloneRule progressId="module3_standalonerule" on:navigateToNextSubmodule={() => navigateToNext('module3_standalonerule')} nextButtonText={getNextButtonText('module3_standalonerule')} />
+    {:else if mainSection === 'module3_unitcutpractice'}
+      <UnitCutPractice />
+    {:else if mainSection === 'module3_mcemailpractice'}
+      <MCEmailPractice />
+    {:else if mainSection === 'module3_timeoutpractice'}
+      <TimeOutPractice on:navigateToNextSubmodule={() => navigateToNext('module3_timeoutpractice')} nextButtonText={getNextButtonText('module3_timeoutpractice')} />
+    {:else if mainSection === 'module3_swaps'}
+      <Swaps progressId="module3_swaps" on:navigateToNextSubmodule={() => navigateToNext('module3_swaps')} nextButtonText={getNextButtonText('module3_swaps')} />
+    {:else if mainSection === 'module3_mastercontrolemail'}
+      <MasterControlEmail progressId="module3_mastercontrolemail" on:navigateToNextSubmodule={() => navigateToNext('module3_mastercontrolemail')} nextButtonText={getNextButtonText('module3_mastercontrolemail')} />
+    {:else if mainSection === 'module3_localswaps'}
+      <LocalSwaps progressId="module3_localswaps" on:navigateToNextSubmodule={() => navigateToNext('module3_localswaps')} nextButtonText={getNextButtonText('module3_localswaps')} />
     {/if}
 
   </main>

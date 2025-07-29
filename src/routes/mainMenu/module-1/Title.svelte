@@ -6,8 +6,8 @@ import { createEventDispatcher } from 'svelte';
 const dispatch = createEventDispatcher();
 
 // Props
-export let isCompleted: boolean = false;
 export let progressId: string;
+export let nextButtonText: string = "Next";
 
 const script = [
 	{
@@ -30,9 +30,6 @@ const videoInfo = {
 $: audioState = $audioStore;
 
 let isComplete = false;
-
-// Use the passed isCompleted prop or determine from local state
-$: isComplete = audioState.currentIndex === script.length - 1 && audioState.progress >= 99;
 
 // Check if user has reached the end of the module - multiple conditions
 $: if (!isComplete && audioState.currentIndex === script.length - 1) {
@@ -61,7 +58,7 @@ function handleNext() {
 <YouTubeTemplate
 	script={script}
 	title={videoInfo.title}
-	isSubmoduleComplete={isComplete}
 	onNextSubmodule={handleNext}
 	progressId={progressId}
+	nextButtonText={nextButtonText}
 /> 
