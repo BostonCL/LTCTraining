@@ -35,6 +35,7 @@
 	"dependencies": {
 		"@google-cloud/text-to-speech": "^6.1.0",
 		"@sveltejs/adapter-netlify": "^5.1.0",
+		"@sveltejs/adapter-static": "^3.0.8",
 		"firebase": "^11.9.1",
 		"handsontable": "^15.3.0"
 	}
