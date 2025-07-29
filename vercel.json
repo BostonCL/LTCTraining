@@ -1,10 +1,5 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build",
-  "framework": "sveltekit",
-  "functions": {
-    "src/routes/**/*.ts": {
-      "maxDuration": 30
-    }
-  }
+  "framework": "sveltekit"
 } 
