@@ -1,9 +1,3 @@
-# Include all static assets
-!static/
-!static/audio/
-!static/images/
-
-# Exclude node_modules and other build artifacts
 node_modules/
 .svelte-kit/
 build/ 
