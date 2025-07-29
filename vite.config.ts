@@ -4,6 +4,13 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
+	build: {
+		rollupOptions: {
+			input: {
+				app: './src/app.html'
+			}
+		}
+	},
 	test: {
 		projects: [
 			{
