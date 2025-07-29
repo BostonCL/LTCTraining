@@ -25,3 +25,5 @@ vite.config.ts.timestamp-*
 
 # Other
 gcp-credentials.json
+*credentials*.json
+*service-account*.json
