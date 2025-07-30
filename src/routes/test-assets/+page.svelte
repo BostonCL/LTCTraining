@@ -8,7 +8,7 @@
 
 	onMount(() => {
 		// Test new API route
-		const apiAudio = new Audio('/api/assets/api/assets/audio/introduction/intro_01.mp3');
+		const apiAudio = new Audio('/api/assets/audio/introduction/intro_01.mp3');
 		apiAudio.onloadstart = () => { debugInfo += 'API Audio loading started\n'; };
 		apiAudio.oncanplay = () => { debugInfo += 'API Audio can play\n'; audioLoaded = true; };
 		apiAudio.onerror = (e) => { 
@@ -23,10 +23,10 @@
 			debugInfo += 'API Image failed to load\n'; 
 			imageError = 'Failed to load image';
 		};
-		apiImg.src = '/api/assets/api/assets/images/introduction/basketballBackground.png';
+		apiImg.src = '/api/assets/images/introduction/basketballBackground.png';
 
 		// Test API routes with fetch to get detailed info
-		fetch('/api/assets/api/assets/audio/introduction/intro_01.mp3')
+		fetch('/api/assets/audio/introduction/intro_01.mp3')
 			.then(response => { 
 				debugInfo += `API Audio fetch: ${response.status}\n`; 
 				debugInfo += `API Audio headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()))}\n`;
@@ -35,7 +35,7 @@
 			.then(contentType => { debugInfo += `API Audio content-type: ${contentType}\n`; })
 			.catch(error => { debugInfo += `API Audio fetch error: ${error}\n`; });
 
-		fetch('/api/assets/api/assets/images/introduction/basketballBackground.png')
+		fetch('/api/assets/images/introduction/basketballBackground.png')
 			.then(response => { 
 				debugInfo += `API Image fetch: ${response.status}\n`; 
 				debugInfo += `API Image headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()))}\n`;
@@ -45,11 +45,11 @@
 			.catch(error => { debugInfo += `API Image fetch error: ${error}\n`; });
 
 		// Test direct static paths as fallback
-		fetch('/api/assets/audio/introduction/intro_01.mp3')
+		fetch('/audio/introduction/intro_01.mp3')
 			.then(response => { debugInfo += `Direct Audio fetch: ${response.status}\n`; })
 			.catch(error => { debugInfo += `Direct Audio fetch error: ${error}\n`; });
 
-		fetch('/api/assets/images/introduction/basketballBackground.png')
+		fetch('/images/introduction/basketballBackground.png')
 			.then(response => { debugInfo += `Direct Image fetch: ${response.status}\n`; })
 			.catch(error => { debugInfo += `Direct Image fetch error: ${error}\n`; });
 	});
@@ -62,13 +62,13 @@
 		<div class="bg-white p-6 rounded-lg shadow-md">
 			<h2 class="text-lg font-semibold">Audio Test (New API)</h2>
 			<p>Status: {audioLoaded ? '✅ Loaded' : audioError ? '❌ ' + audioError : '⏳ Loading...'}</p>
-			<audio controls src="/api/assets/api/assets/audio/introduction/intro_01.mp3" class="mt-2"></audio>
+			<audio controls src="/api/assets/audio/introduction/intro_01.mp3" class="mt-2"></audio>
 		</div>
 
 		<div class="bg-white p-6 rounded-lg shadow-md">
 			<h2 class="text-lg font-semibold">Image Test (New API)</h2>
 			<p>Status: {imageLoaded ? '✅ Loaded' : imageError ? '❌ ' + imageError : '⏳ Loading...'}</p>
-			<img src="/api/assets/api/assets/images/introduction/basketballBackground.png" alt="API Test image" class="mt-2 max-w-xs" />
+			<img src="/api/assets/images/introduction/basketballBackground.png" alt="API Test image" class="mt-2 max-w-xs" />
 		</div>
 	</div>
 
@@ -80,10 +80,10 @@
 	<div class="mt-4 bg-white p-6 rounded-lg shadow-md">
 		<h2 class="text-lg font-semibold">Direct Links (for testing)</h2>
 		<ul class="list-disc pl-4 space-y-2">
-			<li><a href="/api/assets/api/assets/audio/introduction/intro_01.mp3" target="_blank" class="text-blue-600 hover:underline">New API Audio File</a></li>
-			<li><a href="/api/assets/api/assets/images/introduction/basketballBackground.png" target="_blank" class="text-blue-600 hover:underline">New API Image File</a></li>
-			<li><a href="/api/assets/audio/introduction/intro_01.mp3" target="_blank" class="text-blue-600 hover:underline">Direct Audio File</a></li>
-			<li><a href="/api/assets/images/introduction/basketballBackground.png" target="_blank" class="text-blue-600 hover:underline">Direct Image File</a></li>
+			<li><a href="/api/assets/audio/introduction/intro_01.mp3" target="_blank" class="text-blue-600 hover:underline">New API Audio File</a></li>
+			<li><a href="/api/assets/images/introduction/basketballBackground.png" target="_blank" class="text-blue-600 hover:underline">New API Image File</a></li>
+			<li><a href="/audio/introduction/intro_01.mp3" target="_blank" class="text-blue-600 hover:underline">Direct Audio File</a></li>
+			<li><a href="/images/introduction/basketballBackground.png" target="_blank" class="text-blue-600 hover:underline">Direct Image File</a></li>
 		</ul>
 	</div>
 </div> 
