@@ -1,31 +1,3 @@
 {
-  "framework": "sveltekit",
-  "headers": [
-    {
-      "source": "/audio/(.*)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "audio/mpeg"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
-    },
-    {
-      "source": "/images/(.*)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/png"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
-    }
-  ]
+  "framework": "sveltekit"
 } 
