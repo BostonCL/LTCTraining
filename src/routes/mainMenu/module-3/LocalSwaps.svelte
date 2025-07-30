@@ -12,73 +12,73 @@ export let nextButtonText: string = "Next";
 const script = [
   {
     text: "In this section, we will learn how to swap local units when a producer requests it. Let's look at an example. Imagine the producer has to cut 2 minutes from the break we're working in. They decide to cut the local unit. Remember — locals are always 1 minute and :30 seconds long. So, they cut the local unit (1 minute and :30 seconds) plus the :30 seconds Jersey Mike's spot. That adds up to exactly 2 minutes cut from the break.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_01.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Local1.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_01.mp3',
+    image: '/images/module-3/local-swaps/Local1.png'
   },
   {
     text: "Now, that local unit is gone from its original spot — but you can't just leave it like that. You must find a new place in the schedule to air that local unit.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_02.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Local2.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_02.mp3',
+    image: '/images/module-3/local-swaps/Local2.png'
   },
   {
     text: "Key rules to remember: You must always find swaps for locals. You have to find the exact same amount of time (1 minute and :30 seconds) somewhere else in the schedule. Locals can never air in the same break as another local. They can be in back-to-back breaks, but never together in the same break.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_03.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Local2.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_03.mp3',
+    image: '/images/module-3/local-swaps/Local2.png'
   },
   {
     text: "Start by looking for cuttable units. I like to check the green inventory — that's usually the easiest to cut. Sometimes I'll go deep into the overnight hours because it's simpler there.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_04.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Local4.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_04.mp3',
+    image: '/images/module-3/local-swaps/Local4.png'
   },
   {
     text: "Once you find cuttable units: Mark those units as cut (turn them red). This means they won't air in that break anymore. Next, insert a line for the local unit you're moving. Notate everything as you go.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_05.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Local5.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_05.mp3',
+    image: '/images/module-3/local-swaps/Local5.png'
   },
   {
     text: "In this example, we're moving the local unit into Break 5 of the 10 PM game. When you email MC, update the title to: 'Here are the swaps to save 2 minutes from Break 11 of the 12 PM game.' Note the new location: 10 PM game Break 5 CUT: xxx and xxx IN: 1:30 local, please use a fill list",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_06.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Swaps13.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_06.mp3',
+    image: '/images/module-3/local-swaps/Swaps13.png'
   },
   {
     text: "Why does this matter? On the traffic side, these schedules already have sold commercials in place. If you just swap in a local unit without using the fill list, it can conflict with other units, create wrong end times, and worst of all, the commercials may not air correctly — which means we wouldn't get paid for them.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_07.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Swaps13.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_07.mp3',
+    image: '/images/module-3/local-swaps/Swaps13.png'
   },
   {
     text: "Using the fill list keeps everything clean. The local network still gets the promised time, and if there's leftover time, PSAs will run instead. The fill list is just a bunch of PSAs that won't conflict with anything else in the break.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_08.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Swaps13.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_08.mp3',
+    image: '/images/module-3/local-swaps/Swaps13.png'
   },
   {
     text: "Then, paste the local unit into its new spot. Mark it blue to show it's airing there.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_09.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Local9.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_09.mp3',
+    image: '/images/module-3/local-swaps/Local9.png'
   },
   {
     text: "Add a note that says: 'Moved to Break 5 of the 10 PM game.' 'Moved from Break 11 of the 12 PM game.'",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_10.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Local10.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_10.mp3',
+    image: '/images/module-3/local-swaps/Local10.png'
   },
   {
     text: "This is an additional slide for Local Swaps with specific content.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_11.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Local11.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_11.mp3',
+    image: '/images/module-3/local-swaps/Local11.png'
   },
   {
     text: "After you insert the local: In your spreadsheet, mark it as 'No fill'.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_12.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Swaps13.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_12.mp3',
+    image: '/images/module-3/local-swaps/Swaps13.png'
   },
   {
     text: "Finally, double-check that everything is correct: The local is marked as moved to Break 5 of the 10 PM game. It's noted as moved from Break 11 of the 12 PM game. All cuts, moves, and fills are noted. Your colors are correct: red means cut, blue means airing.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_13.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Swaps13.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_13.mp3',
+    image: '/images/module-3/local-swaps/Swaps13.png'
   },
   {
     text: "And that's how you swap locals! During the game, if things are running smoothly and commercials are airing as planned, start preparing a backup plan in case the game does go over.",
-    audio: '/api/assets/audio/module-3/local-swaps/module3_localswaps_14.mp3',
-    image: '/api/assets/images/module-3/local-swaps/Swaps13.png'
+    audio: '/audio/module-3/local-swaps/module3_localswaps_14.mp3',
+    image: '/images/module-3/local-swaps/Swaps13.png'
   }
 ];
 
@@ -112,7 +112,7 @@ function goNext() {
 <YouTubeTemplate 
   script={script} 
   title={videoInfo.title} 
-  image="/api/assets/images/module-3/local-swaps/Swaps13.png" 
+  image="/images/module-3/local-swaps/Swaps13.png" 
  
   onNextSubmodule={goNext} 
   progressId={progressId} 

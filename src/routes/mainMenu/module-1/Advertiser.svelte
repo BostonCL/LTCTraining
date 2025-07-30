@@ -10,8 +10,8 @@ export let progressId: string;
 export let nextButtonText: string = "Next";
 
 const script = [
-  { text: "The Advertiser column lists the companies that have purchased time slots for commercials.", audio: '/api/assets/audio/module-1/05-advertiser/module1_advertiser_01.mp3' },
-  { text: "Compared to the Title column, the Advertiser column contains more condensed information.", audio: '/api/assets/audio/module-1/05-advertiser/module1_advertiser_02.mp3' }
+  { text: "The Advertiser column lists the companies that have purchased time slots for commercials.", audio: '/audio/module-1/05-advertiser/module1_advertiser_01.mp3' },
+  { text: "Compared to the Title column, the Advertiser column contains more condensed information.", audio: '/audio/module-1/05-advertiser/module1_advertiser_02.mp3' }
 ];
 
 const videoInfo = {
@@ -47,4 +47,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} image="/api/assets/images/module-1/advertiser/Advertiserscreen.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/advertiser/Advertiserscreen.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 

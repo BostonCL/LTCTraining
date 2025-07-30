@@ -12,18 +12,18 @@ export let nextButtonText: string = "Next";
 const script = [
 	{
 		text: "Now let's talk about the Event Type column.",
-		audio: '/api/assets/audio/module-1/08-event-type/module1_eventtype_01.mp3',
-		image: '/api/assets/images/module-1/event-type/EventTypesheet.png'
+		audio: '/audio/module-1/08-event-type/module1_eventtype_01.mp3',
+		image: '/images/module-1/event-type/EventTypesheet.png'
 	},
 	{
 		text: 'The event type column is where you will see what type of event is scheduled to air.',
-		audio: '/api/assets/audio/module-1/08-event-type/module1_eventtype_02.mp3',
-		image: '/api/assets/images/module-1/event-type/EventTypesheet.png'
+		audio: '/audio/module-1/08-event-type/module1_eventtype_02.mp3',
+		image: '/images/module-1/event-type/EventTypesheet.png'
 	},
 	{
 		text: 'This is a very important column because this is how we will time out the rest of the show.',
-		audio: '/api/assets/audio/module-1/08-event-type/module1_eventtype_03.mp3',
-		image: '/api/assets/images/module-1/event-type/EventTypesheet.png'
+		audio: '/audio/module-1/08-event-type/module1_eventtype_03.mp3',
+		image: '/images/module-1/event-type/EventTypesheet.png'
 	}
 ];
 

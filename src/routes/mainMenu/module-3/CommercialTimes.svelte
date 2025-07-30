@@ -13,24 +13,24 @@ export let nextButtonText: string = "Next";
 const script = [
   {
     text: `One of our main responsibilities is logging commercial times. You’ll need to watch the entire sporting event and track the commercials as they air to make sure they match what’s on your log sheet. If you spot any issues — like a commercial that didn’t run — you’ll need to make a swap.`,
-    audio: '/api/assets/audio/module-3/commercial-times/module3_commercialtimes_01.mp3',
+    audio: '/audio/module-3/commercial-times/module3_commercialtimes_01.mp3',
     whiteboardText: [
       'Write down commercial times',
       'One of our main responsibilities is logging commercial times.',
       'Track the commercials as they air to make sure they match what’s on your log sheet.',
       'If you spot any issues — like a commercial that didn’t run — you’ll need to make a swap.'
     ],
-    image: '/api/assets/images/introduction/basketballBackground.png'
+    image: '/images/introduction/basketballBackground.png'
   },
   {
     text: `You’ll also stay on the phone with the producer, and MC, listening for their countdowns. When they reach ‘one,’ you’ll record the exact time the commercial airs. For example, if it airs at 8:05:32, you’ll write down ‘8:05:32,’ as shown on this Live Coverage Sheet.`,
-    audio: '/api/assets/audio/module-3/commercial-times/module3_commercialtimes_02.mp3',
-    image: '/api/assets/images/module-3/commercial-times/CommercialTimes.png'
+    audio: '/audio/module-3/commercial-times/module3_commercialtimes_02.mp3',
+    image: '/images/module-3/commercial-times/CommercialTimes.png'
   },
   {
     text: `Usually, if a commercial is going to be cut, they’ll mention it over the phone line and ask for your input on which one should be dropped.`,
-    audio: '/api/assets/audio/module-3/commercial-times/module3_commercialtimes_03.mp3',
-    image: '/api/assets/images/module-3/commercial-times/CommercialTimes.png'
+    audio: '/audio/module-3/commercial-times/module3_commercialtimes_03.mp3',
+    image: '/images/module-3/commercial-times/CommercialTimes.png'
   }
 ];
 
