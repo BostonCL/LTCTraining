@@ -9,6 +9,10 @@ const config = {
 		}),
 		files: {
 			assets: 'static'
+		},
+		// Add proper static asset handling
+		paths: {
+			base: ''
 		}
 	}
 };
