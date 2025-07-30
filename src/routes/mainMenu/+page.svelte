@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getAuth, signOut, type Auth } from 'firebase/auth';
+  // import { getAuth, signOut, type Auth } from 'firebase/auth';
   import { writable, derived } from 'svelte/store';
   import Introduction from './introduction/Introduction.svelte';
   import HitTime from './module-1/HitTime.svelte';
@@ -108,21 +108,21 @@
     }
   ];
 
-  let auth: Auth | undefined;
-  onMount(() => {
-    auth = getAuth();
-  });
+  // let auth: Auth | undefined;
+  // onMount(() => {
+  //   auth = getAuth();
+  // });
 
-  async function handleLogout() {
-    try {
-      if (auth) {
-        await signOut(auth);
-      }
-      window.location.href = '/';
-    } catch (e) {
-      alert('Logout failed. Please try again.');
-    }
-  }
+  // async function handleLogout() {
+  //   try {
+  //     if (auth) {
+  //       await signOut(auth);
+  //     }
+  //     window.location.href = '/';
+  //   } catch (e) {
+  //     alert('Logout failed. Please try again.');
+  //   }
+  // }
 
   // Sidebar and navigation state
   let sidebarOpen = true;
@@ -540,7 +540,7 @@
 <!-- Header -->
 <header class="w-full flex items-center justify-between py-4 px-8 bg-white shadow-sm border-b">
   <span class="text-2xl font-bold text-gray-900 tracking-tight">Live Traffic Coverage Training</span>
-  <button on:click={handleLogout} class="text-gray-500 hover:text-gray-700 text-base font-medium rounded px-4 py-2 border border-gray-200 bg-gray-50">Logout</button>
+  <button on:click={() => { window.location.href = '/'; }} class="text-gray-500 hover:text-gray-700 text-base font-medium rounded px-4 py-2 border border-gray-200 bg-gray-50">Logout</button>
 </header>
 
 <div class="flex min-h-[80vh] relative">
