@@ -1,6 +1,6 @@
 <script lang="ts">
-  // import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-  // import { app } from '$lib/firebase';
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+  import { app } from '$lib/firebase';
 
   let email = '';
   let password = '';
@@ -8,17 +8,17 @@
   let loading = false;
   let isLogin = true;
 
-  // const auth = getAuth(app);
+  const auth = getAuth(app);
 
   async function handleSubmit() {
     loading = true;
     error = '';
     try {
       if (isLogin) {
-        // await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
         window.location.href = '/mainMenu';
       } else {
-        // await createUserWithEmailAndPassword(auth, email, password);
+        await createUserWithEmailAndPassword(auth, email, password);
         window.location.href = '/mainMenu';
       }
     } catch (e: any) {
