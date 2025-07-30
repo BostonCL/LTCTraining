@@ -1,10 +1,5 @@
 {
   "framework": "sveltekit",
-  "functions": {
-    "src/routes/api/assets/[...path]/+server.ts": {
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/api/assets/(.*)",
