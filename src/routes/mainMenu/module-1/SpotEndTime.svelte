@@ -12,8 +12,8 @@ export let progressId: string;
 export let nextButtonText: string = "Next";
 
 const script = [
-  { text: "The Spot End Time indicates the latest possible time a specific commercial can air.", audio: '/api/assets/audio/module-1/10-spot-end-time/module1_spotendtime_01.mp3' },
-  { text: "This timing is crucial because airing a commercial past its designated end time can result in missed audience targeting, or contractual violations.", audio: '/api/assets/audio/module-1/10-spot-end-time/module1_spotendtime_02.mp3' }
+  { text: "The Spot End Time indicates the latest possible time a specific commercial can air.", audio: '/audio/module-1/10-spot-end-time/module1_spotendtime_01.mp3' },
+  { text: "This timing is crucial because airing a commercial past its designated end time can result in missed audience targeting, or contractual violations.", audio: '/audio/module-1/10-spot-end-time/module1_spotendtime_02.mp3' }
 ];
 
 const videoInfo = {
@@ -45,4 +45,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} image="/api/assets/images/module-1/spot-end-time/SpotEndTimescreen.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/spot-end-time/SpotEndTimescreen.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 
