@@ -8,7 +8,7 @@
   let debugInfo = '';
   
   onMount(() => {
-    // Test audio loading
+    // Test direct paths
     const audio = new Audio('/audio/introduction/intro_01.mp3');
     audio.onloadstart = () => {
       console.log('Audio loading started');
@@ -39,11 +39,27 @@
     };
     img.src = '/images/introduction/basketballBackground.png';
     
+    // Test API route
+    const apiAudio = new Audio('/api/static/audio/introduction/intro_01.mp3');
+    apiAudio.onloadstart = () => {
+      debugInfo += 'API Audio loading started\n';
+    };
+    apiAudio.oncanplay = () => {
+      debugInfo += 'API Audio can play\n';
+    };
+    apiAudio.onerror = (e) => {
+      debugInfo += `API Audio error: ${e}\n`;
+    };
+    
     // Test direct fetch
     fetch('/audio/introduction/intro_01.mp3')
       .then(response => {
         console.log('Audio fetch response:', response.status);
         debugInfo += `Audio fetch: ${response.status}\n`;
+        return response.headers.get('content-type');
+      })
+      .then(contentType => {
+        debugInfo += `Audio content-type: ${contentType}\n`;
       })
       .catch(error => {
         console.error('Audio fetch error:', error);
@@ -54,6 +70,10 @@
       .then(response => {
         console.log('Image fetch response:', response.status);
         debugInfo += `Image fetch: ${response.status}\n`;
+        return response.headers.get('content-type');
+      })
+      .then(contentType => {
+        debugInfo += `Image content-type: ${contentType}\n`;
       })
       .catch(error => {
         console.error('Image fetch error:', error);
@@ -79,10 +99,18 @@
     </div>
     
     <div>
+      <h2 class="text-lg font-semibold">API Route Test</h2>
+      <audio controls src="/api/static/audio/introduction/intro_01.mp3" class="mt-2"></audio>
+      <img src="/api/static/images/introduction/basketballBackground.png" alt="API Test image" class="mt-2 max-w-xs" />
+    </div>
+    
+    <div>
       <h2 class="text-lg font-semibold">Direct Links</h2>
       <ul class="list-disc pl-4">
         <li><a href="/audio/introduction/intro_01.mp3" target="_blank" class="text-blue-600 hover:underline">Audio File</a></li>
         <li><a href="/images/introduction/basketballBackground.png" target="_blank" class="text-blue-600 hover:underline">Image File</a></li>
+        <li><a href="/api/static/audio/introduction/intro_01.mp3" target="_blank" class="text-blue-600 hover:underline">API Audio File</a></li>
+        <li><a href="/api/static/images/introduction/basketballBackground.png" target="_blank" class="text-blue-600 hover:underline">API Image File</a></li>
       </ul>
     </div>
     
