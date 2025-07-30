@@ -74,7 +74,7 @@
 		<div class="bg-white p-6 rounded-lg shadow-md">
 			<h2 class="text-lg font-semibold">Image Test (API Route)</h2>
 			<p>Status: {imageLoaded ? '✅ Loaded' : imageError ? '❌ ' + imageError : '⏳ Loading...'}</p>
-			<img src="/api/assets/images/introduction/basketballBackground.png" class="mt-2 max-w-xs" />
+			<img src="/api/assets/images/introduction/basketballBackground.png" alt="Basketball background test" class="mt-2 max-w-xs" />
 		</div>
 	</div>
 
@@ -86,7 +86,7 @@
 
 		<div class="bg-white p-6 rounded-lg shadow-md">
 			<h2 class="text-lg font-semibold">Image Test (Direct)</h2>
-			<img src="/images/introduction/basketballBackground.png" class="mt-2 max-w-xs" />
+			<img src="/images/introduction/basketballBackground.png" alt="Basketball background test" class="mt-2 max-w-xs" />
 		</div>
 	</div>
 
