@@ -3,8 +3,7 @@ node_modules/
 .svelte-kit/
 build/
 
-# Explicitly include static assets
+# Don't ignore static assets
 !static/
 !static/audio/
-!static/images/
-!static/favicon.png 
+!static/images/ 
