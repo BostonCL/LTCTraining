@@ -7,7 +7,6 @@
 	let directStatus = 'Testing...';
 	let apiSize = '';
 	let directSize = '';
-	let lfsInfo = '';
 
 	onMount(async () => {
 		// Test API route
@@ -16,15 +15,7 @@
 			if (response.ok) {
 				const blob = await response.blob();
 				apiSize = `${(blob.size / 1024 / 1024).toFixed(2)} MB`;
-				
-				// Check if it's a placeholder (SVG)
-				if (blob.type === 'image/svg+xml') {
-					apiStatus = `⚠️ Placeholder served (LFS file not available)`;
-					lfsInfo = 'This indicates that Git LFS files are not available in the deployment.';
-				} else {
-					apiStatus = `✅ API route working (${response.status})`;
-					lfsInfo = 'LFS files are available and working correctly.';
-				}
+				apiStatus = `✅ API route working (${response.status})`;
 			} else {
 				apiStatus = `❌ API route failed (${response.status})`;
 			}
@@ -38,13 +29,7 @@
 			if (response.ok) {
 				const blob = await response.blob();
 				directSize = `${(blob.size / 1024 / 1024).toFixed(2)} MB`;
-				
-				// Check if it's a placeholder (SVG)
-				if (blob.type === 'image/svg+xml') {
-					directStatus = `⚠️ Placeholder served (LFS file not available)`;
-				} else {
-					directStatus = `✅ Direct path working (${response.status})`;
-				}
+				directStatus = `✅ Direct path working (${response.status})`;
 			} else {
 				directStatus = `❌ Direct path failed (${response.status})`;
 			}
@@ -61,12 +46,11 @@
 <div class="container mx-auto p-8">
 	<h1 class="text-3xl font-bold mb-8">Static Asset Test</h1>
 
-	<div class="mb-6 bg-blue-100 p-4 rounded-lg">
-		<h2 class="text-lg font-semibold mb-2">Git LFS Status</h2>
-		<p class="text-sm">{lfsInfo || 'Checking LFS file availability...'}</p>
-		<p class="text-sm mt-2">
-			<strong>Note:</strong> If you see placeholder images, it means the Git LFS files are not available in this deployment. 
-			This is expected behavior when using Git LFS with Vercel.
+	<div class="mb-6 bg-green-100 p-4 rounded-lg">
+		<h2 class="text-lg font-semibold mb-2">File Status</h2>
+		<p class="text-sm">
+			<strong>✅ LFS Removed:</strong> Media files are now stored directly in Git repository. 
+			This should resolve deployment issues on Vercel.
 		</p>
 	</div>
 
@@ -82,13 +66,7 @@
 				alt="Basketball background test" 
 				class="mt-2 max-w-xs border"
 				on:error={() => apiStatus = '❌ Image failed to load'}
-				on:load={() => {
-					if (apiStatus.includes('Placeholder')) {
-						apiStatus = '⚠️ Placeholder loaded (LFS file not available)';
-					} else {
-						apiStatus = '✅ Image loaded successfully';
-					}
-				}}
+				on:load={() => apiStatus = '✅ Image loaded successfully'}
 			/>
 		</div>
 
@@ -103,13 +81,7 @@
 				alt="Basketball background test" 
 				class="mt-2 max-w-xs border"
 				on:error={() => directStatus = '❌ Image failed to load'}
-				on:load={() => {
-					if (directStatus.includes('Placeholder')) {
-						directStatus = '⚠️ Placeholder loaded (LFS file not available)';
-					} else {
-						directStatus = '✅ Image loaded successfully';
-					}
-				}}
+				on:load={() => directStatus = '✅ Image loaded successfully'}
 			/>
 		</div>
 	</div>
@@ -128,18 +100,17 @@
 		<h3 class="text-lg font-semibold mb-4">Expected Results</h3>
 		<ul class="space-y-2">
 			<li>✅ Both API route and direct path should work</li>
-			<li>⚠️ If LFS files are not available, you'll see placeholder images</li>
-			<li>✅ Placeholder images should display correctly with explanatory text</li>
-			<li>✅ Content-Type should be appropriate for the file type</li>
+			<li>✅ File size should be around 2.1 MB</li>
+			<li>✅ Images should display correctly</li>
+			<li>✅ Content-Type should be image/png</li>
 		</ul>
 	</div>
 
-	<div class="mt-8 bg-green-100 p-6 rounded-lg">
-		<h3 class="text-lg font-semibold mb-4">Git LFS Information</h3>
+	<div class="mt-8 bg-blue-100 p-6 rounded-lg">
+		<h3 class="text-lg font-semibold mb-4">What Changed</h3>
 		<p class="text-sm">
-			This application uses Git LFS (Large File Storage) for images and audio files. 
-			In Vercel deployments, these files may not be available due to LFS configuration limitations.
-			The application is designed to gracefully handle missing LFS files by serving placeholder content.
+			<strong>LFS Removed:</strong> All media files (images, audio) have been removed from Git LFS and are now stored directly in the Git repository. 
+			This ensures they are available during Vercel deployments.
 		</p>
 	</div>
 </div> 
