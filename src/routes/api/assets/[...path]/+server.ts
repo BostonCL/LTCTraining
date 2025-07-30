@@ -12,11 +12,47 @@ export const GET: RequestHandler = async ({ params }) => {
     // Check if file exists
     if (!existsSync(filePath)) {
       console.error('File not found:', filePath);
-      return new Response('File not found', { status: 404 });
+      console.error('This might be due to LFS files not being downloaded during build');
+      
+      // Return a helpful error response
+      return new Response(
+        JSON.stringify({
+          error: 'File not found',
+          message: 'This file is stored in Git LFS and may not be available in the deployment',
+          path: params.path,
+          suggestion: 'Check if LFS files were properly downloaded during build'
+        }), 
+        { 
+          status: 404,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      );
     }
 
     const file = readFileSync(filePath);
     console.log('Serving file:', params.path, 'Size:', file.length, 'bytes');
+
+    // Check if file is actually a pointer (LFS issue)
+    if (file.length < 1000 && file.toString().includes('version https://git-lfs.github.com/spec/v1')) {
+      console.error('File is a Git LFS pointer, not the actual file');
+      return new Response(
+        JSON.stringify({
+          error: 'LFS pointer found',
+          message: 'This file is a Git LFS pointer and the actual file was not downloaded',
+          path: params.path
+        }), 
+        { 
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      );
+    }
 
     // Determine content type based on file extension
     const ext = params.path.split('.').pop()?.toLowerCase();
@@ -64,7 +100,19 @@ export const GET: RequestHandler = async ({ params }) => {
     });
   } catch (error) {
     console.error('Error serving file:', error);
-    return new Response('Internal server error', { status: 500 });
+    return new Response(
+      JSON.stringify({
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }), 
+      { 
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+    );
   }
 };
 
