@@ -6,6 +6,9 @@ export const GET: RequestHandler = async ({ params }) => {
   try {
     const filePath = join(process.cwd(), 'static', params.path);
     
+    console.log('Requested file path:', params.path);
+    console.log('Full file path:', filePath);
+    
     // Check if file exists
     if (!existsSync(filePath)) {
       console.error('File not found:', filePath);
