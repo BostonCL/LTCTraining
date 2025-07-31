@@ -26,14 +26,15 @@ $: ccEnabled = $captionEnabled;
 $: audioState = $audioStore;
 let currentIdx = 0;
 let imageLoading = false;
+let currentImageUrl = '';
 
 onMount(() => {
   setTotalClips(script.length);
   // Restore progress for this module/submodule
   currentIdx = loadProgress(progressId);
   
-  // Preload images for better performance (async but don't wait for cleanup)
-  const preloadImages = async () => {
+  // Aggressive preloading for better performance
+  const preloadResources = async () => {
     const imageUrls = [];
     if (image) imageUrls.push(image);
     script.forEach(item => {
@@ -41,11 +42,12 @@ onMount(() => {
     });
     
     if (imageUrls.length > 0) {
-      await preloader.preloadImages(imageUrls);
+      // Preload critical images immediately
+      await preloader.preloadCriticalImages(imageUrls);
     }
   };
   
-  preloadImages();
+  preloadResources();
   
   const handler = () => {
     fullscreenEnabled.set(!!document.fullscreenElement);
@@ -82,6 +84,13 @@ $: showCompletionButton = currentIdx === script.length - 1 && audioState.progres
 $: showNextButton = currentIdx === script.length - 1 && audioState.progress >= 99;
 
 $: accumulatedWhiteboardText = currentScript.whiteboardText || [];
+
+// Preload next image when current index changes
+$: if (currentScript?.image && currentScript.image !== currentImageUrl) {
+  currentImageUrl = currentScript.image;
+  // Preload the next image immediately
+  preloader.preloadCriticalImages([currentScript.image]);
+}
 
 let playerArea: HTMLDivElement;
 $: isFullscreen = $fullscreenEnabled;
@@ -126,6 +135,14 @@ function handleImageError() {
   imageLoading = false;
   console.error('Failed to load image');
 }
+
+function getImageSrc(imageUrl: string): string {
+  // Check if image is cached and return optimized version
+  if (preloader.isImageCached(imageUrl)) {
+    return imageUrl;
+  }
+  return imageUrl;
+}
 </script>
 
 <div class="w-full max-w-5xl px-4 mx-auto">
@@ -142,7 +159,7 @@ function handleImageError() {
         </div>
       {:else if currentScript.image}
         <img 
-          src={currentScript.image} 
+          src={getImageSrc(currentScript.image)} 
           alt="Module visual" 
           class="w-full h-full z-0 bg-white object-contain" 
           style="
@@ -153,13 +170,14 @@ function handleImageError() {
             margin: 0 auto;
             background: white;
           " 
-          loading="lazy"
+          loading="eager"
+          fetchpriority="high"
           on:load={handleImageLoad}
           on:error={handleImageError}
         />
       {:else if image && image !== undefined}
         <img 
-          src={image} 
+          src={getImageSrc(image)} 
           alt="Module visual" 
           class="w-full h-full z-0 bg-white object-contain" 
           style="
@@ -170,7 +188,8 @@ function handleImageError() {
             margin: 0 auto;
             background: white;
           " 
-          loading="lazy"
+          loading="eager"
+          fetchpriority="high"
           on:load={handleImageLoad}
           on:error={handleImageError}
         />
