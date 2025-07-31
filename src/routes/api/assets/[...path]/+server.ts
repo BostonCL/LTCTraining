@@ -6,9 +6,6 @@ export const GET: RequestHandler = async ({ params }) => {
   try {
     const filePath = join(process.cwd(), 'static', params.path);
     
-    console.log('Requested file path:', params.path);
-    console.log('Full file path:', filePath);
-    
     // Check if file exists
     if (!existsSync(filePath)) {
       console.error('File not found:', filePath);
@@ -16,7 +13,6 @@ export const GET: RequestHandler = async ({ params }) => {
     }
 
     const file = readFileSync(filePath);
-    console.log('Serving file:', params.path, 'Size:', file.length, 'bytes');
 
     // Determine content type based on file extension
     const ext = params.path.split('.').pop()?.toLowerCase();
@@ -49,18 +45,26 @@ export const GET: RequestHandler = async ({ params }) => {
         contentType = 'application/octet-stream';
     }
 
-    console.log('Content-Type:', contentType);
+    // Optimized headers for better performance
+    const headers = {
+      'Content-Type': contentType,
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Range',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Content-Length': file.length.toString(),
+      'ETag': `"${file.length}-${Date.now()}"`,
+      'Accept-Ranges': 'bytes'
+    };
+
+    // Add compression headers for better performance
+    if (contentType.startsWith('image/') || contentType.startsWith('audio/')) {
+      headers['Content-Encoding'] = 'gzip';
+    }
 
     return new Response(file, {
       status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Range',
-        'Cache-Control': 'public, max-age=31536000, immutable',
-        'Content-Length': file.length.toString()
-      }
+      headers
     });
   } catch (error) {
     console.error('Error serving file:', error);
