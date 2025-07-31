@@ -145,7 +145,7 @@ function getImageSrc(imageUrl: string): string {
 }
 </script>
 
-<div class="w-full max-w-5xl px-4 mx-auto">
+<div class="w-full max-w-5xl px-4 mx-auto mt-8">
   <!-- Video Player Area -->
   <div bind:this={playerArea} class="w-full bg-black rounded-lg overflow-hidden shadow-lg mb-6 relative">
     <div class="relative aspect-video bg-black w-full overflow-hidden">
