@@ -13,12 +13,12 @@ export let nextButtonText: string = "Next";
 const script = [
   {
     text: 'Here is a quick term that is important during this section',
-    audio: '/audio/module-2/selling-title/module2_sellingtitle_01.mp3',
-    image: '/images/introduction/basketballBackground.png'
+    audio: '/static/audio/module-2/selling-title/module2_sellingtitle_01.mp3',
+    image: '/static/images/introduction/basketballBackground.png'
   },
   {
     text: 'Everything found in the list above is also called Selling Title. The Selling Title is the word or phrase used to identify the category of a specific commercial.',
-    audio: '/audio/module-2/selling-title/module2_sellingtitle_02.mp3',
+    audio: '/static/audio/module-2/selling-title/module2_sellingtitle_02.mp3',
     whiteboardText: [
       'The Selling Title is the word or phrase used to identify the category of a specific commercial.'
     ]

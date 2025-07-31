@@ -12,8 +12,8 @@ export let nextButtonText: string = "Next";
 const script = [
   {
     text: "End Time is the end of each show or game, as soon as the final commercial airs — or when the game ends and transitions to the next program — you'll record the exact end time, down to the second, just like when marking down commercials.",
-    audio: '/audio/module-1/end-time/module1_endtime_01.mp3',
-    image: '/images/module-1/end-time/EndTimeSheet.png'
+    audio: '/static/audio/module-1/end-time/module1_endtime_01.mp3',
+    image: '/static/images/module-1/end-time/EndTimeSheet.png'
   }
 ];
 
@@ -50,4 +50,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/end-time/EndTimeSheet.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/static/images/module-1/end-time/EndTimeSheet.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 

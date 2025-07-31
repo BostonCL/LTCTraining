@@ -10,9 +10,9 @@ export let progressId: string;
 export let nextButtonText: string = "Next";
 
 const script = [
-  { text: "right next door is the Hit Time column, this will determine a Mock Schedule. We use Mock Schedules for planning placement of Commercials.", audio: '/audio/module-1/03-hit-time/module1_hittime_01.mp3' },
-  { text: "Hit Times are not the actual times that commercials air, just estimated placeholders.", audio: '/audio/module-1/03-hit-time/module1_hittime_02.mp3' },
-  { text: "This column is very important when moving Units around because of a rule called 'Brand SEP.' Brand SEP will be discussed further in Module 3.", audio: '/audio/module-1/03-hit-time/module1_hittime_03.mp3' }
+  { text: "right next door is the Hit Time column, this will determine a Mock Schedule. We use Mock Schedules for planning placement of Commercials.", audio: '/static/audio/module-1/03-hit-time/module1_hittime_01.mp3' },
+  { text: "Hit Times are not the actual times that commercials air, just estimated placeholders.", audio: '/static/audio/module-1/03-hit-time/module1_hittime_02.mp3' },
+  { text: "This column is very important when moving Units around because of a rule called 'Brand SEP.' Brand SEP will be discussed further in Module 3.", audio: '/static/audio/module-1/03-hit-time/module1_hittime_03.mp3' }
 ];
 
 const videoInfo = {
@@ -48,4 +48,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/hit-time/HitTimesheet.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/static/images/module-1/hit-time/HitTimesheet.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 

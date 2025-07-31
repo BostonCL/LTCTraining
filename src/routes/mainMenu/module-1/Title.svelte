@@ -12,13 +12,13 @@ export let nextButtonText: string = "Next";
 const script = [
 	{
 		text: 'The Title column is where you will see the title of the commercial that is scheduled to air.',
-		audio: '/audio/module-1/06-title/module1_title_01.mp3',
-		image: '/images/module-1/title/Titlescreen.png'
+		audio: '/static/audio/module-1/06-title/module1_title_01.mp3',
+		image: '/static/images/module-1/title/Titlescreen.png'
 	},
 	{
 		text: 'This is a very important column because this is how we will time out the rest of the show.',
-		audio: '/audio/module-1/06-title/module1_title_02.mp3',
-		image: '/images/module-1/title/Titlescreen.png'
+		audio: '/static/audio/module-1/06-title/module1_title_02.mp3',
+		image: '/static/images/module-1/title/Titlescreen.png'
 	}
 ];
 

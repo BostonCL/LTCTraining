@@ -12,13 +12,13 @@ export let nextButtonText: string = "Next";
 const script = [
   {
     text: "Floaters are occasionally seen underneath the end time section— these are extra sold commercial units that need to air during the game. They're especially common during basketball. For example, if a player gets injured and there's a pause in play, you might run a short 30 second floater. If it's a more serious injury, you could run a longer one, by combining Floaters A and B for a full minute.",
-    audio: '/audio/module-1/floaters/module1_floaters_01.mp3',
-    image: '/images/module-1/floaters/FloatersSheet.png'
+    audio: '/static/audio/module-1/floaters/module1_floaters_01.mp3',
+    image: '/static/images/module-1/floaters/FloatersSheet.png'
   },
   {
     text: "Sometimes a Floater will be added to the end of an existing break, but you'll need to be mindful of brand conflicts (which we will go into depth about in Module 3). In this example, if MC wants to add Floater A to Break 12 (the final break), it cannot because there already is a Honda unit in that break.",
-    audio: '/audio/module-1/floaters/module1_floaters_02.mp3',
-    image: '/images/module-1/floaters/FloatersSheet.png'
+    audio: '/static/audio/module-1/floaters/module1_floaters_02.mp3',
+    image: '/static/images/module-1/floaters/FloatersSheet.png'
   }
 ];
 
@@ -55,4 +55,4 @@ function goNext() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/floaters/FloatersSheet.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} image="/static/images/module-1/floaters/FloatersSheet.png" onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 
