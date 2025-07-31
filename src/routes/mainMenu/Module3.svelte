@@ -615,7 +615,7 @@
 
 <!-- Remove Step 2 Navigation Popup -->
 
-<div class="excel-wrapper">
+<div class="excel-wrapper" style="margin-top: 2rem; margin-left: 1rem;">
   <div class="excel-header">
     <h1 class="excel-title">Interactive Live Coverage Sheet</h1>
     <p class="excel-subtitle">Below is an interactive live coverage sheet. You can edit cells, drag rows, and use right-click for more options.</p>
