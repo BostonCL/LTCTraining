@@ -4,6 +4,7 @@ import BasketballAvatar from '$lib/components/BasketballAvatar.svelte';
 import VideoControls from '$lib/components/VideoControls.svelte';
 import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
 import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips, setCurrentIndex, loadProgress, saveProgress } from '$lib/stores/audioStore';
+import { preloader } from '$lib/utils/preloader';
 
   // Props
   export let script: Array<{
@@ -24,16 +25,36 @@ import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, 
 $: ccEnabled = $captionEnabled;
 $: audioState = $audioStore;
 let currentIdx = 0;
+let imageLoading = false;
 
 onMount(() => {
   setTotalClips(script.length);
   // Restore progress for this module/submodule
   currentIdx = loadProgress(progressId);
+  
+  // Preload images for better performance (async but don't wait for cleanup)
+  const preloadImages = async () => {
+    const imageUrls = [];
+    if (image) imageUrls.push(image);
+    script.forEach(item => {
+      if (item.image) imageUrls.push(item.image);
+    });
+    
+    if (imageUrls.length > 0) {
+      await preloader.preloadImages(imageUrls);
+    }
+  };
+  
+  preloadImages();
+  
   const handler = () => {
     fullscreenEnabled.set(!!document.fullscreenElement);
   };
   document.addEventListener('fullscreenchange', handler);
-  return () => document.removeEventListener('fullscreenchange', handler);
+  
+  return () => {
+    document.removeEventListener('fullscreenchange', handler);
+  };
 });
 
 function goToNextSlide() {
@@ -58,7 +79,7 @@ $: canGoNext = (
 );
 $: canGoPrevious = currentIdx > 0;
 $: showCompletionButton = currentIdx === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick;
-$: showNextButton = currentIdx === script.length - 1 && audioState.progress >= 99 && onNextSubmodule;
+$: showNextButton = currentIdx === script.length - 1 && audioState.progress >= 99;
 
 $: accumulatedWhiteboardText = currentScript.whiteboardText || [];
 
@@ -96,6 +117,15 @@ $: if (progressId) {
     currentIdx = saved;
   }
 }
+
+function handleImageLoad() {
+  imageLoading = false;
+}
+
+function handleImageError() {
+  imageLoading = false;
+  console.error('Failed to load image');
+}
 </script>
 
 <div class="w-full max-w-5xl px-4 mx-auto">
@@ -123,6 +153,9 @@ $: if (progressId) {
             margin: 0 auto;
             background: white;
           " 
+          loading="lazy"
+          on:load={handleImageLoad}
+          on:error={handleImageError}
         />
       {:else if image && image !== undefined}
         <img 
@@ -137,6 +170,9 @@ $: if (progressId) {
             margin: 0 auto;
             background: white;
           " 
+          loading="lazy"
+          on:load={handleImageLoad}
+          on:error={handleImageError}
         />
       {/if}
       <!-- Basketball Avatar in the center -->
