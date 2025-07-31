@@ -1,8 +1,18 @@
 {
   "framework": "sveltekit",
+  "rewrites": [
+    {
+      "source": "/images/(.*)",
+      "destination": "/api/assets/images/$1"
+    },
+    {
+      "source": "/audio/(.*)",
+      "destination": "/api/assets/audio/$1"
+    }
+  ],
   "headers": [
     {
-      "source": "/static/(.*)",
+      "source": "/api/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

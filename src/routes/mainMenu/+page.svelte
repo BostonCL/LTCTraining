@@ -513,25 +513,25 @@
   const module2Script = [
     {
       text: "In the Ordered As column you'll see many different types of units. In this module we will go over what they all are. When moving around units this is the first column you will look at.",
-      audio: '/static/audio/module-2/module2_intro.mp3'
+      audio: '/audio/module-2/module2_intro.mp3'
     },
     {
       text: "The sold commercials are color coordinated:",
-      audio: '/static/audio/module-2/01-intro/module2_01_part1.mp3'
+      audio: '/audio/module-2/01-intro/module2_01_part1.mp3'
     },
     {
       text: "Sold commercials (the important stuff) are in YELLOW",
-      audio: '/static/audio/module-2/01-intro/module2_01_part2.mp3',
+      audio: '/audio/module-2/01-intro/module2_01_part2.mp3',
       whiteboardText: ["YELLOW are the SOLD commercials."]
     },
     {
       text: "Local units are PURPLE",
-      audio: '/static/audio/module-2/01-intro/module2_01_part3.mp3',
+      audio: '/audio/module-2/01-intro/module2_01_part3.mp3',
       whiteboardText: ["Locals are PURPLE"]
     },
     {
       text: "Anything in GREEN is cuttable and is not mandatory to air, these will be Drs, PSAs and Promos.",
-      audio: '/static/audio/module-2/01-intro/module2_01_part4.mp3',
+      audio: '/audio/module-2/01-intro/module2_01_part4.mp3',
       whiteboardText: ["GREEN is the first to be cut because they are not worth as much."]
     }
   ];
@@ -710,7 +710,7 @@
       <YouTubeTemplate
         script={module2Script}
         title="Module 2: Tools & Technology"
-        image="/static/images/introduction/basketballBackground.png"
+        image="/images/introduction/basketballBackground.png"
 
         onNextSubmodule={() => navigateToNext('module2')}
         progressId="module2_intro"
