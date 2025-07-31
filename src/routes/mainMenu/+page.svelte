@@ -595,12 +595,12 @@
               <button on:click={() => mainSection = 'module2_yellowunit'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_yellowunit' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">The Yellow Unit</button>
               <button on:click={() => mainSection = 'module2_unitprioritizationdetails'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_unitprioritizationdetails' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Unit Prioritization Details</button>
               <button on:click={() => mainSection = 'module2_greenpurpleunits'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_greenpurpleunits' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Green & Purple Units</button>
+              <button on:click={() => mainSection = 'module2test'} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module2test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''}">
+                <span class="block w-2 h-2 rounded-full {mainSection === 'module2test' ? 'bg-purple-600' : 'bg-purple-300'}"></span>
+                📝 End of Module 2 Test
+              </button>
               <!-- Add more submodules here as needed -->
             </div>
-            <button on:click={() => mainSection = 'module2test'} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module2test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''}">
-              <span class="block w-2 h-2 rounded-full {mainSection === 'module2test' ? 'bg-purple-600' : 'bg-purple-300'}"></span>
-              📝 End of Module 2 Test
-            </button>
           {/if}
         {/each}
         {#if submodulesOpen3}
