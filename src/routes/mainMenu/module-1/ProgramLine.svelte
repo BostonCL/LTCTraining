@@ -11,9 +11,9 @@ export let nextButtonText: string = "Next";
 
 // Placeholder script, audio, and image. Replace with real content later.
 const script = [
-  { text: 'The Program line is the gray line that appears before and after each commercial break.', audio: '/audio/module-1/program-line/module1_programline_01.mp3' },
-  { text: 'The main details to focus on are, show title and segment number. In this case the show title is "That Other Pregame Show" and the segment number is circled in red. The segment number represents which commercial break you\'re about to enter and is always listed directly above that break.', audio: '/audio/module-1/program-line/module1_programline_02.mp3' },
-  { text: 'For example, if you\'re making swaps right below the \'SEG 2\' program line, you\'re working in Break 2.', audio: '/audio/module-1/program-line/module1_programline_03.mp3' }
+  { text: 'The Program line is the gray line that appears before and after each commercial break.', audio: '/static/audio/module-1/program-line/module1_programline_01.mp3' },
+  { text: 'The main details to focus on are, show title and segment number. In this case the show title is "That Other Pregame Show" and the segment number is circled in red. The segment number represents which commercial break you\'re about to enter and is always listed directly above that break.', audio: '/static/audio/module-1/program-line/module1_programline_02.mp3' },
+  { text: 'For example, if you\'re making swaps right below the \'SEG 2\' program line, you\'re working in Break 2.', audio: '/static/audio/module-1/program-line/module1_programline_03.mp3' }
 ];
 
 const videoInfo = {
@@ -51,8 +51,8 @@ function goNext() {
 // Dynamically set the background image based on the current audio index
 $: currentImage =
   audioState.currentIndex === 0
-    ? '/images/module-1/program-line/ProgramLinescreen.png'
-    : '/images/module-1/program-line/Segmentscreen.png';
+    ? '/static/images/module-1/program-line/ProgramLinescreen.png'
+    : '/static/images/module-1/program-line/Segmentscreen.png';
 </script>
 
 <YouTubeTemplate script={script} title={videoInfo.title} image={currentImage} onNextSubmodule={goNext} progressId={progressId} nextButtonText={nextButtonText} /> 
