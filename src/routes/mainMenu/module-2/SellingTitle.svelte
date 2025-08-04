@@ -20,8 +20,10 @@ const script = [
     text: 'Everything found in the list above is also called Selling Title. The Selling Title is the word or phrase used to identify the category of a specific commercial.',
     audio: '/audio/module-2/selling-title/module2_sellingtitle_02.mp3',
     whiteboardText: [
+      '**__Selling Title__**',
       'The Selling Title is the word or phrase used to identify the category of a specific commercial.'
-    ]
+    ],
+    titleAudio: '/audio/module-2/selling-title/module2_sellingtitle_02_title.mp3'
   }
 ];
 

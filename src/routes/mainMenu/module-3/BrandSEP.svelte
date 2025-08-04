@@ -14,30 +14,33 @@ const script = [
     text: `The Brand SEP (Separation) rule requires that all 30-second commercials from the same brand be spaced at least 30 minutes apart.\nIn other words, if you run a 30-second Geico commercial, you must wait at least 30 minutes before airing another 30-second Geico commercial.`,
     audio: '/audio/module-3/brand-sep/module3_brandsep_01.mp3',
     whiteboardText: [
-      'Brand SEP',
+      '**__Brand SEP__**',
       'The Brand SEP (Separation) rule requires that all 30-second commercials from the same brand be spaced at least 30 minutes apart.',
       'In other words, if you run a 30-second Geico commercial, you must wait at least 30 minutes before airing another 30-second Geico commercial.'
     ],
+    titleAudio: '/audio/module-3/brand-sep/module3_brandsep_01_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   },
   {
     text: `Additional Guidelines:\n• 15-second ads can run between 30-second ads of the same brand.\n• However, 15-second and 30-second ads cannot appear in the same commercial break. Never schedule more than one commercial from the same brand in the same break.`,
     audio: '/audio/module-3/brand-sep/module3_brandsep_02.mp3',
     whiteboardText: [
-      'Additional Guidelines:',
+      '**__Additional Guidelines:__**',
       '• 15-second ads can run between 30-second ads of the same brand.',
       '• However, 15-second and 30-second ads cannot appear in the same commercial break. Never schedule more than one commercial from the same brand in the same break.'
     ],
+    titleAudio: '/audio/module-3/brand-sep/module3_brandsep_02_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   },
   {
     text: `Exceptions:\n• You may break the 30 minute rule during live windows.\n• Also, the Brand Sep resets when starting a new game or show.`,
     audio: '/audio/module-3/brand-sep/module3_brandsep_03.mp3',
     whiteboardText: [
-      'Exceptions:',
+      '**__Exceptions:__**',
       '• You may break the 30 minute rule during live windows.',
       '• Also, the Brand Sep resets when starting a new game or show.'
     ],
+    titleAudio: '/audio/module-3/brand-sep/module3_brandsep_03_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   }
 ];

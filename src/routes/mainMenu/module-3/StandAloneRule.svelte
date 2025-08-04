@@ -15,19 +15,21 @@ const script = [
     text: `STAND ALONE Rule: Alcohol Ad Placement\nCommercials for alcohol brands can never air directly before or after commercials for automotive or insurance companies.`,
     audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_01.mp3',
     whiteboardText: [
-      'STAND ALONE Rule: Alcohol Ad Placement',
+      '**__STAND ALONE Rule: Alcohol Ad Placement__**',
       'Commercials for alcohol brands can never air directly before or after commercials for automotive or insurance companies.'
     ],
+    titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_01_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   },
   {
-    text: `Not Allowed:\nAllowed:\nIn this example, the Hershey’s unit creates the necessary separation between the insurance and alcohol units.`,
+    text: `Not Allowed:\nAllowed:\nIn this example, the Hershey's unit creates the necessary separation between the insurance and alcohol units.`,
     audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02.mp3',
     whiteboardText: [
-      'Not Allowed:',
+      '**__Not Allowed:__**',
       'Allowed:',
-      'In this example, the Hershey’s unit creates the necessary separation between the insurance and alcohol units.'
+      'In this example, the Hershey\'s unit creates the necessary separation between the insurance and alcohol units.'
     ],
+    titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   }
 ];

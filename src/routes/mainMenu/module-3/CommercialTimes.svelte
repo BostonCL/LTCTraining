@@ -12,14 +12,15 @@ export let nextButtonText: string = "Next";
 // Commercial Times script (placeholder, update as needed)
 const script = [
   {
-    text: `One of our main responsibilities is logging commercial times. You’ll need to watch the entire sporting event and track the commercials as they air to make sure they match what’s on your log sheet. If you spot any issues — like a commercial that didn’t run — you’ll need to make a swap.`,
+    text: `One of our main responsibilities is logging commercial times. You'll need to watch the entire sporting event and track the commercials as they air to make sure they match what's on your log sheet. If you spot any issues — like a commercial that didn't run — you'll need to make a swap.`,
     audio: '/audio/module-3/commercial-times/module3_commercialtimes_01.mp3',
     whiteboardText: [
-      'Write down commercial times',
+      '**__Write down commercial times__**',
       'One of our main responsibilities is logging commercial times.',
-      'Track the commercials as they air to make sure they match what’s on your log sheet.',
-      'If you spot any issues — like a commercial that didn’t run — you’ll need to make a swap.'
+      'Track the commercials as they air to make sure they match what\'s on your log sheet.',
+      'If you spot any issues — like a commercial that didn\'t run — you\'ll need to make a swap.'
     ],
+    titleAudio: '/audio/module-3/commercial-times/module3_commercialtimes_01_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   },
   {

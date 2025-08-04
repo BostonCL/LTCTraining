@@ -15,42 +15,46 @@ const script = [
     text: `Advertiser Conflicts also known as Brand Conflicts. Advertiser conflict is when competing brands appear in the same break together. Do not place competing brands in the same break. It is critical to never schedule units from competing brands in the same commercial break.`,
     audio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_01.mp3',
     whiteboardText: [
-      'Advertiser Conflicts also known as Brand Conflicts',
+      '**__Advertiser Conflicts also known as Brand Conflicts__**',
       'Advertiser conflict is when competing brands appear in the same break together.',
       'Do not place competing brands in the same break.',
       'It is critical to never schedule units from competing brands in the same commercial break.'
     ],
+    titleAudio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_01_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   },
   {
-    text: `For example:\n• Geico and USAA should not air together, as they both sell insurance\n• Lowe’s and Home Depot are direct competitors in home improvement and must also be kept separate.`,
+    text: `For example:\n• Geico and USAA should not air together, as they both sell insurance\n• Lowe's and Home Depot are direct competitors in home improvement and must also be kept separate.`,
     audio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_02.mp3',
     whiteboardText: [
-      'For example:',
+      '**__For example:__**',
       '• Geico and USAA should not air together, as they both sell insurance',
-      '• Lowe’s and Home Depot are direct competitors in home improvement and must also be kept separate.'
+      '• Lowe\'s and Home Depot are direct competitors in home improvement and must also be kept separate.'
     ],
+    titleAudio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_02_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   },
   {
-    text: `If you’re unsure what a specific brand or unit is, research or ask the Traffic Department to confirm.`,
+    text: `If you're unsure what a specific brand or unit is, research or ask the Traffic Department to confirm.`,
     audio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_03.mp3',
     whiteboardText: [
-      'If you’re unsure',
-      'If you’re unsure what a specific brand or unit is,',
+      '**__If you\'re unsure__**',
+      'If you\'re unsure what a specific brand or unit is,',
       'research or ask the Traffic Department to confirm.'
     ],
+    titleAudio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_03_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   },
   {
     text: `Why this matters:\nIf competing brands appear in the same break, the network will not get paid for either commercial, which results in a significant financial loss.`,
     audio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_04.mp3',
     whiteboardText: [
-      'Why this matters:',
+      '**__Why this matters:__**',
       'If competing brands appear in the same break,',
       'the network will not get paid for either commercial,',
       'which results in a significant financial loss.'
     ],
+    titleAudio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_04_title.mp3',
     image: '/images/introduction/basketballBackground.png'
   }
 ];
