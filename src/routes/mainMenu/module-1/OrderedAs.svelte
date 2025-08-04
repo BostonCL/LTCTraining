@@ -15,7 +15,7 @@ const script = [
   { 
     text: "The majority of Module 2 will be dedicated to the Ordered As column. In short, the Ordered As column displays what Window a commercial is sold to. This helps us understand where we can place our Commercials.", 
     audio: '/audio/module-1/09-ordered-as/module1_orderedas_combined.mp3?v=' + Date.now(),
-    image: '/images/module-1/ordered-as/OrderedAsscreen.png?v=' + Date.now()
+    image: '/images/module-1/ordered-as/OrderedAsscreen.jpg?v=' + Date.now()
   }
 ];
 

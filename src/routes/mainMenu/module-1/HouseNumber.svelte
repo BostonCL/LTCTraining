@@ -13,7 +13,7 @@ const script = [
   { 
     text: "The House Number column contains a unique ID number for each of the commercials. This is how the MC identifies which ad you're referring to. Since one advertiser, like Geico for example, can have several different ads running during the same program, the House Number is key for identifying which specific commercial you are referencing.", 
     audio: '/audio/module-1/07-house-number/module1_housenumber_combined.mp3?v=' + Date.now(),
-    image: '/images/module-1/house-number/HouseNumberscreen.png?v=' + Date.now()
+    image: '/images/module-1/house-number/HouseNumberscreen.jpg?v=' + Date.now()
   }
 ];
 
