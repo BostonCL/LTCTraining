@@ -208,8 +208,13 @@ function getImageSrc(imageUrl: string): string {
     <!-- Video Controls at the bottom -->
     <!-- Navigation Buttons above the duration bar -->
     <div class="w-full flex justify-between items-center mt-0 mb-0 px-0">
-      <button class="w-12 h-12 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed" on:click={goToPreviousSlide} disabled={!canGoPrevious} aria-label="Previous">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      <button 
+        class="px-4 py-2 rounded-lg text-slate-500 bg-slate-100 hover:bg-slate-200 font-medium disabled:opacity-40" 
+        on:click={goToPreviousSlide} 
+        disabled={!canGoPrevious} 
+        aria-label="Previous"
+      >
+        ← Previous
       </button>
       {#if showCompletionButton}
         <button 
@@ -219,12 +224,21 @@ function getImageSrc(imageUrl: string): string {
           {completionButtonText}
         </button>
       {:else if showNextButton}
-        <button class="w-32 px-4 py-3 rounded-lg bg-blue-600 bg-opacity-80 text-white font-semibold shadow hover:bg-blue-700 hover:bg-opacity-100 transition flex items-center justify-center" on:click={handleNextArrow} aria-label="Next">
-          {nextButtonText}
+        <button 
+          class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 disabled:opacity-40" 
+          on:click={handleNextArrow} 
+          aria-label="Next"
+        >
+          {nextButtonText} →
         </button>
       {:else}
-        <button class="w-12 h-12 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full shadow hover:bg-opacity-60 transition disabled:opacity-30 disabled:cursor-not-allowed" on:click={handleNextArrow} disabled={!canGoNext} aria-label="Next">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <button 
+          class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 disabled:opacity-40" 
+          on:click={handleNextArrow} 
+          disabled={!canGoNext} 
+          aria-label="Next"
+        >
+          Next →
         </button>
       {/if}
     </div>

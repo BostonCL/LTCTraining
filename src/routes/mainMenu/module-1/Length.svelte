@@ -10,11 +10,13 @@ export let progressId: string;
 export let nextButtonText: string = "Next";
 
 const script = [
-  { text: "The Length column tells you the duration of time for each Unit.", audio: '/audio/module-1/04-length/module1_length_01.mp3' },
-  { text: "Adding up the commercial lengths determines how long a Commercial Break will be. This is a common question for producers.", audio: '/audio/module-1/04-length/module1_length_02.mp3' },
-  { text: "Sometimes a break needs to be shorter at the last minute so knowing which units to move is very important.", audio: '/audio/module-1/04-length/module1_length_03.mp3' },
-  { text: "Note: the Program line (the grey row) is never included in the length of the break.", audio: '/audio/module-1/04-length/module1_length_04.mp3' }
+  { text: "The Length column tells you the duration of time for each Unit. Adding up the commercial lengths determines how long a Commercial Break will be. This is a common question for producers. Sometimes a break needs to be shorter at the last minute so knowing which units to move is very important. Note: the Program line (the grey row) is never included in the length of the break.", audio: '/audio/module-1/04-length/module1_length_combined.mp3?v=' + Date.now(), image: '/images/module-1/length/Lengthsheet.png?v=' + Date.now() }
 ];
+
+// Clear any cached progress for this module
+if (typeof localStorage !== 'undefined') {
+  localStorage.removeItem('progress_module1_length');
+}
 
 const videoInfo = {
   title: 'Length',
@@ -53,4 +55,4 @@ function goToQuiz() {
 }
 </script>
 
-<YouTubeTemplate script={script} title={videoInfo.title} image="/images/module-1/length/Lengthsheet.png" onNextSubmodule={goNext} completionButtonText="📝 Take Quiz" onCompletionButtonClick={goToQuiz} progressId={progressId} nextButtonText={nextButtonText} /> 
+<YouTubeTemplate script={script} title={videoInfo.title} onNextSubmodule={goNext} completionButtonText="📝 Take Quiz" onCompletionButtonClick={goToQuiz} progressId={progressId} nextButtonText={nextButtonText} /> 

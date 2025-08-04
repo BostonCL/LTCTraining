@@ -14,6 +14,7 @@
   export let description: string = 'Test your knowledge with these questions.';
   export let passingScore: number = 70;
   export const showResults: boolean = true;
+  export let image: string | undefined = undefined;
 
   const dispatch = createEventDispatcher();
 
@@ -79,6 +80,13 @@
             <span class="text-sm text-slate-400 font-semibold tracking-wide flex items-center gap-1">📝 Question {currentQuestionIndex + 1} of {questions.length}</span>
           </div>
         {/if}
+        
+        {#if image}
+          <div class="mb-6 flex justify-center">
+            <img src={image} alt="Quiz reference image" class="max-w-full max-h-64 object-contain rounded-lg shadow-md" />
+          </div>
+        {/if}
+        
         <div class="text-2xl font-semibold text-slate-900 mb-6 animate-fadein font-display tracking-wide">{currentQuestion.question}</div>
         <div class="border-b border-slate-200 mb-6"></div>
         <div class="grid gap-4 mb-10 animate-fadein">

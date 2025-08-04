@@ -357,17 +357,23 @@ onMount(() => {
   </div>
   <div class="excel-instructions">
     {#if intro}
-      <button class="excel-instructions-nav" aria-label="Go to Step 1" on:click={goToStep1}>
-        <span class="excel-instructions-nav-arrow">→</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <div></div>
+        <button class="excel-nav-btn excel-nav-btn-next" aria-label="Go to Step 1" on:click={goToStep1}>
+          Next →
+        </button>
+      </div>
       <h2 class="excel-instructions-title">Instructions</h2>
       <div class="excel-instructions-body">
         The UNITED SOCCER Unit @ row 10 did not air for whatever reason and the game already ended.
       </div>
     {:else if showStep1}
-      <button class="excel-instructions-nav" aria-label="Back to Intro" on:click={goBackIntro}>
-        <span class="excel-instructions-nav-arrow">←</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Intro" on:click={goBackIntro}>
+          ← Previous
+        </button>
+        <div></div>
+      </div>
       <h2 class="excel-instructions-title">Step 1</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">CUT the Unit.<br>Look for any possible soccer games that the unit can air in for the rest of the night.<br>Unfortunately there is no eligible spot.</div>
@@ -380,9 +386,12 @@ onMount(() => {
         {/if}
       </div>
     {:else if showStep2}
-      <button class="excel-instructions-nav" aria-label="Back to Step 1" on:click={goToStep1}>
-        <span class="excel-instructions-nav-arrow">←</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Step 1" on:click={goToStep1}>
+          ← Previous
+        </button>
+        <div></div>
+      </div>
       <h2 class="excel-instructions-title">Step 2</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">Add a few rows and description under the End Time with an explanation for the Cut.</div>
@@ -452,6 +461,14 @@ onMount(() => {
   }
   .excel-header {
     margin-bottom: 20px;
+    padding-top: 2rem;
+    padding-left: 1rem;
+    transition: padding-left 0.2s ease-in-out;
+  }
+
+  /* Adjust padding when sidebar is collapsed */
+  :global(.sidebar-collapsed) .excel-header {
+    padding-left: 0.5rem;
   }
   .excel-title {
     font-size: 20px;
@@ -612,31 +629,7 @@ onMount(() => {
     height: 100%;
     overflow: auto;
   }
-  .excel-instructions-nav {
-    background: #0074D9;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: background 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
-  .excel-instructions-nav:hover {
-    background: #005fa3;
-  }
-  .excel-instructions-nav-arrow {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #fff;
-    pointer-events: none;
-  }
+
   .excel-step-hint {
     color: #1a2a3a;
   }
@@ -669,6 +662,35 @@ onMount(() => {
   }
   .excel-step2-next-btn:hover {
     background: #005fa3;
+  }
+  .excel-nav-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-size: 0.9rem;
+  }
+  .excel-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .excel-nav-btn-prev {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+  .excel-nav-btn-prev:hover:not(:disabled) {
+    background: #e2e8f0;
+  }
+  .excel-nav-btn-next {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  .excel-nav-btn-next:hover:not(:disabled) {
+    background: #1d4ed8;
   }
   .excel-check-result {
     margin-top: 10px;

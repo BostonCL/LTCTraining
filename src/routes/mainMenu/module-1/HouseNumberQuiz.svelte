@@ -49,6 +49,7 @@
 
   function handleContinue() {
     // Dispatch event to navigate to the next submodule
+    console.log('HouseNumberQuiz: handleContinue called');
     dispatch('navigateToNextSubmodule');
   }
 </script>

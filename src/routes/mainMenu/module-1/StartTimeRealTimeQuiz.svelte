@@ -49,6 +49,7 @@
 
   function handleContinue() {
     // Dispatch event to navigate to the next submodule
+    console.log('StartTimeRealTimeQuiz: handleContinue called');
     dispatch('navigateToNextSubmodule');
   }
 </script>

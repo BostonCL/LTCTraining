@@ -368,17 +368,23 @@ onMount(() => {
   </div>
   <div class="excel-instructions">
     {#if intro}
-      <button class="excel-instructions-nav" aria-label="Go to Step 1" on:click={goToStep1}>
-        <span class="excel-instructions-nav-arrow">→</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <div></div>
+        <button class="excel-nav-btn excel-nav-btn-next" aria-label="Go to Step 1" on:click={goToStep1}>
+          Next →
+        </button>
+      </div>
       <h2 class="excel-instructions-title">Instructions</h2>
       <div class="excel-instructions-body">
         The Game went over by 2 minutes! The End Time for the 8:00pm game was 10:02:00
       </div>
     {:else if showStep1}
-      <button class="excel-instructions-nav" aria-label="Back to Intro" on:click={goBackIntro}>
-        <span class="excel-instructions-nav-arrow">←</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Intro" on:click={goBackIntro}>
+          ← Previous
+        </button>
+        <div></div>
+      </div>
       <h2 class="excel-instructions-title">Step 1</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">Find 2 minutes to Cut!<br>Look for units from the 10:00:00pm game with the largest length to CUT</div>
@@ -391,9 +397,12 @@ onMount(() => {
         {/if}
       </div>
     {:else if showStep2}
-      <button class="excel-instructions-nav" aria-label="Back to Step 1" on:click={goToStep1}>
-        <span class="excel-instructions-nav-arrow">←</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Step 1" on:click={goToStep1}>
+          ← Previous
+        </button>
+        <div></div>
+      </div>
       <h2 class="excel-instructions-title">Step 2</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">Write the email to Master Control explaining what happened!</div>
@@ -497,6 +506,14 @@ CUT: 601357</pre>
   }
   .excel-header {
     margin-bottom: 20px;
+    padding-top: 2rem;
+    padding-left: 1rem;
+    transition: padding-left 0.2s ease-in-out;
+  }
+
+  /* Adjust padding when sidebar is collapsed */
+  :global(.sidebar-collapsed) .excel-header {
+    padding-left: 0.5rem;
   }
   .excel-title {
     font-size: 20px;
@@ -702,23 +719,36 @@ CUT: 601357</pre>
   .excel-step2-next-btn:hover {
     background-color: #388e3c;
   }
-  .excel-instructions-nav {
-    background: none;
-    border: none;
+  .excel-nav-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
     cursor: pointer;
-    padding: 0;
-    margin: 0;
-    font-size: 1.5rem;
-    color: #0074D9;
-    transition: color 0.3s ease;
+    transition: all 0.2s;
+    border: none;
+    font-size: 0.9rem;
   }
-  .excel-instructions-nav:hover {
-    color: #0056b3;
+  .excel-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
-  .excel-instructions-nav-arrow {
-    display: inline-block;
-    transform: rotate(90deg);
+  .excel-nav-btn-prev {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
   }
+  .excel-nav-btn-prev:hover:not(:disabled) {
+    background: #e2e8f0;
+  }
+  .excel-nav-btn-next {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  .excel-nav-btn-next:hover:not(:disabled) {
+    background: #1d4ed8;
+  }
+
   .excel-email-compare-wrapper {
     display: flex;
     gap: 24px;
