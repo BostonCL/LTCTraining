@@ -13,7 +13,7 @@ const script = [
   { 
     text: "The Advertiser column lists the companies that have purchased time slots for commercials. Compared to the Title column, the Advertiser column contains more condensed information.", 
     audio: '/audio/module-1/05-advertiser/module1_advertiser_combined.mp3?v=' + Date.now(),
-    image: '/images/module-1/advertiser/Advertiserscreen.png?v=' + Date.now()
+    image: '/images/module-1/advertiser/Advertiserscreen.jpg?v=' + Date.now()
   }
 ];
 
