@@ -27,3 +27,4 @@ vite.config.ts.timestamp-*
 gcp-credentials.json
 *credentials*.json
 *service-account*.json
+ltctraining-b3b3e6e4eb5b.json
