@@ -615,7 +615,7 @@
 
 <!-- Remove Step 2 Navigation Popup -->
 
-<div class="excel-wrapper" style="margin-top: 2rem; margin-left: 1rem;">
+<div class="excel-wrapper">
   <div class="excel-header">
     <h1 class="excel-title">Interactive Live Coverage Sheet</h1>
     <p class="excel-subtitle">Below is an interactive live coverage sheet. You can edit cells, drag rows, and use right-click for more options.</p>
@@ -624,17 +624,23 @@
   
   <div class="excel-instructions">
     {#if !showStep1 && !showStep2 && !showStep3 && !showStep4}
-      <button class="excel-instructions-nav" aria-label="Go to Step 1" on:click={goToStep1}>
-        <span class="excel-instructions-nav-arrow">→</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <div></div>
+        <button class="excel-nav-btn excel-nav-btn-next" aria-label="Go to Step 1" on:click={goToStep1}>
+          Next →
+        </button>
+      </div>
       <h2 class="excel-instructions-title">Instructions</h2>
       <div class="excel-instructions-body">
         The producer wants to cut 1 minute from break 3. Perform the actions to do this on the interactive excel sheet!
       </div>
     {:else if showStep1 && !showStep2 && !showStep3 && !showStep4}
-      <button class="excel-instructions-nav" aria-label="Back to Instructions" on:click={goBackInstructions}>
-        <span class="excel-instructions-nav-arrow">←</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Instructions" on:click={goBackInstructions}>
+          ← Previous
+        </button>
+        <div></div>
+      </div>
       <h2 class="excel-instructions-title">Step 1</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">Look for any <span class="excel-green">Green Promo</span> in SEG. 3 which is unsold inventory to <span class="excel-red">CUT</span>.</div>
@@ -749,6 +755,14 @@
 
   .excel-header {
     margin-bottom: 20px;
+    padding-top: 2rem;
+    padding-left: 1rem;
+    transition: padding-left 0.2s ease-in-out;
+  }
+
+  /* Adjust padding when sidebar is collapsed */
+  :global(.sidebar-collapsed) .excel-header {
+    padding-left: 0.5rem;
   }
 
   .excel-title {
@@ -1009,34 +1023,7 @@
     color: #E53E3E;
     font-weight: bold;
   }
-  .excel-instructions-nav {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    background: #0074D9;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    transition: background 0.2s;
-    z-index: 2;
-  }
-  .excel-instructions-nav:hover {
-    background: #005fa3;
-  }
-  .excel-instructions-nav-arrow {
-    font-weight: bold;
-    font-size: 1.4em;
-    line-height: 1;
-    margin-left: 2px;
-  }
+
   
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
@@ -1077,5 +1064,34 @@
   }
   .excel-step2-next-btn:hover {
     background: #005fa3;
+  }
+  .excel-nav-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-size: 0.9rem;
+  }
+  .excel-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .excel-nav-btn-prev {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+  .excel-nav-btn-prev:hover:not(:disabled) {
+    background: #e2e8f0;
+  }
+  .excel-nav-btn-next {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  .excel-nav-btn-next:hover:not(:disabled) {
+    background: #1d4ed8;
   }
 </style> 

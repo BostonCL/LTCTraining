@@ -27,4 +27,13 @@ module1_starttimerealtime_05.mp3|But for Start Time, let's say the game is delay
 module1_starttimerealtime_06.mp3|This is how the Real Time/ Start Time column would appear in this example: 
 module-1/program-line/module1_programline_01|The Program line is the gray line that appears before and after each commercial break.
 module-1/program-line/module1_programline_02|The main details to focus on are, show title and segment number. In this case the show title is "That Other Pregame Show" and the segment number is circled in red. The segment number represents which commercial break you're about to enter and is always listed directly above that break.
-module-1/program-line/module1_programline_03|For example, if you're making swaps right below the 'SEG 2' program line, you're working in Break 2. 
+module-1/program-line/module1_programline_03|For example, if you're making swaps right below the 'SEG 2' program line, you're working in Break 2.
+
+# --- Key Tab ---
+module-1/keytab/keytab_01|In the bottom left-hand corner of this Excel file, you'll see two tabs: 'Key' and 'Coverage.' All that we have discussed so far is found in the Coverage tab. You'll spend most of your time working in the Coverage tab, but occasionally you'll need to refer to the Key tab. Keep in mind that some information on the Key tab is outdated, so focus only on the important information explained here.
+module-1/keytab/keytab_02|Contingency Plan: This plan outlines what to do if a game runs long — for example, which shows might be cut or adjusted.
+module-1/keytab/keytab_03|Live Coverage Reports: At the end of your shift, you will send out a Live Coverage Report. The list of email recipients is listed below the Live Coverage Reports section.
+module-1/keytab/keytab_04|One more thing to note: at the top of the sheet, you'll see a color code. The important colors to remember are: Yellow (Commercial), Red (CUT), Blue (Moved From). There will be more information about these color codes and their significance in Module 3.
+
+# --- Hit Time ---
+module-1/03-hit-time/module1_hittime_single|Right next door is the Hit Time column, this will determine a Mock Schedule. We use Mock Schedules for planning placement of Commercials. Hit Times are not the actual times that commercials air, just estimated placeholders. This column is very important when moving Units around because of a rule called 'Brand SEP.' Brand SEP will be discussed further in Module 3. 

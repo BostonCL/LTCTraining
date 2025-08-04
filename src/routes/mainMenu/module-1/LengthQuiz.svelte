@@ -49,6 +49,7 @@
 
   function handleContinue() {
     // Dispatch event to navigate to the next submodule
+    console.log('LengthQuiz: handleContinue called');
     dispatch('navigateToNextSubmodule');
   }
 </script>
@@ -58,6 +59,7 @@
   title="Length Quiz"
   description="Test your understanding of the Length column and commercial break timing."
   passingScore={80}
+  image="/images/module-1/length/LengthQuiz.png"
   on:quizCompleted={handleQuizCompleted}
   on:continue={handleContinue}
 /> 

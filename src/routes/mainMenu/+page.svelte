@@ -18,6 +18,7 @@
   import HouseNumberQuiz from './module-1/HouseNumberQuiz.svelte';
   import EndTime from './module-1/EndTime.svelte';
   import Floaters from './module-1/Floaters.svelte';
+  import KeyTab from './module-1/KeyTab.svelte';
   import Module3 from './Module3.svelte';
   import QuizTemplate from '$lib/components/QuizTemplate.svelte';
   import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
@@ -133,6 +134,11 @@
   // Add a submodulesOpen3 state for Module 3
   let submodulesOpen3 = true;
   
+  // Add collapsible states for each module
+  let module1Collapsed = false;
+  let module2Collapsed = false;
+  let module3Collapsed = false;
+  
   // Track completion of submodules
   let completedSubmodules = new Set<number>();
   
@@ -157,8 +163,8 @@
   // Check if any submodule is completed
   $: isSubmoduleCompleted = (idx: number) => completedSubmodules.has(idx);
   
-  // Check if Module 1 is fully completed (all 12 submodules)
-  $: module1Completed = completedSubmodules.size === 12;
+  // Check if Module 1 is fully completed (all 13 submodules)
+  $: module1Completed = completedSubmodules.size === 13;
 
   // Define the content map for easier rendering
   const module1Submodules = [
@@ -173,7 +179,8 @@
     { title: 'Ordered As', component: OrderedAs },
     { title: 'Spot End Time', component: SpotEndTime },
     { title: 'End Time', component: EndTime },
-    { title: 'Floaters', component: Floaters }
+    { title: 'Floaters', component: Floaters },
+    { title: 'Key Tab', component: KeyTab }
   ];
 
   // Navigation map - defines the flow between modules and submodules
@@ -192,7 +199,8 @@
       8: { next: 'module1sub', subIndex: 9 }, // Ordered As -> Spot End Time
       9: { next: 'module1sub', subIndex: 10 }, // Spot End Time -> End Time
       10: { next: 'module1sub', subIndex: 11 }, // End Time -> Floaters
-      11: { next: 'module1test' } // Floaters -> Module 1 Test
+      11: { next: 'module1sub', subIndex: 12 }, // Floaters -> Key Tab
+      12: { next: 'module1test' } // Key Tab -> Module 1 Test
     },
     'quiz': { next: 'module1sub', subIndex: 2 }, // Start Time & Real Time Quiz -> Hit Time
     'lengthQuiz': { next: 'module1sub', subIndex: 5 }, // Length Quiz -> Title
@@ -251,18 +259,24 @@
 
   // Function to navigate to the next destination
   function navigateToNext(currentSection: string, currentSubIndex?: number) {
+    console.log('navigateToNext called with:', currentSection, currentSubIndex);
     const nextDest = getNextDestination(currentSection, currentSubIndex);
+    console.log('nextDest:', nextDest);
     if (nextDest) {
       if (nextDest.subIndex !== undefined) {
         // Navigate to a specific submodule
+        console.log('Navigating to submodule:', nextDest.next, 'index:', nextDest.subIndex);
         mainSection = nextDest.next;
         if (nextDest.next === 'module1sub') {
           module1SubIdx = nextDest.subIndex;
         }
       } else {
         // Navigate to a main section
+        console.log('Navigating to main section:', nextDest.next);
         mainSection = nextDest.next;
       }
+    } else {
+      console.log('No next destination found for:', currentSection);
     }
   }
 
@@ -557,11 +571,18 @@
           Introduction
         </button>
         <!-- Module 1 intro -->
-        <button on:click={goToModule1Intro} class="text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 text-sm w-full {mainSection === 'module1' ? 'bg-blue-100 text-blue-700' : ''}">
-          <span class="block w-2 h-2 rounded-full {mainSection === 'module1' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
-          Module 1: Live Coverage Sheet
-        </button>
-        {#if submodulesOpen}
+        <div class="flex items-center text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === 'module1' ? 'bg-blue-100 text-blue-700' : ''}">
+          <button on:click={goToModule1Intro} class="flex items-center gap-2 flex-1 text-left">
+            <span class="block w-2 h-2 rounded-full {mainSection === 'module1' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+            Module 1: Live Coverage Sheet
+          </button>
+          <button on:click={() => module1Collapsed = !module1Collapsed} class="text-gray-400 hover:text-gray-600 transition-transform {module1Collapsed ? 'rotate-90' : ''}" aria-label="Toggle Module 1 submodules">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+        {#if !module1Collapsed}
           <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
             <button on:click={() => goToModule1Sub(0)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 0 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Program Line</button>
             <button on:click={() => goToModule1Sub(1)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 1 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Start Time & Real Time</button>
@@ -578,6 +599,7 @@
             <button on:click={() => goToModule1Sub(9)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 9 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Spot End Time</button>
             <button on:click={() => goToModule1Sub(10)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 10 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">End Time</button>
             <button on:click={() => goToModule1Sub(11)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 11 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Floaters</button>
+            <button on:click={() => goToModule1Sub(12)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 12 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Key Tab</button>
             <button on:click={() => mainSection = 'module1test'} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module1test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''}">
               <span class="block w-2 h-2 rounded-full {mainSection === 'module1test' ? 'bg-purple-600' : 'bg-purple-300'}"></span>
               📝 End of Module 1 Test
@@ -585,11 +607,26 @@
           </div>
         {/if}
         {#each modules.slice(1) as module, modIdx}
-          <button on:click={() => mainSection = `module${modIdx+2}`} class="text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 text-sm w-full {mainSection === `module${modIdx+2}` ? 'bg-blue-100 text-blue-700' : ''}">
-            <span class="block w-2 h-2 rounded-full {mainSection === `module${modIdx+2}` ? 'bg-blue-600' : 'bg-gray-300'}"></span>
-            {module.title}
-          </button>
-          {#if modIdx === 0}
+          <div class="flex items-center text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === `module${modIdx+2}` ? 'bg-blue-100 text-blue-700' : ''}">
+            <button on:click={() => mainSection = `module${modIdx+2}`} class="flex items-center gap-2 flex-1 text-left">
+              <span class="block w-2 h-2 rounded-full {mainSection === `module${modIdx+2}` ? 'bg-blue-600' : 'bg-gray-300'}"></span>
+              {module.title}
+            </button>
+            {#if modIdx === 0}
+              <button on:click={() => module2Collapsed = !module2Collapsed} class="text-gray-400 hover:text-gray-600 transition-transform {module2Collapsed ? 'rotate-90' : ''}" aria-label="Toggle Module 2 submodules">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            {:else if modIdx === 1}
+              <button on:click={() => module3Collapsed = !module3Collapsed} class="text-gray-400 hover:text-gray-600 transition-transform {module3Collapsed ? 'rotate-90' : ''}" aria-label="Toggle Module 3 submodules">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            {/if}
+          </div>
+          {#if modIdx === 0 && !module2Collapsed}
             <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
               <button on:click={() => mainSection = 'module2_sellingtitle'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_sellingtitle' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Selling Title</button>
               <button on:click={() => mainSection = 'module2_yellowunit'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_yellowunit' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">The Yellow Unit</button>
@@ -603,7 +640,7 @@
             </div>
           {/if}
         {/each}
-        {#if submodulesOpen3}
+        {#if !module3Collapsed}
           <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
             <button on:click={() => mainSection = 'module3_brandsep'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_brandsep' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Brand SEP</button>
             <button on:click={() => mainSection = 'module3_advertiserconflicts'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_advertiserconflicts' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Advertiser Conflicts</button>
@@ -629,7 +666,7 @@
   {/if}
 
   <!-- Main Content -->
-  <main class="flex-1 flex flex-col items-center">
+  <main class="flex-1 flex flex-col items-center {!sidebarOpen ? 'sidebar-collapsed' : ''}">
     {#if mainSection === 'introduction'}
       <Introduction />
     {:else if mainSection === 'module1'}
@@ -644,13 +681,13 @@
       {:else if module1SubIdx === 3}
         <EventType progressId="module1_eventtype" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 4}
-        <Length progressId="module1_length" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+        <Length progressId="module1_length" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} on:navigateToQuiz={() => { console.log('Length: navigateToQuiz called'); mainSection = 'lengthQuiz'; }} />
       {:else if module1SubIdx === 5}
         <Title progressId="module1_title" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 6}
         <Advertiser progressId="module1_advertiser" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 7}
-        <HouseNumber progressId="module1_housenumber" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+        <HouseNumber progressId="module1_housenumber" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} on:navigateToQuiz={() => { console.log('HouseNumber: navigateToQuiz called'); mainSection = 'houseNumberQuiz'; }} />
       {:else if module1SubIdx === 8}
         <OrderedAs progressId="module1_orderedas" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 9}
@@ -659,13 +696,15 @@
         <EndTime progressId="module1_endtime" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 11}
         <Floaters progressId="module1_floaters" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
+      {:else if module1SubIdx === 12}
+        <KeyTab progressId="module1_keytab" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {/if}
     {:else if mainSection === 'quiz'}
-      <StartTimeRealTimeQuiz on:navigateToNextSubmodule={() => navigateToNext('quiz')} />
+      <StartTimeRealTimeQuiz on:navigateToNextSubmodule={() => { console.log('Navigating from quiz'); navigateToNext('quiz'); }} />
     {:else if mainSection === 'lengthQuiz'}
-      <LengthQuiz on:navigateToNextSubmodule={() => navigateToNext('lengthQuiz')} />
+      <LengthQuiz on:navigateToNextSubmodule={() => { console.log('Navigating from lengthQuiz'); navigateToNext('lengthQuiz'); }} />
     {:else if mainSection === 'houseNumberQuiz'}
-      <HouseNumberQuiz on:navigateToNextSubmodule={() => navigateToNext('houseNumberQuiz')} />
+      <HouseNumberQuiz on:navigateToNextSubmodule={() => { console.log('Navigating from houseNumberQuiz'); navigateToNext('houseNumberQuiz'); }} />
     {:else if mainSection === 'module1test'}
       <div class="w-full max-w-2xl mx-auto">
         <h2 class="text-2xl font-bold mb-4">End of Module 1 Test</h2>
@@ -763,7 +802,7 @@
     {:else if mainSection === 'module2_unitprioritizationdetails'}
       <UnitPrioritizationDetails progressId="module2_unitprioritizationdetails" />
     {:else if mainSection === 'module2_greenpurpleunits'}
-      <GreenPurpleUnits progressId="module2_greenpurpleunits" />
+      <GreenPurpleUnits progressId="module2_greenpurpleunits" on:navigateToNextSubmodule={() => navigateToNext('module2_greenpurpleunits')} />
     {:else if mainSection === 'module3'}
       <Module3Intro progressId="module3_intro" on:navigateToNextSubmodule={() => navigateToNext('module3')} nextButtonText={getNextButtonText('module3')} />
     {:else if mainSection === 'module3_excelsheet'}

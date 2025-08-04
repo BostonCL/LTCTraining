@@ -333,18 +333,24 @@ onMount(() => {
   </div>
   <div class="excel-instructions">
     {#if intro}
-      <button class="excel-instructions-nav" aria-label="Go to Step 1" on:click={goToStep1}>
-        <span class="excel-instructions-nav-arrow">→</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <div></div>
+        <button class="excel-nav-btn excel-nav-btn-next" aria-label="Go to Step 1" on:click={goToStep1}>
+          Next →
+        </button>
+      </div>
       <h2 class="excel-instructions-title">Instructions</h2>
       <div class="excel-instructions-body">
         Here we will send a practice swap email to Master Control!<br><br>
         (We need a mock email text editing playground to write a practice email with checks.)
       </div>
     {:else if showStep1}
-      <button class="excel-instructions-nav" aria-label="Back to Intro" on:click={goBackIntro}>
-        <span class="excel-instructions-nav-arrow">←</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Intro" on:click={goBackIntro}>
+          ← Previous
+        </button>
+        <div></div>
+      </div>
       <h2 class="excel-instructions-title">Step 1</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">We will write a practice swap email to Master Control. Please use the box below to compose your email.</div>
@@ -376,9 +382,12 @@ IN: 601521
         {/if}
       </div>
     {:else if showStep2}
-      <button class="excel-instructions-nav" aria-label="Back to Step 1" on:click={goToStep1}>
-        <span class="excel-instructions-nav-arrow">←</span>
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Step 1" on:click={goToStep1}>
+          ← Previous
+        </button>
+        <div></div>
+      </div>
       <h2 class="excel-instructions-title">Step 2</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">Write a swap email to Master Control to save :30 seconds from Break 11 of the 12PM game.</div>
@@ -470,6 +479,14 @@ IN: 601521
   }
   .excel-header {
     margin-bottom: 20px;
+    padding-top: 2rem;
+    padding-left: 1rem;
+    transition: padding-left 0.2s ease-in-out;
+  }
+
+  /* Adjust padding when sidebar is collapsed */
+  :global(.sidebar-collapsed) .excel-header {
+    padding-left: 0.5rem;
   }
   .excel-title {
     font-size: 20px;
@@ -659,5 +676,34 @@ IN: 601521
     border-radius: 4px;
     padding: 8px;
     min-height: 120px;
+  }
+  .excel-nav-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-size: 0.9rem;
+  }
+  .excel-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .excel-nav-btn-prev {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+  .excel-nav-btn-prev:hover:not(:disabled) {
+    background: #e2e8f0;
+  }
+  .excel-nav-btn-next {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  .excel-nav-btn-next:hover:not(:disabled) {
+    background: #1d4ed8;
   }
 </style> 
