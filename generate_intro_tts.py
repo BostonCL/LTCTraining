@@ -18,7 +18,7 @@ def generate_tts(text, output_filename):
     
     voice = texttospeech.VoiceSelectionParams(
         language_code="en-US",
-        name="en-US-Neural2-F",
+        name="en-US-Chirp3-HD-Leda",
         ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
     )
     

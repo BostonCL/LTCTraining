@@ -19,32 +19,32 @@ const script = [
   {
     text: 'This is our Unit Prioritization List, ranked from highest to lowest importance.',
     audio: '/audio/module-2/yellow-unit/module2_yellowunit_02.mp3',
-    whiteboardText: ['Unit Prioritization List']
+    whiteboardText: ['**__Unit Prioritization List__**']
   },
   {
     text: 'Show Specific',
     audio: '/audio/module-2/yellow-unit/module2_yellowunit_03.mp3',
-    whiteboardText: ['Unit Prioritization List', '1st) Show Specific']
+    whiteboardText: ['**__Unit Prioritization List__**', '• **Show Specific**']
   },
   {
     text: 'Sports Spectacular',
     audio: '/audio/module-2/yellow-unit/module2_yellowunit_04.mp3',
-    whiteboardText: ['Unit Prioritization List', '1st) Show Specific', '2nd) Sports Spectacular']
+    whiteboardText: ['**__Unit Prioritization List__**', '• **Show Specific**', '• **Sports Spectacular**']
   },
   {
     text: 'ROS 24 Hour',
     audio: '/audio/module-2/yellow-unit/module2_yellowunit_05.mp3',
-    whiteboardText: ['Unit Prioritization List', '1st) Show Specific', '2nd) Sports Spectacular', '3rd) ROS 24 Hour']
+    whiteboardText: ['**__Unit Prioritization List__**', '• **Show Specific**', '• **Sports Spectacular**', '• **ROS 24 Hour**']
   },
   {
     text: 'ROS Prime',
     audio: '/audio/module-2/yellow-unit/module2_yellowunit_06.mp3',
-    whiteboardText: ['Unit Prioritization List', '1st) Show Specific', '2nd) Sports Spectacular', '3rd) ROS 24 Hour', '4th) ROS Prime']
+    whiteboardText: ['**__Unit Prioritization List__**', '• **Show Specific**', '• **Sports Spectacular**', '• **ROS 24 Hour**', '• **ROS Prime**']
   },
   {
     text: 'Studio Encore/ Sports Encore',
     audio: '/audio/module-2/yellow-unit/module2_yellowunit_07.mp3',
-    whiteboardText: ['Unit Prioritization List', '1st) Show Specific', '2nd) Sports Spectacular', '3rd) ROS 24 Hour', '4th) ROS Prime', '5th) Studio Encore/ Sports Encore']
+    whiteboardText: ['**__Unit Prioritization List__**', '• **Show Specific**', '• **Sports Spectacular**', '• **ROS 24 Hour**', '• **ROS Prime**', '• **Studio Encore/ Sports Encore**']
   }
 ];
 

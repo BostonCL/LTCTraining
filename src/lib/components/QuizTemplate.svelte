@@ -83,7 +83,7 @@
         
         {#if image}
           <div class="mb-6 flex justify-center">
-            <img src={image} alt="Quiz reference image" class="max-w-full max-h-64 object-contain rounded-lg shadow-md" />
+            <img src={image} alt="" class="max-w-full max-h-64 object-contain rounded-lg shadow-md" />
           </div>
         {/if}
         

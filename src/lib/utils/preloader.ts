@@ -16,7 +16,13 @@ class Preloader {
     if (this.audioCache.has(url)) return;
 
     return new Promise((resolve) => {
-      const audio = new Audio();
+      // Only run in browser environment
+      if (typeof window === 'undefined') {
+        resolve();
+        return;
+      }
+
+      const audio = new window.Audio();
       audio.preload = 'metadata'; // Only load metadata, not full file
       
       audio.onloadedmetadata = () => {
@@ -50,11 +56,17 @@ class Preloader {
     if (this.imageCache.has(url)) return;
 
     return new Promise((resolve) => {
-      const img = new Image();
+      // Only run in browser environment
+      if (typeof window === 'undefined') {
+        resolve();
+        return;
+      }
+
+      const img = new window.Image();
       
       // Set loading priority
-      if (immediate) {
-        img.fetchPriority = 'high';
+      if (immediate && 'fetchPriority' in img) {
+        (img as any).fetchPriority = 'high';
       }
       
       img.onload = () => {

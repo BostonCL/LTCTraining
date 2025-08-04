@@ -796,13 +796,13 @@
         {/if}
       </div>
     {:else if mainSection === 'module2_sellingtitle'}
-      <SellingTitle progressId="module2_sellingtitle" />
+      <SellingTitle progressId="module2_sellingtitle" nextButtonText={getNextButtonText('module2_sellingtitle')} on:navigateToNextSubmodule={() => navigateToNext('module2_sellingtitle')} />
     {:else if mainSection === 'module2_yellowunit'}
-      <TheYellowUnit progressId="module2_yellowunit" />
+      <TheYellowUnit progressId="module2_yellowunit" nextButtonText={getNextButtonText('module2_yellowunit')} on:navigateToNextSubmodule={() => navigateToNext('module2_yellowunit')} />
     {:else if mainSection === 'module2_unitprioritizationdetails'}
-      <UnitPrioritizationDetails progressId="module2_unitprioritizationdetails" />
+      <UnitPrioritizationDetails progressId="module2_unitprioritizationdetails" nextButtonText={getNextButtonText('module2_unitprioritizationdetails')} on:navigateToNextSubmodule={() => navigateToNext('module2_unitprioritizationdetails')} />
     {:else if mainSection === 'module2_greenpurpleunits'}
-      <GreenPurpleUnits progressId="module2_greenpurpleunits" on:navigateToNextSubmodule={() => navigateToNext('module2_greenpurpleunits')} />
+      <GreenPurpleUnits progressId="module2_greenpurpleunits" nextButtonText={getNextButtonText('module2_greenpurpleunits')} on:navigateToNextSubmodule={() => navigateToNext('module2_greenpurpleunits')} />
     {:else if mainSection === 'module3'}
       <Module3Intro progressId="module3_intro" on:navigateToNextSubmodule={() => navigateToNext('module3')} nextButtonText={getNextButtonText('module3')} />
     {:else if mainSection === 'module3_excelsheet'}

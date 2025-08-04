@@ -3,7 +3,7 @@ import { onMount } from 'svelte';
 import BasketballAvatar from '$lib/components/BasketballAvatar.svelte';
 import VideoControls from '$lib/components/VideoControls.svelte';
 import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
-import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips, setCurrentIndex, loadProgress, saveProgress } from '$lib/stores/audioStore';
+import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips, setCurrentIndex, loadProgress, saveProgress, audioElement } from '$lib/stores/audioStore';
 import { preloader } from '$lib/utils/preloader';
 
   // Props
@@ -12,6 +12,7 @@ import { preloader } from '$lib/utils/preloader';
     audio: string;
     whiteboardText?: string[];
     image?: string;
+    titleAudio?: string;
   }> = [];
   export let title: string = '';
   export let image: string | undefined = undefined;
@@ -75,15 +76,47 @@ function goToPreviousSlide() {
 
 $: currentScript = script[currentIdx] || script[0];
 $: currentCaption = currentScript?.text || '';
+$: hasTitleAudio = !!currentScript?.titleAudio;
+
+// Reset animation completion when slide changes
+$: if (currentIdx !== undefined) {
+  whiteboardAnimationCompleted = false;
+}
 $: canGoNext = (
   currentIdx < script.length - 1 &&
-  (!audioState.isPlaying && audioState.progress >= 99)
+  (!audioState.isPlaying && audioState.progress >= 99) &&
+  (accumulatedWhiteboardText.length === 0 || whiteboardAnimationCompleted)
 );
 $: canGoPrevious = currentIdx > 0;
 $: showCompletionButton = currentIdx === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick;
 $: showNextButton = currentIdx === script.length - 1 && audioState.progress >= 99;
 
 $: accumulatedWhiteboardText = currentScript.whiteboardText || [];
+
+// Delay main audio when there's title audio
+let titleAudioDelay = false;
+let titleAudioCompleted = false;
+let whiteboardAnimationCompleted = false;
+
+function onTitleAudioComplete() {
+  titleAudioCompleted = true;
+  titleAudioDelay = false;
+  // Start the main audio after title audio is done
+  if (audioElement) {
+    audioElement.play();
+  }
+}
+
+function onAnimationComplete() {
+  whiteboardAnimationCompleted = true;
+}
+
+// Pause main audio when slide has title audio
+$: if (hasTitleAudio && audioElement && audioElement.played.length > 0) {
+  // Pause the main audio to let title audio play first
+  audioElement.pause();
+  titleAudioDelay = true;
+}
 
 // Preload next image when current index changes
 $: if (currentScript?.image && currentScript.image !== currentImageUrl) {
@@ -155,6 +188,10 @@ function getImageSrc(imageUrl: string): string {
           <WhiteboardAnimation 
             textLines={accumulatedWhiteboardText}
             drawSpeed={0.03}
+            audioText={currentScript.text}
+            titleAudio={currentScript.titleAudio || ''}
+            on:titleAudioComplete={onTitleAudioComplete}
+            on:animationComplete={onAnimationComplete}
           />
         </div>
       {:else if currentScript.image}
