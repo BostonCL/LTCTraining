@@ -12,7 +12,7 @@ export let nextButtonText: string = "Next";
 // The Yellow Unit script (updated to a single animation slide)
 const script = [
   {
-    text: `Let’s start with the basics: The Yellow Unit category. On the next slide, they are listed from most to least important. As you might remember, they are located in the “Ordered As” column on the live coverage sheet.`,
+    text: `Let's start with the basics: The Yellow Unit category. On the next slide, they are listed from most to least important. As you might remember, they are located in the "Ordered As" column on the live coverage sheet.`,
     audio: '/audio/module-2/yellow-unit/module2_yellowunit_01.mp3',
     image: '/images/introduction/basketballBackground.png'
   },

@@ -1,5 +1,13 @@
 <script lang="ts">
 	import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
+	import { onMount } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
+	import { audioStore } from '$lib/stores/audioStore';
+
+	const dispatch = createEventDispatcher();
+
+	let showPlayButton = true;
+	let hasStarted = false;
 
 	const introScript = [
 		{ 
@@ -113,7 +121,71 @@
 		description: 'Welcome to the CBS Live Traffic Coverage Training program. This comprehensive introduction covers the fundamentals of live traffic reporting, including what live coverage means, the key responsibilities involved, and what to expect throughout this training course.'
 	};
 
-	function dummyNext() {}
+	function handlePlayClick() {
+		showPlayButton = false;
+		hasStarted = true;
+		// Start the audio playback
+		audioStore.update(state => ({ ...state, isPlaying: true }));
+	}
+
+	onMount(() => {
+		// Reset play button state when component mounts
+		showPlayButton = true;
+		hasStarted = false;
+	});
 </script>
 
-<YouTubeTemplate script={introScript} title={videoInfo.title} onNextSubmodule={dummyNext} progressId="introduction_intro" /> 
+{#if showPlayButton && !hasStarted}
+	<!-- Play Button Overlay -->
+	<div class="w-full max-w-5xl px-4 mx-auto mt-8">
+		<div class="w-full bg-black rounded-lg overflow-hidden shadow-lg mb-6 relative">
+			<div class="relative aspect-video bg-black w-full overflow-hidden">
+				<img 
+					src="/images/introduction/basketballBackground.jpg" 
+					alt="Introduction background" 
+					class="w-full h-full z-0 bg-white object-contain opacity-50" 
+					style="
+						object-fit: contain;
+						object-position: center center;
+						filter: brightness(0.98);
+						display: block;
+						margin: 0 auto;
+						background: white;
+					" 
+				/>
+				<!-- YouTube-style Play Button -->
+				<div class="absolute inset-0 flex items-center justify-center z-20">
+					<button 
+						on:click={handlePlayClick}
+						class="w-24 h-24 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center shadow-lg transform hover:scale-110 transition-all duration-200"
+						aria-label="Play introduction"
+					>
+						<svg class="w-12 h-12 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+							<path d="M8 5v14l11-7z"/>
+						</svg>
+					</button>
+				</div>
+				<!-- Play Text -->
+				<div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white text-lg font-medium z-20">
+					Click to start introduction
+				</div>
+			</div>
+		</div>
+		<!-- Video Title -->
+		<h1 class="w-full text-2xl font-bold text-gray-900 mb-2">Introduction</h1>
+		<!-- Video Description -->
+		<p class="w-full text-gray-700 mb-4">Click the play button to begin the introduction to CBS Sports Network Traffic Department training.</p>
+	</div>
+{:else}
+	<YouTubeTemplate 
+		script={introScript} 
+		title="Introduction" 
+		showAvatar={true}
+		progressId="introduction"
+		nextButtonText="Continue to Module 1"
+		onNextSubmodule={() => {
+			// Navigate to Module 1 when introduction is complete
+			dispatch('navigateToNextSubmodule');
+		}}
+	/>
+{/if} 

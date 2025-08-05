@@ -13,6 +13,7 @@ import { preloader } from '$lib/utils/preloader';
     whiteboardText?: string[];
     image?: string;
     titleAudio?: string;
+    imageStyle?: string;
   }> = [];
   export let title: string = '';
   export let image: string | undefined = undefined;
@@ -206,6 +207,7 @@ function getImageSrc(imageUrl: string): string {
             display: block;
             margin: 0 auto;
             background: white;
+            {currentScript.imageStyle || ''}
           " 
           loading="eager"
           fetchpriority="high"
