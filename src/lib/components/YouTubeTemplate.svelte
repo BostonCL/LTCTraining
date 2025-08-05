@@ -5,6 +5,7 @@ import VideoControls from '$lib/components/VideoControls.svelte';
 import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
 import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips, setCurrentIndex, loadProgress, saveProgress, audioElement } from '$lib/stores/audioStore';
 import { preloader } from '$lib/utils/preloader';
+import { DEV_FEATURES } from '$lib/config/dev';
 
   // Props
   export let script: Array<{
@@ -32,8 +33,12 @@ let currentImageUrl = '';
 
 onMount(() => {
   setTotalClips(script.length);
-  // Restore progress for this module/submodule
-  currentIdx = loadProgress(progressId);
+  // In developer mode, start from the beginning or restore progress
+  if (DEV_FEATURES.developerMode) {
+    currentIdx = 0; // Start from beginning in dev mode
+  } else {
+    currentIdx = loadProgress(progressId);
+  }
   
   // Aggressive preloading for better performance
   const preloadResources = async () => {
@@ -83,14 +88,18 @@ $: hasTitleAudio = !!currentScript?.titleAudio;
 $: if (currentIdx !== undefined) {
   whiteboardAnimationCompleted = false;
 }
-$: canGoNext = (
-  currentIdx < script.length - 1 &&
+$: canGoNext = DEV_FEATURES.developerMode ? 
+  currentIdx < script.length - 1 : 
+  (currentIdx < script.length - 1 &&
   (!audioState.isPlaying && audioState.progress >= 99) &&
-  (accumulatedWhiteboardText.length === 0 || whiteboardAnimationCompleted)
-);
+  (accumulatedWhiteboardText.length === 0 || whiteboardAnimationCompleted));
 $: canGoPrevious = currentIdx > 0;
-$: showCompletionButton = currentIdx === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick;
-$: showNextButton = currentIdx === script.length - 1 && audioState.progress >= 99;
+$: showCompletionButton = DEV_FEATURES.developerMode ? 
+  (currentIdx === script.length - 1 && completionButtonText && onCompletionButtonClick) :
+  (currentIdx === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick);
+$: showNextButton = DEV_FEATURES.developerMode ? 
+  currentIdx === script.length - 1 :
+  (currentIdx === script.length - 1 && audioState.progress >= 99);
 
 $: accumulatedWhiteboardText = currentScript.whiteboardText || [];
 
@@ -149,12 +158,12 @@ function handleNextArrow() {
   }
 }
 
-// Save progress whenever currentIdx changes
-$: if (progressId && typeof currentIdx === 'number') {
+// Save progress whenever currentIdx changes (skip in developer mode)
+$: if (progressId && typeof currentIdx === 'number' && !DEV_FEATURES.developerMode) {
   saveProgress(progressId, currentIdx);
 }
 
-$: if (progressId) {
+$: if (progressId && !DEV_FEATURES.developerMode) {
   const saved = loadProgress(progressId);
   if (typeof saved === 'number' && saved !== currentIdx) {
     currentIdx = saved;
@@ -180,6 +189,15 @@ function getImageSrc(imageUrl: string): string {
 </script>
 
 <div class="w-full max-w-5xl px-4 mx-auto mt-8">
+  <!-- Developer Mode Indicator -->
+  {#if DEV_FEATURES.developerMode}
+    <div class="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded-lg">
+      <div class="flex items-center">
+        <span class="text-yellow-800 font-semibold">🔧 Developer Mode Active</span>
+        <span class="ml-2 text-yellow-700 text-sm">All slides unlocked</span>
+      </div>
+    </div>
+  {/if}
   <!-- Video Player Area -->
   <div bind:this={playerArea} class="w-full bg-black rounded-lg overflow-hidden shadow-lg mb-6 relative">
     <div class="relative aspect-video bg-black w-full overflow-hidden">

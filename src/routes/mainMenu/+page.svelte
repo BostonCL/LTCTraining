@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { getAuth, signOut, type Auth } from 'firebase/auth';
   import { writable, derived } from 'svelte/store';
+  import { DEV_FEATURES } from '$lib/config/dev';
   import Introduction from './introduction/Introduction.svelte';
   import HitTime from './module-1/HitTime.svelte';
   import EventType from './module-1/EventType.svelte';
@@ -128,7 +129,7 @@
 
   // Sidebar and navigation state
   let sidebarOpen = true;
-  let mainSection = 'introduction'; // 'introduction', 'module1', 'module1sub', 'quiz', or 'other'
+  let mainSection: string = 'introduction'; // 'introduction', 'module1', 'module1sub', 'quiz', or 'other'
   let module1SubIdx = 0;
   let submodulesOpen = true;
   
@@ -656,6 +657,30 @@
             📝 Final Exam
           </button>
         </div>
+        
+        <!-- Developer Mode Section -->
+        {#if DEV_FEATURES.developerMode}
+          <div class="mt-6 pt-4 border-t border-gray-200">
+            <div class="px-3 py-2 text-xs font-semibold text-yellow-700 uppercase tracking-wide">🔧 Developer Mode</div>
+            <div class="space-y-1">
+              <button on:click={() => mainSection = 'introduction'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded hover:bg-yellow-100 {mainSection === 'introduction' ? 'bg-yellow-200 text-yellow-800' : 'text-yellow-700'}">
+                🏠 Introduction
+              </button>
+              <button on:click={() => { mainSection = 'module1'; module1SubIdx = 0; }} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded hover:bg-yellow-100 {mainSection === 'module1' ? 'bg-yellow-200 text-yellow-800' : 'text-yellow-700'}">
+                📋 Module 1
+              </button>
+              <button on:click={() => mainSection = 'module2'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded hover:bg-yellow-100 {mainSection === 'module2' ? 'bg-yellow-200 text-yellow-800' : 'text-yellow-700'}">
+                📋 Module 2
+              </button>
+              <button on:click={() => mainSection = 'module3'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded hover:bg-yellow-100 {mainSection === 'module3' ? 'bg-yellow-200 text-yellow-800' : 'text-yellow-700'}">
+                📋 Module 3
+              </button>
+              <button on:click={() => mainSection = 'finalexam'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded hover:bg-yellow-100 {mainSection === 'finalexam' ? 'bg-yellow-200 text-yellow-800' : 'text-yellow-700'}">
+                📝 Final Exam
+              </button>
+            </div>
+          </div>
+        {/if}
       </nav>
     </aside>
   {:else}
