@@ -14,13 +14,8 @@
 
   const script = [
     {
-      text: 'Welcome to this section. Where we will learn how to properly swap units within the live coverage sheet.',
-      audio: '/audio/module-3/swaps/module3_swaps_01.mp3',
-      image: '/images/module-3/Swaps1.png',
-    },
-    {
-      text: 'In this section, we’ll walk through each step you need to follow to make sure your swaps are accurate and compliant.',
-      audio: '/audio/module-3/swaps/module3_swaps_02.mp3',
+      text: 'Welcome to this section. Where we will learn how to properly swap units within the live coverage sheet. In this section, we\'ll walk through each step you need to follow to make sure your swaps are accurate and compliant.',
+      audio: '/audio/module-3/swaps/module3_swaps_01_02_combined.mp3',
       image: '/images/module-3/Swaps1.png',
     },
     {
