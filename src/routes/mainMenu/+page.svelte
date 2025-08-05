@@ -39,6 +39,7 @@
   import Swaps from './module-3/Swaps.svelte';
   import MasterControlEmail from './module-3/MasterControlEmail.svelte';
   import LocalSwaps from './module-3/LocalSwaps.svelte';
+  import FinalExam from './module-3/FinalExam.svelte';
   // Modules with submodules for Module 1
   const modules = [
     {
@@ -92,7 +93,7 @@
       </div>`
     },
     {
-      title: 'Module 2: Tools & Technology',
+      title: 'Module 2: Understanding Units',
       content: 'Learn about the tools and technology used in live traffic reporting.'
     },
     {
@@ -656,6 +657,14 @@
             <!-- Add more submodules here as needed -->
           </div>
         {/if}
+        
+        <!-- Final Exam Section -->
+        <div class="flex items-center text-left px-3 py-2 hover:bg-green-50 focus:bg-green-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === 'finalexam' ? 'bg-green-100 text-green-700' : ''}">
+          <button on:click={() => mainSection = 'finalexam'} class="flex items-center gap-2 flex-1 text-left">
+            <span class="block w-2 h-2 rounded-full {mainSection === 'finalexam' ? 'bg-green-600' : 'bg-green-300'}"></span>
+            📝 Final Exam
+          </button>
+        </div>
       </nav>
     </aside>
   {:else}
@@ -668,7 +677,10 @@
   <!-- Main Content -->
   <main class="flex-1 flex flex-col items-center {!sidebarOpen ? 'sidebar-collapsed' : ''}">
     {#if mainSection === 'introduction'}
-      <Introduction />
+      <Introduction on:navigateToNextSubmodule={() => {
+        mainSection = 'module1';
+        module1SubIdx = 0;
+      }} />
     {:else if mainSection === 'module1'}
       <Module1Intro on:navigateToNextSubmodule={next} progressId="module1_intro" nextButtonText={getNextButtonText('module1')} />
     {:else if mainSection === 'module1sub'}
@@ -748,7 +760,7 @@
     {:else if mainSection === 'module2'}
       <YouTubeTemplate
         script={module2Script}
-        title="Module 2: Tools & Technology"
+        title="Module 2: Understanding Units"
         image="/images/introduction/basketballBackground.png"
 
         onNextSubmodule={() => navigateToNext('module2')}
@@ -827,6 +839,8 @@
       <MasterControlEmail progressId="module3_mastercontrolemail" on:navigateToNextSubmodule={() => navigateToNext('module3_mastercontrolemail')} nextButtonText={getNextButtonText('module3_mastercontrolemail')} />
     {:else if mainSection === 'module3_localswaps'}
       <LocalSwaps progressId="module3_localswaps" on:navigateToNextSubmodule={() => navigateToNext('module3_localswaps')} nextButtonText={getNextButtonText('module3_localswaps')} />
+    {:else if mainSection === 'finalexam'}
+      <FinalExam progressId="finalexam" on:navigateToNextSubmodule={() => navigateToNext('finalexam')} nextButtonText="Complete Training" />
     {/if}
 
   </main>
