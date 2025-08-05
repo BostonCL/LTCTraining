@@ -28,7 +28,7 @@ const script = [
   {
     text: "Start by looking for cuttable units. I like to check the green inventory — that's usually the easiest to cut. Sometimes I'll go deep into the overnight hours because it's simpler there.",
     audio: '/audio/module-3/local-swaps/module3_localswaps_04.mp3',
-    image: '/images/module-3/local-swaps/Local4.png'
+    image: '/images/module-3/local-swaps/Local3.jpg'
   },
   {
     text: "Once you find cuttable units: Mark those units as cut (turn them red). This means they won't air in that break anymore. Next, insert a line for the local unit you're moving. Notate everything as you go.",
@@ -38,17 +38,12 @@ const script = [
   {
     text: "In this example, we're moving the local unit into Break 5 of the 10 PM game. When you email MC, update the title to: 'Here are the swaps to save 2 minutes from Break 11 of the 12 PM game.' Note the new location: 10 PM game Break 5 CUT: xxx and xxx IN: 1:30 local, please use a fill list",
     audio: '/audio/module-3/local-swaps/module3_localswaps_06.mp3',
-    image: '/images/module-3/local-swaps/Swaps13.png'
+    image: '/images/module-3/local-swaps/Local6.png'
   },
   {
-    text: "Why does this matter? On the traffic side, these schedules already have sold commercials in place. If you just swap in a local unit without using the fill list, it can conflict with other units, create wrong end times, and worst of all, the commercials may not air correctly — which means we wouldn't get paid for them.",
-    audio: '/audio/module-3/local-swaps/module3_localswaps_07.mp3',
-    image: '/images/module-3/local-swaps/Swaps13.png'
-  },
-  {
-    text: "Using the fill list keeps everything clean. The local network still gets the promised time, and if there's leftover time, PSAs will run instead. The fill list is just a bunch of PSAs that won't conflict with anything else in the break.",
-    audio: '/audio/module-3/local-swaps/module3_localswaps_08.mp3',
-    image: '/images/module-3/local-swaps/Swaps13.png'
+    text: "Why does this matter? On the traffic side, these schedules already have sold commercials in place. If you just swap in a local unit without using the fill list, it can conflict with other units, create wrong end times, and worst of all, the commercials may not air correctly — which means we wouldn't get paid for them. Using the fill list keeps everything clean. The local network still gets the promised time, and if there's leftover time, PSAs will run instead. The fill list is just a bunch of PSAs that won't conflict with anything else in the break.",
+    audio: '/audio/module-3/local-swaps/module3_localswaps_07_08_combined.mp3',
+    image: '/images/module-3/local-swaps/Local2.png'
   },
   {
     text: "Then, paste the local unit into its new spot. Mark it blue to show it's airing there.",
