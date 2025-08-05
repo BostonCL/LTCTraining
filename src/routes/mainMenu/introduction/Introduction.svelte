@@ -42,7 +42,7 @@
 		{ 
 			text: 'Window: A term used in the Traffic Department for any particular program or game. Window refers specifically to the time period during which the program or game airs, encompassing the duration from its beginning to its end. For example, instead of saying "7 PM Basketball Game," we would say "7 PM Window."',
 			audio: '/audio/introduction/intro_07.mp3',
-			whiteboardText: ['**__Window__**', 'refers to the specific scheduled time period during which a program or game airs, from start to finish.'],
+			whiteboardText: ['**__Window__**', 'Refers to the specific scheduled time period during which a program or game airs, from start to finish.'],
 			titleAudio: '/audio/introduction/intro_07_title.mp3'
 		},
 		{ 
@@ -64,9 +64,9 @@
 			titleAudio: '/audio/introduction/intro_10_title.mp3'
 		},
 		{ 
-			text: 'CUT: A term used when a Commercial/Unit has been removed from its original spot. A CUT Commercial/Unit may still air in another show or time slot. Note: While \'Dead\' and \'Cut\' are sometimes used interchangeably, they do not mean exactly the same thing. A dead unit never airs, while a cut unit might.',
+			text: 'Cut is a term used when a Commercial/Unit has been removed from its original spot. A Cut Commercial/Unit may still air in another show or time slot. Note: While \'Dead\' and \'Cut\' are sometimes used interchangeably, they do not mean exactly the same thing. A dead unit never airs, while a cut unit might.',
 			audio: '/audio/introduction/intro_11.mp3',
-			whiteboardText: ['**__CUT__**', 'A term used when a Commercial/Unit has been removed from its original spot. A CUT Commercial/Unit may still air in another show or time slot.'],
+			whiteboardText: ['**__CUT__**', 'A term used when a Commercial/Unit has been removed from its original spot. A Cut Commercial/Unit may still air in another show or time slot.'],
 			titleAudio: '/audio/introduction/intro_11_title.mp3'
 		},
 		{ 

@@ -11,5 +11,8 @@ export const DEV_FEATURES = {
   enableDebugLogging: false,
   
   // Show development info overlay
-  showDevInfo: false
+  showDevInfo: false,
+  
+  // Developer mode - unlocks all slides and bypasses progress restrictions
+  developerMode: true
 }; 

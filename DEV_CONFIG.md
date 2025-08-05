@@ -25,6 +25,18 @@ This file controls development features that can be easily toggled on/off.
 - **Description**: Shows development information overlay
 - **Usage**: Set to `true` to see development info
 
+### Developer Mode
+- **Setting**: `DEV_FEATURES.developerMode`
+- **Default**: `true`
+- **Description**: Unlocks all slides and bypasses progress restrictions
+- **Usage**: Set to `true` to enable developer mode with full access to all content
+- **Features**:
+  - Bypasses audio progress requirements
+  - Allows navigation to any slide/module
+  - Shows developer mode indicator in UI
+  - Adds quick navigation buttons in sidebar
+  - Disables progress saving/loading
+
 ## Quick Toggle
 
 To disable all development features for production:
@@ -44,6 +56,7 @@ You can also control individual features:
 export const DEV_FEATURES = {
   showVideoNavigationButtons: true,  // Show/hide video nav buttons
   enableDebugLogging: false,         // Enable/disable debug logs
-  showDevInfo: false                 // Show/hide dev info overlay
+  showDevInfo: false,                // Show/hide dev info overlay
+  developerMode: true                // Enable/disable developer mode
 };
 ``` 
