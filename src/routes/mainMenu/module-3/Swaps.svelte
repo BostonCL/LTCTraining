@@ -91,14 +91,12 @@
     {
       text: 'Before we wrap up, here are a few key reminders. Always use clear, consistent color coding. Red means the unit did not air here or was moved. Blue means it aired here.',
       audio: '/audio/module-3/swaps/module3_swaps_16.mp3',
+      image: '/images/module-3/Swaps14.jpg',
     },
     {
-      text: 'Always double-check for brand conflicts. Document every move you make to avoid mistakes. And keep your notes organized so you can easily track your changes.',
-      audio: '/audio/module-3/swaps/module3_swaps_17.mp3',
-    },
-    {
-      text: 'In the next module, we will learn how to document these adjustments in emails.',
-      audio: '/audio/module-3/swaps/module3_swaps_18.mp3',
+      text: 'Always double-check for brand conflicts. Document every move you make to avoid mistakes. And keep your notes organized so you can easily track your changes. In the next module, we will learn how to document these adjustments in emails.',
+      audio: '/audio/module-3/swaps/module3_swaps_17_18_combined.mp3',
+      image: '/images/module-3/Swaps13.png',
     },
   ];
 

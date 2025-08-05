@@ -1,0 +1,27 @@
+{
+  "companies": {
+    "Aatrix": {
+      "employees": {
+        "-NzdiiSvkl3nm5dLc-wr": {
+          "password": "Srt8magnum",
+          "userID": 0,
+          "username": "boston.rocks@yahoo.com"
+        },
+        "-NzdiiSvkl3nm5dLc-ws": {
+          "password": "Chichibong",
+          "userID": 2,
+          "username": "WavyDavy@gmail.com"
+        }
+      },
+      "name": "Aatrix"
+    }
+  },
+  "supportTickets": {
+    "-O-Mi9Tv3VE2tsYzDCUY": {
+      "description": "PEe pee\n",
+      "reason": "Poop",
+      "timestamp": 1718384896002,
+      "userName": "boston.rocks@yahoo.com"
+    }
+  }
+}
