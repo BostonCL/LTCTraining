@@ -9,6 +9,7 @@
   export let audioText: string = ''; // The text that corresponds to the audio being played
   export let titleAudio: string = ''; // Audio file for the title
   export let startWithAudio: boolean = false; // Special case: start animation when audio starts
+  export let showAllAtOnce: boolean = false; // Special case: show all content at once
 
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
@@ -60,6 +61,31 @@
   function extractImagePath(text: string): string | null {
     const match = text.match(/!\[.*?\]\((.*?)\)/);
     return match ? match[1] : null;
+  }
+
+  // Helper: Load and draw image on canvas
+  function drawImageOnCanvas(imagePath: string, x: number, y: number, maxWidth: number, maxHeight: number) {
+    const img = new Image();
+    img.onload = () => {
+      if (!ctx || !canvas) return;
+      
+      // Calculate aspect ratio to maintain proportions
+      const aspectRatio = img.width / img.height;
+      let drawWidth = maxWidth;
+      let drawHeight = maxWidth / aspectRatio;
+      
+      if (drawHeight > maxHeight) {
+        drawHeight = maxHeight;
+        drawWidth = maxHeight * aspectRatio;
+      }
+      
+      // Center the image
+      const centerX = x + (maxWidth - drawWidth) / 2;
+      const centerY = y + (maxHeight - drawHeight) / 2;
+      
+      ctx.drawImage(img, centerX, centerY, drawWidth, drawHeight);
+    };
+    img.src = imagePath;
   }
 
   // Helper: Word wrap a single string into multiple lines
@@ -177,7 +203,18 @@
           const wrapped = wrapText(ctx, formatting.text, canvas.width - 2 * padding);
           for (let w = 0; w < wrapped.length; w++) {
             const line = wrapped[w];
-            const x = i === 0 && w === 0 ? (canvas.width - ctx.measureText(line).width) / 2 : padding;
+            // Special layout for Stand Alone Rule slide 2
+            let x = padding;
+            if (textLines[i] === 'Not Allowed:') {
+              // Position "Not Allowed:" on the left side
+              x = padding;
+            } else if (textLines[i] === 'Allowed:') {
+              // Position "Allowed:" on the left side (under the first image)
+              x = padding;
+            } else {
+              // Regular left alignment for other text
+              x = padding;
+            }
             
             // Apply formatting
             if (formatting.isBold) {
@@ -323,7 +360,15 @@
     if (currentLineIndex === 0) {
        animationStartTime = performance.now();
     }
-    animationFrame = requestAnimationFrame(animate);
+    
+    if (showAllAtOnce) {
+      // Show all content immediately
+      showAllContent();
+      isAnimating = false;
+      dispatch('animationComplete');
+    } else {
+      animationFrame = requestAnimationFrame(animate);
+    }
   }
 
   function stopAnimation() {
@@ -634,6 +679,94 @@
     }
   }
 
+  function showAllContent() {
+    if (!ctx || !canvas) return;
+    
+    // Clear canvas and draw background
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw grid pattern
+    ctx.strokeStyle = '#f0f0f0';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < canvas.width; i += 20) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, canvas.height);
+      ctx.stroke();
+    }
+    for (let i = 0; i < canvas.height; i += 20) {
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(canvas.width, i);
+      ctx.stroke();
+    }
+    
+    // Show all content immediately
+    ctx.fillStyle = textColor;
+    ctx.font = `${fontSize}px ${fontFamily}`;
+    ctx.textBaseline = 'top';
+    
+    let y = padding;
+    for (let i = 0; i < textLines.length; i++) {
+      if (textLines[i]) {
+        // Check if this line is an image
+        if (isImageUrl(textLines[i])) {
+          const imagePath = extractImagePath(textLines[i]);
+          if (imagePath) {
+            // Draw image below the previous text
+            const imageHeight = 200; // Increased height for higher quality images
+            drawImageOnCanvas(imagePath, padding, y, canvas.width - 2 * padding, imageHeight);
+            y += imageHeight + 20; // Add space after image
+          }
+        } else {
+          // Regular text line
+          const formatting = parseTextFormatting(textLines[i]);
+          const wrapped = wrapText(ctx, formatting.text, canvas.width - 2 * padding);
+          for (let w = 0; w < wrapped.length; w++) {
+            const line = wrapped[w];
+            
+            // Special layout for Stand Alone Rule slide 2
+            let x = padding;
+            if (textLines[i] === 'Not Allowed:') {
+              // Position "Not Allowed:" on the left side
+              x = padding;
+            } else if (textLines[i] === 'Allowed:') {
+              // Position "Allowed:" on the left side (under the first image)
+              x = padding;
+            } else {
+              // Regular left alignment for other text
+              x = padding;
+            }
+            
+            // Apply formatting
+            if (formatting.isBold) {
+              ctx.font = `bold ${fontSize}px ${fontFamily}`;
+            } else {
+              ctx.font = `${fontSize}px ${fontFamily}`;
+            }
+            
+            ctx.fillText(line, x, y);
+            
+            // Draw underline if needed
+            if (formatting.isUnderlined) {
+              const metrics = ctx.measureText(line);
+              ctx.strokeStyle = textColor;
+              ctx.lineWidth = 3;
+              ctx.lineCap = 'round';
+              ctx.beginPath();
+              ctx.moveTo(x, y + fontSize + 4);
+              ctx.lineTo(x + metrics.width, y + fontSize + 4);
+              ctx.stroke();
+            }
+            
+            y += lineHeight;
+          }
+        }
+      }
+    }
+  }
+
   function checkTimingRules() {
     console.log('Checking timing rules...');
     
@@ -707,7 +840,7 @@
 
   // Handle main audio progress for non-title-audio slides
   $: if ($audioStore.isPlaying && !titleAudio && animationStarted && !isAnimating) {
-    const shouldStartImmediately = audioTextMatchesWhiteboard();
+    const shouldStartImmediately = audioTextMatchesWhiteboard() || showAllAtOnce;
     
     if (shouldStartImmediately) {
       startAnimation();
@@ -716,6 +849,11 @@
         startAnimation();
       }
     }
+  }
+
+  // Start animation immediately when audio starts for showAllAtOnce slides
+  $: if ($audioStore.isPlaying && showAllAtOnce && !isAnimating) {
+    startAnimation();
   }
 
   onMount(() => {
