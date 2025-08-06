@@ -20,7 +20,7 @@
     },
     {
       id: 2,
-      question: "Using the same example above, what is the Start Time?",
+      question: "A football game is scheduled to begin at 7:00:00 PM, but due to a delay, it actually begins at 7:06:45 PM. Using the same example above, what is the Start Time?",
       options: [
         "7:00:00 PM",
         "6:59:59 PM",
