@@ -33,7 +33,7 @@ const script = [
   {
     text: "Once you find cuttable units: Mark those units as cut (turn them red). This means they won't air in that break anymore. Next, insert a line for the local unit you're moving. Notate everything as you go.",
     audio: '/audio/module-3/local-swaps/module3_localswaps_05.mp3',
-    image: '/images/module-3/local-swaps/Local5.png'
+    image: '/images/module-3/local-swaps/Local5v2.jpg'
   },
   {
     text: "In this example, we're moving the local unit into Break 5 of the 10 PM game. When you email MC, update the title to: 'Here are the swaps to save 2 minutes from Break 11 of the 12 PM game.' Note the new location: 10 PM game Break 5 cut: 6 0 0 8 1 2 and 6 0 9 7 3 5 IN: 1:30 local, please use a fill list",
