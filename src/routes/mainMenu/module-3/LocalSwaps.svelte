@@ -58,12 +58,12 @@ const script = [
   {
     text: "Add a note that says: 'Moved from Break 11 of the 12 PM game.' After you insert the local: In your spreadsheet, mark it as \"No fill\".",
     audio: '/audio/module-3/local-swaps/module3_localswaps_10_11_combined.mp3',
-    image: '/images/module-3/local-swaps/Local11.png'
+    image: '/images/module-3/local-swaps/Local10v2.jpg'
   },
   {
     text: "Finally, double-check that everything is correct:\nThe local is marked as moved to Break 5 of the 10 PM game.\nIt's noted as moved from Break 11 of the 12 PM game.\nAll cuts, moves, and fills are noted.\nYour colors are correct: red means cut, blue means airing.\n\nAnd that's how you swap locals!\nDuring the game, if things are running smoothly and commercials are airing as planned, start preparing a backup plan in case the game does go over.",
     audio: '/audio/module-3/local-swaps/module3_localswaps_11_12_combined.mp3',
-    image: '/images/module-3/local-swaps/Local10.png'
+    image: '/images/module-3/local-swaps/LocalV2_slide11.jpg'
   }
 ];
 
