@@ -33,7 +33,7 @@ const script = [
   {
     text: "Now, you need to show what's being cut to make room for the new spot. Write: 'CUT' and then paste the house numbers of the commercial or commercials you're removing. Always copy and paste the house numbers directly. This really helps eliminate mistakes.",
     audio: '/audio/module-3/master-control-email/module3_mastercontrol_05.mp3',
-    image: '/images/module-3/master-control-email/Email4v2.jpg'
+    image: '/images/module-3/master-control-email/Emailv3.jpg'
   },
   {
     text: "Finally, show what you're adding in. Under 'CUT'- write 'IN' and paste the house number of the spot you are moving into that break. In this case, you are saving a Jersey Mike's commercial, so you will paste that house number right there.",
