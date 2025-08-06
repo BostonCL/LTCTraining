@@ -20,7 +20,7 @@
     {
       text: "Live Coverage Reports: At the end of your shift, you will send out a Live Coverage Report. The list of email recipients is listed below the Live Coverage Reports section.",
       audio: '/audio/module-1/keytab/keytab_03.mp3',
-      image: '/images/module-1/keytab/KeyTab3.png'
+      image: '/images/module-1/keytab/KeyTab3.jpg'
     },
     {
       text: "One more thing to note: at the top of the sheet, you'll see a color code. The important colors to remember are: Yellow (Commercial), Red (CUT), Blue (Moved From). There will be more information about these color codes and their significance in Module 3.",
