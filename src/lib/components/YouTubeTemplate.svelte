@@ -15,6 +15,7 @@ import { DEV_FEATURES } from '$lib/config/dev';
     image?: string;
     titleAudio?: string;
     imageStyle?: string;
+    additionalImage?: string;
   }> = [];
   export let title: string = '';
   export let image: string | undefined = undefined;
@@ -46,6 +47,7 @@ onMount(() => {
     if (image) imageUrls.push(image);
     script.forEach(item => {
       if (item.image) imageUrls.push(item.image);
+      if (item.additionalImage) imageUrls.push(item.additionalImage);
     });
     
     if (imageUrls.length > 0) {
@@ -216,24 +218,63 @@ function getImageSrc(imageUrl: string): string {
           />
         </div>
       {:else if currentScript.image}
-        <img 
-          src={getImageSrc(currentScript.image)} 
-          alt="Module visual" 
-          class="w-full h-full z-0 bg-white object-contain" 
-          style="
-            object-fit: contain;
-            object-position: center center;
-            filter: brightness(0.98);
-            display: block;
-            margin: 0 auto;
-            background: white;
-            {currentScript.imageStyle || ''}
-          " 
-          loading="eager"
-          fetchpriority="high"
-          on:load={handleImageLoad}
-          on:error={handleImageError}
-        />
+        {#if currentScript.additionalImage}
+          <!-- Two images side by side -->
+          <div class="w-full h-full z-0 bg-white flex items-center justify-center gap-4 p-4">
+            <img 
+              src={getImageSrc(currentScript.image)} 
+              alt="Not Allowed example" 
+              class="h-full object-contain" 
+              style="
+                object-fit: contain;
+                object-position: center center;
+                filter: brightness(0.98);
+                background: white;
+                max-width: 45%;
+              " 
+              loading="eager"
+              fetchpriority="high"
+              on:load={handleImageLoad}
+              on:error={handleImageError}
+            />
+            <img 
+              src={getImageSrc(currentScript.additionalImage)} 
+              alt="Allowed example" 
+              class="h-full object-contain" 
+              style="
+                object-fit: contain;
+                object-position: center center;
+                filter: brightness(0.98);
+                background: white;
+                max-width: 45%;
+              " 
+              loading="eager"
+              fetchpriority="high"
+              on:load={handleImageLoad}
+              on:error={handleImageError}
+            />
+          </div>
+        {:else}
+          <!-- Single image -->
+          <img 
+            src={getImageSrc(currentScript.image)} 
+            alt="Module visual" 
+            class="w-full h-full z-0 bg-white object-contain" 
+            style="
+              object-fit: contain;
+              object-position: center center;
+              filter: brightness(0.98);
+              display: block;
+              margin: 0 auto;
+              background: white;
+              {currentScript.imageStyle || ''}
+            " 
+            loading="eager"
+            fetchpriority="high"
+            on:load={handleImageLoad}
+            on:error={handleImageError}
+          />
+        {/if}
       {:else if image && image !== undefined}
         <img 
           src={getImageSrc(image)} 
