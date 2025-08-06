@@ -51,6 +51,17 @@
     return { text: cleanText, isBold, isUnderlined };
   }
 
+  // Helper: Check if text is an image URL
+  function isImageUrl(text: string): boolean {
+    return text.startsWith('![') && text.includes('](') && text.endsWith(')');
+  }
+
+  // Helper: Extract image path from markdown image syntax
+  function extractImagePath(text: string): string | null {
+    const match = text.match(/!\[.*?\]\((.*?)\)/);
+    return match ? match[1] : null;
+  }
+
   // Helper: Word wrap a single string into multiple lines
   function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
     const words = text.split(' ');
