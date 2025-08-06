@@ -36,7 +36,7 @@ const script = [
     image: '/images/module-3/local-swaps/Local5.png'
   },
   {
-    text: "In this example, we're moving the local unit into Break 5 of the 10 PM game. When you email MC, update the title to: 'Here are the swaps to save 2 minutes from Break 11 of the 12 PM game.' Note the new location: 10 PM game Break 5 CUT: xxx and xxx IN: 1:30 local, please use a fill list",
+    text: "In this example, we're moving the local unit into Break 5 of the 10 PM game. When you email MC, update the title to: 'Here are the swaps to save 2 minutes from Break 11 of the 12 PM game.' Note the new location: 10 PM game Break 5 CUT: 600812 and 609735 IN: 1:30 local, please use a fill list",
     audio: '/audio/module-3/local-swaps/module3_localswaps_06.mp3',
     image: '/images/module-3/local-swaps/Local6.png'
   },
