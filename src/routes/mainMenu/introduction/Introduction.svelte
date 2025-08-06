@@ -70,14 +70,16 @@
 			titleAudio: '/audio/introduction/intro_11_title.mp3'
 		},
 		{ 
-			text: 'Effectively managing inventory is crucial for the financial and overall success of CBS Sports Network. The network operates on a 24-hour clock from 6 AM to 6 AM, so our goal is to schedule and properly organize the commercials within that 24-hour period! Beware! There are many factors that contribute to the ever changing schedules of live coverage. A program can go longer than anticipated. As a result, Units can be cut. Our job is to advocate for Commercials/Units and ensure that they air on TV despite these changes. The role may appear intimidating at first, but don\'t worry. This training course will set you up for success in the CBS Traffic Department. Keep in mind there will be practice questions throughout the course, and there will be a test at the end. You must score 70% or higher on the test to proceed. Participants must take notes and prepare questions for a follow-up appointment with the Traffic Team.',
-			audio: '/audio/introduction/intro_12_13_14_15_16_combined.mp3',
-			image: '/images/introduction/basketballBackground.jpg',
+			text: 'What is live coverage? Managing and airing all Commercials/Units during live games. Communicating with the network producer and Master Control through phone and email. We will refer to Master Control as MC from here on. They are the people that ultimately send the commercials to air. We communicate with them the most. So be nice to them! Marking down airing times.',
+			audio: '/audio/introduction/intro_12.mp3',
+			whiteboardText: ['**__What is live coverage?__**', '• Airing Commercials', '• Constantly Communicating through Phone & Email', '• Marking down airing times'],
 			titleAudio: '/audio/introduction/intro_12_title.mp3'
 		},
 		{ 
-			text: 'Participants must take notes and prepare questions for a follow-up appointment with the Traffic Team.',
-			audio: '/audio/introduction/intro_13.mp3'
+			text: 'Effectively managing inventory is crucial for the financial and overall success of CBS Sports Network. The network operates on a 24-hour clock from 6 AM to 6 AM, so our goal is to schedule and properly organize the commercials within that 24-hour period! Beware! There are many factors that contribute to the ever changing schedules of live coverage. A program can go longer than anticipated. As a result, Units can be cut. Our job is to advocate for Commercials/Units and ensure that they air on TV despite these changes. The role may appear intimidating at first, but don\'t worry. This training course will set you up for success in the CBS Traffic Department. Keep in mind there will be practice questions throughout the course, and there will be a test at the end. You must score 70% or higher on the test to proceed. Participants must take notes and prepare questions for a follow-up appointment with the Traffic Team.',
+			audio: '/audio/introduction/intro_12_13_14_15_16_combined.mp3',
+			image: '/images/introduction/basketballBackground.jpg',
+			titleAudio: '/audio/introduction/intro_13_title.mp3'
 		}
 	];
 

@@ -167,6 +167,8 @@
   
   // Check if Module 1 is fully completed (all 13 submodules)
   $: module1Completed = completedSubmodules.size === 13;
+  
+
 
   // Define the content map for easier rendering
   const module1Submodules = [
@@ -259,11 +261,27 @@
     return "Next";
   }
 
+
+  
+
+
+  // Function to log fullscreen state for debugging
+  function logFullscreenState(context: string) {
+    const isFullscreen = !!document.fullscreenElement;
+    const playerArea = document.querySelector('[data-player-area]');
+    console.log(`[${context}] Fullscreen: ${isFullscreen}, Player area found: ${!!playerArea}`);
+  }
+
   // Function to navigate to the next destination
   function navigateToNext(currentSection: string, currentSubIndex?: number) {
     console.log('navigateToNext called with:', currentSection, currentSubIndex);
     const nextDest = getNextDestination(currentSection, currentSubIndex);
     console.log('nextDest:', nextDest);
+    
+    // Check if we're in fullscreen before navigation
+    const wasFullscreen = !!document.fullscreenElement;
+    logFullscreenState('Before navigation');
+    
     if (nextDest) {
       if (nextDest.subIndex !== undefined) {
         // Navigate to a specific submodule
@@ -277,23 +295,99 @@
         console.log('Navigating to main section:', nextDest.next);
         mainSection = nextDest.next;
       }
+      
+      // If we were in fullscreen, restore it on the new content
+      if (wasFullscreen) {
+        console.log('Was in fullscreen, will restore fullscreen on new content');
+        // Use a longer delay and try multiple times
+        setTimeout(() => {
+          const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+          if (newPlayerArea && newPlayerArea.requestFullscreen) {
+            console.log('Opening next content in fullscreen');
+            newPlayerArea.requestFullscreen().then(() => {
+              console.log('Fullscreen restored successfully');
+              logFullscreenState('After restoration');
+            }).catch(err => {
+              console.log('Failed to open next content in fullscreen:', err);
+              // Try one more time after a longer delay
+              setTimeout(() => {
+                if (newPlayerArea && newPlayerArea.requestFullscreen) {
+                  newPlayerArea.requestFullscreen().then(() => {
+                    logFullscreenState('After second attempt');
+                  }).catch(err2 => {
+                    console.log('Second attempt also failed:', err2);
+                    logFullscreenState('After failed second attempt');
+                  });
+                }
+              }, 1000);
+            });
+          } else {
+            console.log('No player area found for fullscreen restoration');
+            logFullscreenState('No player area found');
+          }
+        }, 800);
+      }
     } else {
       console.log('No next destination found for:', currentSection);
     }
   }
 
   function goToIntroduction() {
+    const wasFullscreen = !!document.fullscreenElement;
     mainSection = 'introduction';
+    if (wasFullscreen) {
+      setTimeout(() => {
+        const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+        if (newPlayerArea && newPlayerArea.requestFullscreen) {
+          newPlayerArea.requestFullscreen().catch(err => {
+            console.log('Failed to open introduction in fullscreen:', err);
+          });
+        }
+      }, 800);
+    }
   }
   function goToModule1Intro() {
+    const wasFullscreen = !!document.fullscreenElement;
     mainSection = 'module1';
+    if (wasFullscreen) {
+      setTimeout(() => {
+        const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+        if (newPlayerArea && newPlayerArea.requestFullscreen) {
+          newPlayerArea.requestFullscreen().catch(err => {
+            console.log('Failed to open module1 intro in fullscreen:', err);
+          });
+        }
+      }, 800);
+    }
   }
   function goToModule1Sub(idx: number) {
+    const wasFullscreen = !!document.fullscreenElement;
     mainSection = 'module1sub';
     module1SubIdx = idx;
+    if (wasFullscreen) {
+      setTimeout(() => {
+        const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+        if (newPlayerArea && newPlayerArea.requestFullscreen) {
+          newPlayerArea.requestFullscreen().catch(err => {
+            console.log('Failed to open module1 sub in fullscreen:', err);
+          });
+        }
+      }, 800);
+    }
   }
   function goToQuiz() {
+    const wasFullscreen = !!document.fullscreenElement;
     mainSection = 'quiz';
+    if (wasFullscreen) {
+      setTimeout(() => {
+        const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+        if (newPlayerArea && newPlayerArea.requestFullscreen) {
+          newPlayerArea.requestFullscreen().catch(err => {
+            console.log('Failed to open quiz in fullscreen:', err);
+          });
+        }
+      }, 800);
+    }
   }
   
   function goToNextSubmodule() {
@@ -305,8 +399,19 @@
       goToModule1Intro();
     } else if (mainSection === 'module1') {
       // Go to first submodule (Program Line)
+      const wasFullscreen = !!document.fullscreenElement;
       mainSection = 'module1sub';
       module1SubIdx = 0;
+      if (wasFullscreen) {
+        setTimeout(() => {
+          const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+          if (newPlayerArea && newPlayerArea.requestFullscreen) {
+            newPlayerArea.requestFullscreen().catch(err => {
+              console.log('Failed to open module1 sub in fullscreen:', err);
+            });
+          }
+        }, 800);
+      }
     } else if (mainSection === 'module1sub') {
       if (module1SubIdx < module1Submodules.length - 1) {
         goToModule1Sub(module1SubIdx + 1);
@@ -553,7 +658,7 @@
 <div class="flex min-h-[80vh] relative">
   <!-- Sidebar Table of Contents -->
   {#if sidebarOpen}
-    <aside class="bg-white border-r w-64 transition-all duration-200 ease-in-out z-20">
+    <aside class="sidebar bg-white border-r w-64 transition-all duration-200 ease-in-out z-20">
       <div class="flex items-center justify-between px-4 py-3 border-b">
         <span class="font-semibold text-gray-700">Table of Contents</span>
         <button on:click={() => (sidebarOpen = false)} class="text-gray-400 hover:text-gray-700 text-lg font-bold">×</button>
@@ -685,13 +790,13 @@
     </aside>
   {:else}
     <!-- Floating menu button -->
-    <button on:click={() => (sidebarOpen = true)} class="fixed top-20 left-4 z-30 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg p-3 focus:outline-none" aria-label="Open sidebar menu">
+    <button on:click={() => (sidebarOpen = true)} class="floating-menu-button fixed top-20 left-4 z-30 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg p-3 focus:outline-none" aria-label="Open sidebar menu">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
   {/if}
 
   <!-- Main Content -->
-  <main class="flex-1 flex flex-col items-center {!sidebarOpen ? 'sidebar-collapsed' : ''}">
+  <main data-fullscreen-container class="flex-1 flex flex-col items-center {!sidebarOpen ? 'sidebar-collapsed' : ''}">
     {#if mainSection === 'introduction'}
       <Introduction on:navigateToNextSubmodule={() => {
         mainSection = 'module1';
@@ -709,13 +814,41 @@
       {:else if module1SubIdx === 3}
         <EventType progressId="module1_eventtype" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 4}
-        <Length progressId="module1_length" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} on:navigateToQuiz={() => { console.log('Length: navigateToQuiz called'); mainSection = 'lengthQuiz'; }} />
+        <Length progressId="module1_length" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} on:navigateToQuiz={() => { 
+          console.log('Length: navigateToQuiz called'); 
+          const wasFullscreen = !!document.fullscreenElement;
+          mainSection = 'lengthQuiz';
+          if (wasFullscreen) {
+            setTimeout(() => {
+              const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+              if (newPlayerArea && newPlayerArea.requestFullscreen) {
+                newPlayerArea.requestFullscreen().catch(err => {
+                  console.log('Failed to open quiz in fullscreen:', err);
+                });
+              }
+            }, 800);
+          }
+        }} />
       {:else if module1SubIdx === 5}
         <Title progressId="module1_title" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 6}
         <Advertiser progressId="module1_advertiser" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 7}
-        <HouseNumber progressId="module1_housenumber" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} on:navigateToQuiz={() => { console.log('HouseNumber: navigateToQuiz called'); mainSection = 'houseNumberQuiz'; }} />
+        <HouseNumber progressId="module1_housenumber" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} on:navigateToQuiz={() => { 
+          console.log('HouseNumber: navigateToQuiz called'); 
+          const wasFullscreen = !!document.fullscreenElement;
+          mainSection = 'houseNumberQuiz';
+          if (wasFullscreen) {
+            setTimeout(() => {
+              const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+              if (newPlayerArea && newPlayerArea.requestFullscreen) {
+                newPlayerArea.requestFullscreen().catch(err => {
+                  console.log('Failed to open quiz in fullscreen:', err);
+                });
+              }
+            }, 800);
+          }
+        }} />
       {:else if module1SubIdx === 8}
         <OrderedAs progressId="module1_orderedas" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} />
       {:else if module1SubIdx === 9}

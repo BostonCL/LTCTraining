@@ -1,1 +1,6 @@
 @import 'tailwindcss';
+
+/* Minimal fullscreen styles - just let it scale naturally */
+[data-player-area]:fullscreen {
+  background: white;
+}
