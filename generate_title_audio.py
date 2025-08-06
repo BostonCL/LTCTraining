@@ -48,10 +48,7 @@ def main():
         'intro_09_title.mp3': 'Swaps',
         'intro_10_title.mp3': 'Dead',
         'intro_11_title.mp3': 'CUT',
-        'intro_12_title.mp3': 'What is live coverage?',
-        'intro_13_title.mp3': 'What is live coverage?',
-        'intro_14_title.mp3': 'What is live coverage?',
-        'intro_15_title.mp3': 'What is live coverage?'
+        'intro_12_title.mp3': 'What is live coverage?'
     }
     
     # Create output directory if it doesn't exist
