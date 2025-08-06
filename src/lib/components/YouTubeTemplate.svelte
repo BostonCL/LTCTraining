@@ -16,7 +16,6 @@ import { DEV_FEATURES } from '$lib/config/dev';
     titleAudio?: string;
     imageStyle?: string;
     additionalImage?: string;
-    customImages?: Array<{ label: string; path: string }>;
   }> = [];
   export let title: string = '';
   export let image: string | undefined = undefined;
@@ -49,11 +48,6 @@ onMount(() => {
     script.forEach(item => {
       if (item.image) imageUrls.push(item.image);
       if (item.additionalImage) imageUrls.push(item.additionalImage);
-      if (item.customImages) {
-        item.customImages.forEach(customImage => {
-          imageUrls.push(customImage.path);
-        });
-      }
     });
     
     if (imageUrls.length > 0) {
@@ -213,47 +207,16 @@ function getImageSrc(imageUrl: string): string {
       {#if accumulatedWhiteboardText.length > 0}
         <!-- Whiteboard Animation -->
         <div class="absolute inset-0 z-10 bg-white">
-          {#if currentScript.customImages}
-            <!-- Custom whiteboard with images -->
-            <div class="w-full h-full bg-white p-8 flex flex-col">
-              <WhiteboardAnimation 
-                textLines={accumulatedWhiteboardText}
-                drawSpeed={0.03}
-                audioText={currentScript.text}
-                titleAudio={currentScript.titleAudio || ''}
-                startWithAudio={progressId === 'module2_intro' && currentIdx === 1}
-                on:titleAudioComplete={onTitleAudioComplete}
-                on:animationComplete={onAnimationComplete}
-              />
-              <!-- Custom images below whiteboard text -->
-              <div class="flex justify-center items-center gap-8 mt-8">
-                {#each currentScript.customImages as image}
-                  <div class="text-center">
-                    <img 
-                      src={getImageSrc(image.path)} 
-                      alt={image.label} 
-                      class="max-h-48 object-contain rounded-lg shadow-md" 
-                      loading="eager"
-                      fetchpriority="high"
-                      on:load={handleImageLoad}
-                      on:error={handleImageError}
-                    />
-                    <p class="mt-2 text-sm font-semibold text-gray-700">{image.label}</p>
-                  </div>
-                {/each}
-              </div>
-            </div>
-          {:else}
-            <WhiteboardAnimation 
+                      <WhiteboardAnimation 
               textLines={accumulatedWhiteboardText}
               drawSpeed={0.03}
               audioText={currentScript.text}
               titleAudio={currentScript.titleAudio || ''}
-              startWithAudio={progressId === 'module2_intro' && currentIdx === 1}
+              startWithAudio={(progressId === 'module2_intro' && currentIdx === 1) || (progressId === 'standalone_rule' && currentIdx === 1)}
+              showAllAtOnce={progressId === 'standalone_rule' && currentIdx === 1}
               on:titleAudioComplete={onTitleAudioComplete}
               on:animationComplete={onAnimationComplete}
             />
-          {/if}
         </div>
       {:else if currentScript.image}
         {#if currentScript.additionalImage}

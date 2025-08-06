@@ -25,15 +25,13 @@ const script = [
     text: `Not Allowed:\nAllowed:\nIn this example, the Hershey's unit creates the necessary separation between the insurance and alcohol units.`,
     audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02.mp3',
     whiteboardText: [
-      '**__Not Allowed:__**',
-      '**__Allowed:__**',
+      'Not Allowed:',
+      '![Not Allowed](/images/module-3/stand-alone-rule/NotAllowed.jpg)',
+      'Allowed:',
+      '![Allowed](/images/module-3/stand-alone-rule/Allowed.jpg)',
       'In this example, the Hershey\'s unit creates the necessary separation between the insurance and alcohol units.'
     ],
-    titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02_title.mp3',
-    customImages: [
-      { label: 'Not Allowed', path: '/images/module-3/stand-alone-rule/NotAllowed.jpg' },
-      { label: 'Allowed', path: '/images/module-3/stand-alone-rule/Allowed.jpg' }
-    ]
+    titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02_title.mp3'
   }
 ];
 
@@ -55,6 +53,6 @@ function handleNext() {
   title={videoInfo.title}
 
   onNextSubmodule={handleNext}
-  progressId={progressId}
+  progressId="standalone_rule"
   nextButtonText={nextButtonText}
 /> 
