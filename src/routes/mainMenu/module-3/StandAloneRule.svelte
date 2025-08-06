@@ -26,11 +26,13 @@ const script = [
     audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02.mp3',
     whiteboardText: [
       '**__Not Allowed:__**',
-      'Allowed:',
+      '**__Allowed:__**',
       'In this example, the Hershey\'s unit creates the necessary separation between the insurance and alcohol units.'
     ],
     titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02_title.mp3',
-    image: '/images/introduction/basketballBackground.png'
+    image: '/images/module-3/stand-alone-rule/NotAllowed.jpg',
+    imageStyle: 'max-width: 45%; margin-right: 2%;',
+    additionalImage: '/images/module-3/stand-alone-rule/Allowed.jpg'
   }
 ];
 
