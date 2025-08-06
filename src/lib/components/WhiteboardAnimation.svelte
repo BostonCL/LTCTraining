@@ -8,6 +8,7 @@
   export let drawSpeed: number = 0.05; // Speed of text drawing (seconds per character)
   export let audioText: string = ''; // The text that corresponds to the audio being played
   export let titleAudio: string = ''; // Audio file for the title
+  export let startWithAudio: boolean = false; // Special case: start animation when audio starts
 
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
@@ -441,6 +442,10 @@
       // Play title audio first
       console.log('Title audio detected, playing title first');
       playTitleAudio();
+    } else if (startWithAudio) {
+      // Special case: start animation immediately when audio starts
+      console.log('startWithAudio enabled - starting animation immediately with audio');
+      startAnimation();
     } else {
       // No title audio, follow original timing rules
       const shouldStartImmediately = audioTextMatchesWhiteboard();

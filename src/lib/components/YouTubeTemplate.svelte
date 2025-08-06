@@ -210,6 +210,7 @@ function getImageSrc(imageUrl: string): string {
             drawSpeed={0.03}
             audioText={currentScript.text}
             titleAudio={currentScript.titleAudio || ''}
+            startWithAudio={progressId === 'module2_intro' && currentIdx === 1}
             on:titleAudioComplete={onTitleAudioComplete}
             on:animationComplete={onAnimationComplete}
           />
