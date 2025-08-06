@@ -140,6 +140,7 @@ $: isFullscreen = $fullscreenEnabled;
 
 function handleToggleFullscreen() {
   if (!isFullscreen) {
+    // Use the player area directly for proper fullscreen
     if (playerArea?.requestFullscreen) {
       playerArea.requestFullscreen();
     }
@@ -199,7 +200,7 @@ function getImageSrc(imageUrl: string): string {
     </div>
   {/if}
   <!-- Video Player Area -->
-  <div bind:this={playerArea} class="w-full bg-black rounded-lg overflow-hidden shadow-lg mb-6 relative">
+  <div bind:this={playerArea} data-player-area class="w-full bg-black rounded-lg overflow-hidden shadow-lg mb-6 relative">
     <div class="relative aspect-video bg-black w-full overflow-hidden">
       {#if accumulatedWhiteboardText.length > 0}
         <!-- Whiteboard Animation -->

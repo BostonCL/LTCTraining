@@ -25,6 +25,9 @@
   let timeStarted: number;
   let timeCompleted: number;
 
+  // Fullscreen state
+  let isFullscreen = false;
+
   $: currentQuestion = questions[currentQuestionIndex];
   $: isLastQuestion = currentQuestionIndex === questions.length - 1;
   $: canProceed = selectedAnswers[currentQuestionIndex] !== null && selectedAnswers[currentQuestionIndex] !== undefined;
@@ -33,7 +36,44 @@
   onMount(() => {
     timeStarted = Date.now();
     selectedAnswers = new Array(questions.length).fill(null);
+    
+    // Check initial fullscreen state
+    isFullscreen = !!document.fullscreenElement;
+    
+    // Listen for fullscreen changes
+    const handleFullscreenChange = () => {
+      isFullscreen = !!document.fullscreenElement;
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
   });
+
+  function handleToggleFullscreen() {
+    if (!isFullscreen) {
+      // Enter fullscreen
+      const playerArea = document.querySelector('[data-player-area]') as HTMLElement;
+      if (playerArea && playerArea.requestFullscreen) {
+        playerArea.requestFullscreen().then(() => {
+          isFullscreen = true;
+        }).catch(err => {
+          console.log('Failed to enter fullscreen:', err);
+        });
+      }
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen().then(() => {
+          isFullscreen = false;
+        }).catch(err => {
+          console.log('Failed to exit fullscreen:', err);
+        });
+      }
+    }
+  }
 
   function selectAnswer(optionIndex: number) {
     selectedAnswers[currentQuestionIndex] = optionIndex;
@@ -68,8 +108,24 @@
   }
 </script>
 
-<div class="flex justify-center items-center min-h-[80vh] bg-gradient-to-br from-slate-50 to-blue-100">
+<div class="flex justify-center items-center min-h-[80vh] bg-gradient-to-br from-slate-50 to-blue-100" data-player-area>
   <div class="w-full max-w-2xl rounded-3xl overflow-hidden relative bg-gradient-to-br from-white/90 to-blue-50/80">
+    <!-- Fullscreen toggle button -->
+    <button
+      class="absolute top-4 right-4 z-50 p-2 rounded-lg bg-white/80 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
+      on:click={handleToggleFullscreen}
+      title="Toggle fullscreen"
+    >
+      {#if isFullscreen}
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      {:else}
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+        </svg>
+      {/if}
+    </button>
     <div class="p-6 sm:p-10">
       <h1 class="text-2xl font-extrabold text-slate-900 mb-1 tracking-tight">{title}</h1>
       <p class="text-slate-500 mb-6">{description}</p>

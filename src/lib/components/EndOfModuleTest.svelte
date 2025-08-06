@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  
   type Question = {
     text: string;
     options: string[];
@@ -126,6 +128,9 @@
   let showSummary = false;
   let score = 0;
   let failThreshold = 7; // must get at least 7/10 correct
+  
+  // Fullscreen state
+  let isFullscreen = false;
 
   function submitAnswer(selected: number) {
     if (!showExtraQuestions) {
@@ -171,10 +176,64 @@
       }
     }
   }
+
+  function handleToggleFullscreen() {
+    if (!isFullscreen) {
+      // Enter fullscreen
+      const playerArea = document.querySelector('[data-player-area]') as HTMLElement;
+      if (playerArea && playerArea.requestFullscreen) {
+        playerArea.requestFullscreen().then(() => {
+          isFullscreen = true;
+        }).catch(err => {
+          console.log('Failed to enter fullscreen:', err);
+        });
+      }
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen().then(() => {
+          isFullscreen = false;
+        }).catch(err => {
+          console.log('Failed to exit fullscreen:', err);
+        });
+      }
+    }
+  }
+
+  // Check fullscreen state on mount and listen for changes
+  onMount(() => {
+    isFullscreen = !!document.fullscreenElement;
+    
+    const handleFullscreenChange = () => {
+      isFullscreen = !!document.fullscreenElement;
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  });
 </script>
 
 {#if !showSummary}
-  <div class="quiz-container">
+  <div class="quiz-container" data-player-area>
+    <!-- Fullscreen toggle button -->
+    <button
+      class="absolute top-4 right-4 z-50 p-2 rounded-lg bg-white/80 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
+      on:click={handleToggleFullscreen}
+      title="Toggle fullscreen"
+    >
+      {#if isFullscreen}
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      {:else}
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+        </svg>
+      {/if}
+    </button>
     <div class="quiz-progress">
       {#if !showExtraQuestions}
         Question {currentQuestionIndex + 1} of {mainQuestions.length}
@@ -215,7 +274,23 @@
     {/if}
   </div>
 {:else}
-  <div class="quiz-summary">
+  <div class="quiz-summary" data-player-area>
+    <!-- Fullscreen toggle button -->
+    <button
+      class="absolute top-4 right-4 z-50 p-2 rounded-lg bg-white/80 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
+      on:click={handleToggleFullscreen}
+      title="Toggle fullscreen"
+    >
+      {#if isFullscreen}
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      {:else}
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+        </svg>
+      {/if}
+    </button>
     <h2>Test Complete!</h2>
     <p>Your score: {score} / {mainQuestions.length}</p>
     {#if showExtraQuestions}
