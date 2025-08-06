@@ -12,10 +12,10 @@ export let nextButtonText: string = "Next";
 // STAND ALONE Rule script (placeholder, update as needed)
 const script = [
   {
-    text: `STAND ALONE Rule: Alcohol Ad Placement\nCommercials for alcohol brands can never air directly before or after commercials for automotive or insurance companies.`,
+    text: `Commercials for alcohol brands can never air directly before or after commercials for automotive or insurance companies.`,
     audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_01.mp3',
     whiteboardText: [
-      '**__STAND ALONE Rule: Alcohol Ad Placement__**',
+      '**__STAND ALONE Rule__**',
       'Commercials for alcohol brands can never air directly before or after commercials for automotive or insurance companies.'
     ],
     titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_01_title.mp3',
