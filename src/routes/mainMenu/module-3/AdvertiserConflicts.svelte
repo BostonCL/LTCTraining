@@ -12,10 +12,10 @@ export let nextButtonText: string = "Next";
 // Advertiser Conflicts script (placeholder, update as needed)
 const script = [
   {
-    text: `Advertiser Conflicts also known as Brand Conflicts. Advertiser conflict is when competing brands appear in the same break together. Do not place competing brands in the same break. It is critical to never schedule units from competing brands in the same commercial break.`,
+    text: `Advertiser conflict is when competing brands appear in the same break together. Do not place competing brands in the same break. It is critical to never schedule units from competing brands in the same commercial break.`,
     audio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_01.mp3',
     whiteboardText: [
-      '**__Advertiser Conflicts also known as Brand Conflicts__**',
+      '**__Advertiser Conflicts__**',
       'Advertiser conflict is when competing brands appear in the same break together.',
       'Do not place competing brands in the same break.',
       'It is critical to never schedule units from competing brands in the same commercial break.'
