@@ -17,7 +17,7 @@ const script = [
     image: '/images/introduction/basketballBackground.png'
   },
   {
-    text: 'Everything found in the list above is also called Selling Title. The Selling Title is the word or phrase used to identify the category of a specific commercial.',
+    text: 'Everything found in the previous slide is also called the Selling Title. The Selling Title is the word or phrase used to identify the category of a specific commercial.',
     audio: '/audio/module-2/selling-title/module2_sellingtitle_02.mp3',
     whiteboardText: [
       '**__Selling Title__**',
