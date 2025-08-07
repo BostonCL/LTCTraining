@@ -65,6 +65,7 @@ let data = [
 
 let selectedColor = '#F2DCDB'; // Default light red
 let showColorPicker = false;
+let colorTimeout: ReturnType<typeof setTimeout> | null = null;
 let cellColors: { [key: string]: string } = {};
 let clearedCells = new Set<string>();
 
@@ -234,9 +235,11 @@ onMount(() => {
     selectionMode: 'range',
     outsideClickDeselects: false,
     afterRender: () => {
-      // Use requestAnimationFrame to ensure DOM is ready and prevent flickering
-      requestAnimationFrame(() => {
-        if (!hot) return;
+      // Debounce color application to prevent flickering
+      if (hot && !hot.isDestroyed) {
+        if (colorTimeout) clearTimeout(colorTimeout);
+        colorTimeout = setTimeout(() => {
+          if (!hot || hot.isDestroyed) return;
         
         // Apply base colors first (event type colors)
         const eventTypeCol = 2;
@@ -313,7 +316,7 @@ onMount(() => {
             }
           }
         }
-      });
+      }, 50); // 50ms debounce
     }
   });
   return () => hot?.destroy();
