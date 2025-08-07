@@ -362,19 +362,17 @@ onMount(() => {
 </script>
 
 <div class="excel-wrapper">
-  <div class="excel-header">
-    <h1 class="excel-title">Time Out Practice</h1>
-    <p class="excel-subtitle">Practice time out scenarios using the interactive Excel sheet below.</p>
-  </div>
   <div class="excel-instructions">
     {#if intro}
-      <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-1">
         <div></div>
         <button class="excel-nav-btn excel-nav-btn-next" aria-label="Go to Step 1" on:click={goToStep1}>
           Next →
         </button>
       </div>
-      <h2 class="excel-instructions-title">Instructions</h2>
+      <h1 class="excel-instructions-title">Time Out Practice</h1>
+      <p class="excel-subtitle">Practice time out scenarios using the interactive Excel sheet below.</p>
+      <h2 class="excel-instructions-subtitle">Instructions</h2>
       <div class="excel-instructions-body">
         The Game went over by 2 minutes! The End Time for the 8:00pm game was 10:02:00
       </div>
@@ -504,51 +502,43 @@ CUT: 601357</pre>
     display: flex;
     flex-direction: column;
   }
-  .excel-header {
-    margin-bottom: 20px;
-    padding-top: 2rem;
-    padding-left: 1rem;
-    transition: padding-left 0.2s ease-in-out;
-  }
-
-  /* Adjust padding when sidebar is collapsed */
-  :global(.sidebar-collapsed) .excel-header {
-    padding-left: 0.5rem;
-  }
-  .excel-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #1f1f1f;
-    margin: 0 0 8px 0;
-  }
   .excel-subtitle {
     font-size: 14px;
     color: #666;
-    margin: 0;
+    margin: 0 0 12px 0;
   }
   .excel-instructions {
     border: 2px solid #0074D9;
     background: #f0f6ff;
     border-radius: 6px;
-    padding: 16px 20px;
-    margin: 18px 0 18px 0;
+    padding: 8px 20px;
+    margin: 10px 0 10px 0;
     max-width: 900px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     position: relative;
   }
   .excel-instructions-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0074D9;
+    margin-bottom: 4px;
+    margin-top: 0;
+  }
+  .excel-instructions-subtitle {
     font-size: 1.15rem;
     font-weight: bold;
     color: #0074D9;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    margin-top: 0;
   }
   .excel-instructions-body {
     font-size: 1rem;
     color: #1a2a3a;
+    margin-top: 0;
   }
   .excel-toolbar {
-    margin-top: 15px;
-    padding: 10px;
+    margin-top: 8px;
+    padding: 8px;
     background: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 4px;
