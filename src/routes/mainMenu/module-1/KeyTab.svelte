@@ -6,6 +6,10 @@
 
   const dispatch = createEventDispatcher();
 
+  // Props
+  export let progressId: string;
+  export let nextButtonText: string = "Next";
+
   const keyTabScript = [
     {
       text: "In the bottom left-hand corner of this Excel file, you'll see two tabs: 'Key' and 'Coverage.' All that we have discussed so far is found in the Coverage tab. You'll spend most of your time working in the Coverage tab, but occasionally you'll need to refer to the Key tab. Keep in mind that some information on the Key tab is outdated, so focus only on the important information explained here.",
@@ -50,6 +54,7 @@
     script={keyTabScript}
     title="Key Tab"
     onNextSubmodule={handleNext}
-    progressId="module1_keytab"
+    progressId={progressId}
+    nextButtonText={nextButtonText}
   />
 </div> 
