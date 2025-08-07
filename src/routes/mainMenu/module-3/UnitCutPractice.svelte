@@ -317,10 +317,11 @@ onMount(() => {
           }
         }
       }, 50); // 50ms debounce
-    }
+        }
+      }
+    });
+    return () => hot?.destroy();
   });
-  return () => hot?.destroy();
-});
 </script>
 
 <div class="excel-wrapper">
