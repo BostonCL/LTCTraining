@@ -464,7 +464,38 @@
         // This ensures the selection is properly tracked
       },
       afterRender: () => {
-        // Reapply persistent colors after rendering
+        // Apply base colors first (event type colors)
+        const eventTypeCol = 2;
+        for (let row = 1; row < data.length; row++) {
+          for (let col = 0; col < data[row].length; col++) {
+            const cellKey = `${row}-${col}`;
+            const cellElement = hot?.getCell(row, col);
+            if (!cellElement) continue;
+            
+            // Skip if cell is cleared or has persistent color
+            if (clearedCells.has(cellKey) || cellColors[cellKey]) continue;
+            
+            // Apply event type colors
+            if (data[row][eventTypeCol]) {
+              const eventType = data[row][eventTypeCol].toLowerCase();
+              if (eventType === 'commercial' && col !== 0) {
+                cellElement.style.setProperty('background-color', '#FFFF00', 'important');
+                cellElement.style.removeProperty('color');
+              } else if (eventType === 'local' && col !== 0) {
+                cellElement.style.setProperty('background-color', '#7030A0', 'important');
+                cellElement.style.setProperty('color', '#fff', 'important');
+              } else if (eventType === 'program' && col !== 0) {
+                cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
+                cellElement.style.setProperty('font-weight', 'bold', 'important');
+              } else if (eventType === 'promo' && col !== 0) {
+                cellElement.style.setProperty('background-color', '#375623', 'important');
+                cellElement.style.setProperty('color', '#fff', 'important');
+              }
+            }
+          }
+        }
+        
+        // Apply persistent colors (user-applied colors)
         Object.keys(cellColors).forEach(cellKey => {
           if (clearedCells.has(cellKey)) {
             delete cellColors[cellKey];
@@ -474,41 +505,34 @@
           const cellElement = hot?.getCell(row, col);
           if (cellElement) {
             cellElement.style.setProperty('background-color', cellColors[cellKey], 'important');
-            // If green or purple, also set text color to white
             if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
               cellElement.style.setProperty('color', '#fff', 'important');
-            } else {
-              cellElement.style.removeProperty('color');
-            }
-            // Row 0: bold and blue (#0000ff)
-            if (row === 0) {
-              cellElement.style.setProperty('font-weight', 'bold', 'important');
-              cellElement.style.setProperty('color', '#0000ff', 'important');
-            } else {
-              cellElement.style.removeProperty('font-weight');
             }
           }
         });
-        // Always set column 0 (A) cells (except header) to white if not colored
-        if (hot) {
-          for (let r = 1; r < data.length; r++) {
-            const cellKey = `${r}-0`;
-            const cellElement = hot.getCell(r, 0);
-            if (cellElement && !cellColors[cellKey]) {
-              cellElement.style.setProperty('background-color', '#fff', 'important');
-              cellElement.style.removeProperty('color');
-            }
+        
+        // Apply header styling (row 0)
+        for (let col = 0; col < data[0].length; col++) {
+          const cellElement = hot?.getCell(0, col);
+          if (cellElement) {
+            cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
+            cellElement.style.setProperty('color', '#0000ff', 'important');
+            cellElement.style.setProperty('font-weight', 'bold', 'important');
           }
         }
-        // Set column A to blue and bold for rows where column 0 is 'End Time', 'Start Time', or 'Start Time 9:00:00'
-        if (hot) {
-          for (let r = 1; r < data.length; r++) {
-            if (data[r][0] === 'End Time' || data[r][0] === 'Start Time' || data[r][0] === 'Start Time 9:00:00') {
-              const cellElement = hot.getCell(r, 0);
-              if (cellElement) {
-                cellElement.style.setProperty('color', '#0000ff', 'important');
-                cellElement.style.setProperty('font-weight', 'bold', 'important');
-              }
+        
+        // Apply special column A styling
+        for (let row = 1; row < data.length; row++) {
+          const cellElement = hot?.getCell(row, 0);
+          if (cellElement && typeof data[row][0] === 'string') {
+            const cellValue = data[row][0].toLowerCase().trim();
+            if (cellValue === 'start time' || cellValue === 'end time' || cellValue === 'start time 9:00:00') {
+              cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
+              cellElement.style.setProperty('color', '#0000ff', 'important');
+              cellElement.style.setProperty('font-weight', 'bold', 'important');
+            } else if (!cellColors[`${row}-0`] && !clearedCells.has(`${row}-0`)) {
+              cellElement.style.setProperty('background-color', '#fff', 'important');
+              cellElement.style.removeProperty('color');
             }
           }
         }
@@ -520,94 +544,7 @@
         };
       }
     });
-
-    // Color 'Commercial' event type rows yellow except for column 0
-    const eventTypeCol = 2; // 0-based index for 'Event Type'
-    for (let row = 1; row < data.length; row++) {
-      if (data[row][eventTypeCol] && data[row][eventTypeCol].toLowerCase() === 'commercial') {
-        for (let col = 1; col < data[row].length; col++) { // start at 1 to skip column 0
-          const cellKey = `${row}-${col}`;
-          if (clearedCells.has(cellKey)) {
-            delete cellColors[cellKey];
-            continue;
-          }
-          cellColors[cellKey] = '#FFFF00';
-          const cellElement = hot.getCell(row, col);
-          if (cellElement) {
-            cellElement.style.setProperty('background-color', '#FFFF00', 'important');
-            cellElement.style.removeProperty('color');
-          }
-        }
-      }
-      // Color 'Local' event type rows dark purple except for column 0
-      if (data[row][eventTypeCol] && data[row][eventTypeCol].toLowerCase() === 'local') {
-        for (let col = 1; col < data[row].length; col++) { // start at 1 to skip column 0
-          const cellKey = `${row}-${col}`;
-          if (clearedCells.has(cellKey)) {
-            delete cellColors[cellKey];
-            continue;
-          }
-          cellColors[cellKey] = '#7030A0';
-          const cellElement = hot.getCell(row, col);
-          if (cellElement) {
-            cellElement.style.setProperty('background-color', '#7030A0', 'important');
-            cellElement.style.setProperty('color', '#fff', 'important');
-          }
-        }
-      }
-      // Color 'Program' event type rows grey except for column 0
-      if (data[row][eventTypeCol] && data[row][eventTypeCol].toLowerCase() === 'program') {
-        for (let col = 1; col < data[row].length; col++) { // start at 1 to skip column 0
-          const cellKey = `${row}-${col}`;
-          if (clearedCells.has(cellKey)) {
-            delete cellColors[cellKey];
-            continue;
-          }
-          cellColors[cellKey] = '#A5A5A5';
-          const cellElement = hot.getCell(row, col);
-          if (cellElement) {
-            cellElement.style.setProperty('background-color', '#A5A5A5', 'important');
-            cellElement.style.removeProperty('color');
-          }
-        }
-      }
-      // Color 'Promo' event type rows new green except for column 0
-      if (data[row][eventTypeCol] && data[row][eventTypeCol].toLowerCase() === 'promo') {
-        for (let col = 1; col < data[row].length; col++) { // start at 1 to skip column 0
-          const cellKey = `${row}-${col}`;
-          if (clearedCells.has(cellKey)) {
-            delete cellColors[cellKey];
-            continue;
-          }
-          cellColors[cellKey] = '#375623';
-          const cellElement = hot.getCell(row, col);
-          if (cellElement) {
-            cellElement.style.setProperty('background-color', '#375623', 'important');
-            cellElement.style.setProperty('color', '#fff', 'important');
-          }
-        }
-      }
-    }
-    // After all other coloring, make row 0 bold and blue (#0000ff)
-    for (let col = 0; col < data[0].length; col++) {
-      const cellElement = hot.getCell(0, col);
-      if (cellElement) {
-        cellElement.style.setProperty('font-weight', 'bold', 'important');
-        cellElement.style.setProperty('color', '#0000ff', 'important');
-      }
-    }
-    // After all other coloring, set column A to blue and bold for rows where column 0 is 'End Time', 'Start Time', or 'Start Time 9:00:00'
-    if (hot) {
-      for (let r = 1; r < data.length; r++) {
-        if (data[r][0] === 'End Time' || data[r][0] === 'Start Time' || data[r][0] === 'Start Time 9:00:00') {
-          const cellElement = hot.getCell(r, 0);
-          if (cellElement) {
-            cellElement.style.setProperty('color', '#0000ff', 'important');
-            cellElement.style.setProperty('font-weight', 'bold', 'important');
-          }
-        }
-      }
-    }
+    
     hot.render();
     return () => hot?.destroy();
   });
