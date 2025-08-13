@@ -4,3 +4,88 @@
 [data-player-area]:fullscreen {
   background: white;
 }
+
+/* Custom basketball avatar animations */
+@keyframes basketball-bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  40%, 43% {
+    transform: translate3d(0, -30px, 0) rotate(5deg);
+  }
+  70% {
+    transform: translate3d(0, -15px, 0) rotate(2deg);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0) rotate(1deg);
+  }
+}
+
+.basketball-bounce {
+  animation: basketball-bounce 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  transform-origin: center bottom;
+}
+
+/* Speech bubble animation */
+@keyframes speech-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.speech-pulse {
+  animation: speech-pulse 1.5s ease-in-out infinite;
+}
+
+/* Enhanced slide-in animation for avatar */
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-100%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-20%) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.avatar-slide-in {
+  animation: slide-in-left 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* Mouth animation for talking */
+@keyframes mouth-talk {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.2);
+  }
+}
+
+.mouth-talk {
+  animation: mouth-talk 0.2s ease-in-out;
+}
+
+/* Eye blink animation */
+@keyframes eye-blink {
+  0%, 90%, 100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+.eye-blink {
+  animation: eye-blink 3s infinite;
+}

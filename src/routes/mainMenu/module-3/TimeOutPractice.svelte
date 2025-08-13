@@ -232,11 +232,8 @@ onMount(() => {
     selectionMode: 'range',
     outsideClickDeselects: false,
     afterRender: () => {
-      // Debounce color application to prevent flickering
+      // Only apply colors if not already applied to prevent flickering
       if (hot && !hot.isDestroyed) {
-        if (colorTimeout) clearTimeout(colorTimeout);
-        colorTimeout = setTimeout(() => {
-          if (!hot || hot.isDestroyed) return;
         
         // Apply base colors first (event type colors)
         const eventTypeCol = 2;
@@ -248,6 +245,10 @@ onMount(() => {
             
             // Skip if cell is cleared or has persistent color
             if (clearedCells.has(cellKey) || cellColors[cellKey]) continue;
+            
+            // Check if color is already applied to prevent re-application
+            const currentBgColor = cellElement.style.backgroundColor;
+            if (currentBgColor && currentBgColor !== 'rgba(0, 0, 0, 0)' && currentBgColor !== 'transparent') continue;
             
             // Apply event type colors
             if (data[row][eventTypeCol]) {
@@ -327,12 +328,11 @@ onMount(() => {
           endTimeWhiteCell.style.setProperty('color', '#fff', 'important');
           endTimeWhiteCell.style.setProperty('font-weight', 'bold', 'important');
         }
-      }, 50); // 50ms debounce
-        }
       }
-    });
-    return () => hot?.destroy();
+    }
   });
+  return () => hot?.destroy();
+});
 </script>
 
 <div class="excel-wrapper">
