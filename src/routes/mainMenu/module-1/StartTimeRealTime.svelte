@@ -28,14 +28,14 @@ const script = [
 		image: '/images/module-1/start-time-real-time/StartTime2.jpg'
 	},
 	{
-		text: 'The real time will be right next to it, where you see the red arrow. This is where you will write down the time the show actually starts.',
+		text: 'For Start Time, let\'s say the game is delayed and starts at 8:03:30. You would write 8:03:30 down next to Start Time.',
 		audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_05.mp3',
-		image: '/images/module-1/start-time-real-time/RealTime2.jpg'
+		image: '/images/module-1/start-time-real-time/StartTime5.jpg'
 	},
 	{
 		text: 'So, for example, if the show is scheduled to start at 1:00 PM but it actually starts at 1:02 PM, you will write down 1:02 PM in the real time column.',
 		audio: '/audio/module-1/02-start-time-real-time/module1_starttimerealtime_06.mp3',
-		image: '/images/module-1/start-time-real-time/R&S6.jpg'
+		image: '/images/module-1/start-time-real-time/StartTime6.jpg'
 	}
 ];
 

@@ -211,6 +211,9 @@
             } else if (textLines[i] === 'Allowed:') {
               // Position "Allowed:" on the left side (under the first image)
               x = padding;
+            } else if (i === 0 && w === 0) {
+              // Center the title (first line, first word wrap)
+              x = (canvas.width - ctx.measureText(line).width) / 2;
             } else {
               // Regular left alignment for other text
               x = padding;
@@ -413,6 +416,63 @@
     
     console.log('Audio text:', audioText);
     console.log('Clean audio text:', cleanAudioText);
+    
+    // If there's a title audio, compare main audio text against whiteboard text excluding the first line (title)
+    if (titleAudio && textLines.length > 1) {
+      const contentLines = textLines.slice(1); // Skip the first line (title)
+      const cleanWhiteboardText = contentLines.map(line => {
+        const formatting = parseTextFormatting(line);
+        return formatting.text;
+      }).join(' ');
+      
+      const cleanWhiteboardLower = cleanWhiteboardText
+        .replace(/[.,!?;:]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+      
+      // For title audio slides, strip the title from the original audio text before cleaning
+      let audioTextForComparison = audioText;
+      if (textLines[0]) {
+        const titleText = textLines[0].replace(/[.,!?;:•]/g, '').trim();
+        
+        // Try multiple patterns: "Title: Content", "Title Content", or just "Title"
+        const patterns = [
+          titleText + ':',
+          titleText + ' ',
+          titleText
+        ];
+        
+        for (const pattern of patterns) {
+          if (audioTextForComparison.toLowerCase().startsWith(pattern.toLowerCase())) {
+            audioTextForComparison = audioTextForComparison.substring(pattern.length).trim();
+            break;
+          }
+        }
+        
+        // If no pattern matched, try to find and remove the title word from the beginning
+        if (audioTextForComparison === audioText) {
+          const words = audioTextForComparison.toLowerCase().split(' ');
+          if (words[0] === titleText.toLowerCase()) {
+            audioTextForComparison = audioTextForComparison.substring(titleText.length).trim();
+          }
+        }
+      }
+      
+      // Clean the stripped audio text
+      const cleanAudioTextForComparison = audioTextForComparison
+        .replace(/[.,!?;:•]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+      
+      // Make comparison flexible - check if all whiteboard words are present in audio words
+      const audioWords = cleanAudioTextForComparison.split(' ').filter(word => word.length > 0);
+      const whiteboardWords = cleanWhiteboardLower.split(' ').filter(word => word.length > 0);
+      
+      // Return true if all whiteboard words are present in audio (allowing for extra words in audio)
+      return whiteboardWords.every(word => audioWords.includes(word));
+    }
     
     // For progressive slides, compare audio with the last line only
     if (textLines.length > 1) {
@@ -734,6 +794,9 @@
             } else if (textLines[i] === 'Allowed:') {
               // Position "Allowed:" on the left side (under the first image)
               x = padding;
+            } else if (i === 0 && w === 0) {
+              // Center the title (first line, first word wrap)
+              x = (canvas.width - ctx.measureText(line).width) / 2;
             } else {
               // Regular left alignment for other text
               x = padding;

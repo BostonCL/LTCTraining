@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMount } from 'svelte';
-import BasketballAvatar from '$lib/components/BasketballAvatar.svelte';
+import CuteCartoonAvatar from '$lib/components/CuteCartoonAvatar.svelte';
 import VideoControls from '$lib/components/VideoControls.svelte';
 import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
 import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips, setCurrentIndex, loadProgress, saveProgress, audioElement } from '$lib/stores/audioStore';
@@ -295,8 +295,8 @@ function getImageSrc(imageUrl: string): string {
           on:error={handleImageError}
         />
       {/if}
-      <!-- Basketball Avatar in the center -->
-      <BasketballAvatar scripts={script} currentIdx={currentIdx} showAvatar={showAvatar} />
+      <!-- Cute Cartoon Avatar in the center -->
+      <CuteCartoonAvatar scripts={script} currentIdx={currentIdx} showAvatar={false} />
       <!-- Closed Caption Overlay -->
       {#if ccEnabled}
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none z-20">

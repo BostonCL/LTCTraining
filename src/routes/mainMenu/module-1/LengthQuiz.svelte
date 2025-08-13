@@ -20,15 +20,15 @@
     },
     {
       id: 2,
-      question: "If a commercial break has three 30-second spots, what is the total length of that break?",
+      question: "How long is the above break?",
       options: [
-        "30 seconds",
-        "60 seconds",
-        "90 seconds",
-        "120 seconds"
+        "1 min 30 seconds",
+        "2 mins 30 seconds",
+        "3 mins 15 seconds",
+        "2 mins 15 seconds"
       ],
-      correctAnswer: 2,
-      explanation: "Three 30-second spots would total 90 seconds (30 + 30 + 30 = 90)."
+      correctAnswer: 1,
+      explanation: "The correct answer is 2 mins 30 seconds."
     }
   ];
 

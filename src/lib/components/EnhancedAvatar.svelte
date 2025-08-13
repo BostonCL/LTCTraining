@@ -4,14 +4,14 @@
   import { audioStore, setAudioElement, setDuration, setCurrentIndex, setTotalClips, updateProgress } from '$lib/stores/audioStore';
   import { browser } from '$app/environment';
   import { preloader } from '$lib/utils/preloader';
+  import { avatarOptions, type AvatarOption, animationPresets } from '$lib/config/avatarOptions';
   import * as THREE from 'three';
 
   export let scripts: { text: string; audio: string }[] = [];
   export let currentIdx: number = 0;
   export let onComplete: () => void = () => {};
-  export let showAvatar: boolean = false;
-
-
+  export let showAvatar: boolean = true;
+  export let selectedAvatar: AvatarOption = avatarOptions[0];
 
   let isDone = false;
   let audio: HTMLAudioElement | null = null;
@@ -19,14 +19,21 @@
   let avatarVisible = false;
   let isTalking = false;
   let container: HTMLDivElement;
+  let rendererInitialized = false;
   
   // Three.js variables
   let scene: THREE.Scene;
   let camera: THREE.PerspectiveCamera;
   let renderer: THREE.WebGLRenderer;
-  let avatar: any; // Ready Player Me avatar
+  let avatar: any;
   let mixer: THREE.AnimationMixer;
   let clock = new THREE.Clock();
+
+  // Animation state
+  let mouthOpen = false;
+  let eyebrowRaise = false;
+  let eyeBlink = false;
+  let headNod = false;
 
   // Preload all audio files when component mounts
   onMount(async () => {
@@ -39,7 +46,6 @@
     setTimeout(() => {
       avatarVisible = true;
       initThreeJS();
-      loadAvatar();
     }, 500);
   });
 
@@ -56,54 +62,122 @@
   async function initThreeJS() {
     if (!browser || !container) return;
 
-    // Scene setup
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x00000000); // Transparent
+    try {
+      // Scene setup
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x00000000); // Transparent
 
-    // Camera setup
-    camera = new THREE.PerspectiveCamera(
-      75,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(0, 1.6, 2);
+      // Camera setup
+      camera = new THREE.PerspectiveCamera(
+        75,
+        container.clientWidth / container.clientHeight,
+        0.1,
+        1000
+      );
+      camera.position.set(0, 0, 2);
 
-    // Renderer setup
-    renderer = new THREE.WebGLRenderer({ 
-      alpha: true, 
-      antialias: true 
+      // Renderer setup
+      renderer = new THREE.WebGLRenderer({ 
+        alpha: true, 
+        antialias: true 
+      });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(renderer.domElement);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+      directionalLight.position.set(0, 10, 5);
+      scene.add(directionalLight);
+
+      rendererInitialized = true;
+
+      // Create a simple avatar immediately
+      createSimpleAvatar();
+      
+      // Start animation loop
+      animate();
+    } catch (error) {
+      console.error('Error initializing Three.js:', error);
+      // Fallback to CSS-based avatar
+      createCSSAvatar();
+    }
+  }
+
+  function createSimpleAvatar() {
+    if (!scene) return;
+
+    // Create a simple colored sphere as avatar
+    const geometry = new THREE.SphereGeometry(0.8, 32, 32);
+    const material = new THREE.MeshLambertMaterial({ 
+      color: 0xff8c00, // Orange basketball color
+      transparent: true,
+      opacity: 0.9
     });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    container.appendChild(renderer.domElement);
+    
+    avatar = new THREE.Mesh(geometry, material);
+    avatar.position.set(0, 0, 0);
+    scene.add(avatar);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
+    // Add basketball texture lines
+    const lineGeometry = new THREE.SphereGeometry(0.81, 32, 32);
+    const lineMaterial = new THREE.MeshBasicMaterial({
+      color: 0x8B4513, // Brown lines
+      wireframe: true,
+      transparent: true,
+      opacity: 0.3
+    });
+    
+    const lines = new THREE.Mesh(lineGeometry, lineMaterial);
+    scene.add(lines);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(0, 10, 5);
-    scene.add(directionalLight);
+    startIdleAnimations();
+  }
 
-    // Animation loop
-    animate();
+  function createCSSAvatar() {
+    // Fallback to CSS-based avatar if Three.js fails
+    console.log('Using CSS fallback avatar');
   }
 
   async function loadAvatar() {
-    if (!browser) return;
+    if (!browser || !rendererInitialized) return;
 
     try {
-      // Load Ready Player Me avatar
-      // You can replace this URL with your own avatar
-      const avatarUrl = 'https://models.readyplayer.me/64f7b8b8b8b8b8b8b8b8b8b.glb';
-      
+      switch (selectedAvatar.type) {
+        case 'ready-player-me':
+          await loadReadyPlayerMeAvatar();
+          break;
+        case 'live2d':
+          await loadLive2DAvatar();
+          break;
+        case 'custom':
+          createCustomAvatar();
+          break;
+        default:
+          createCustomAvatar();
+      }
+    } catch (error) {
+      console.error('Error loading avatar:', error);
+      createCustomAvatar();
+    }
+  }
+
+  async function loadReadyPlayerMeAvatar() {
+    if (!scene) return;
+    
+    try {
       const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
       const loader = new GLTFLoader();
       
+      // Use a working demo URL or create a simple avatar
+      const avatarUrl = 'https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb';
+      
       loader.load(avatarUrl, (gltf: any) => {
         avatar = gltf.scene;
-        avatar.scale.set(1, 1, 1);
+        avatar.scale.set(0.5, 0.5, 0.5);
         avatar.position.set(0, 0, 0);
         scene.add(avatar);
 
@@ -115,40 +189,79 @@
           const idleAction = mixer.clipAction(gltf.animations[0]);
           idleAction.play();
         }
+
+        // Start idle animations
+        startIdleAnimations();
+      }, undefined, (error) => {
+        console.error('Error loading 3D avatar:', error);
+        createSimpleAvatar();
       });
     } catch (error) {
-      console.error('Error loading avatar:', error);
-      // Fallback to simple basketball if avatar fails to load
-      createSimpleBasketball();
+      console.error('Error loading Ready Player Me avatar:', error);
+      createSimpleAvatar();
     }
   }
 
-  function createSimpleBasketball() {
-    // Create a simple basketball as fallback
-    const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    const material = new THREE.MeshLambertMaterial({ 
-      color: 0xff8c00,
-      transparent: true,
-      opacity: 0.9
-    });
+  async function loadLive2DAvatar() {
+    // For Live2D, we'd need to implement Live2D Cubism SDK
+    // This is a placeholder for now
+    console.log('Live2D avatar loading not implemented yet');
+    createSimpleAvatar();
+  }
+
+  function createCustomAvatar() {
+    createSimpleAvatar();
+  }
+
+  function startIdleAnimations() {
+    if (!browser) return;
     
-    avatar = new THREE.Mesh(geometry, material);
-    scene.add(avatar);
+    // Eye blinking
+    setInterval(() => {
+      eyeBlink = true;
+      setTimeout(() => {
+        eyeBlink = false;
+      }, 150);
+    }, 4000);
+    
+    // Subtle breathing animation
+    setInterval(() => {
+      if (avatar && !isTalking) {
+        const scale = 1 + Math.sin(Date.now() * 0.001) * 0.02;
+        avatar.scale.set(scale, scale, scale);
+      }
+    }, 16);
   }
 
   function startTalkingAnimation() {
-    if (!avatar || !mixer) return;
+    if (!avatar) return;
     
-    // Add talking animation
-    // This would be a mouth movement animation
-    // For now, we'll just scale the avatar slightly
+    // Enhanced talking animation
+    const talkInterval = setInterval(() => {
+      mouthOpen = !mouthOpen;
+      eyebrowRaise = !eyebrowRaise;
+      
+      // Head nod
+      if (Math.random() > 0.7) {
+        headNod = true;
+        setTimeout(() => {
+          headNod = false;
+        }, 200);
+      }
+    }, 200);
+
+    // Scale animation
     avatar.scale.set(1.05, 1.05, 1.05);
+    
+    return () => clearInterval(talkInterval);
   }
 
   function stopTalkingAnimation() {
     if (!avatar) return;
     
-    // Return to normal scale
+    mouthOpen = false;
+    eyebrowRaise = false;
+    headNod = false;
     avatar.scale.set(1, 1, 1);
   }
 
@@ -263,7 +376,7 @@
     <div 
       bind:this={container}
       class="relative w-32 h-32 md:w-40 md:h-40"
-      style="transform: translateY({isTalking ? -5 : 0}px);"
+      style="transform: translateY({isTalking ? -5 : 0}px) rotateY({headNod ? 5 : 0}deg);"
       transition:scale={{ duration: 300 }}
     >
       <!-- Three.js canvas will be inserted here -->
@@ -293,4 +406,4 @@
   <div class="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm animate-pulse">
     Loading...
   </div>
-{/if} 
+{/if}
