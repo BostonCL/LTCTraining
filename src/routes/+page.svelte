@@ -1,18 +1,55 @@
 <script lang="ts">
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-  import { app } from '$lib/firebase';
+  import { onMount } from 'svelte';
+  import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+  import { auth } from '$lib/firebase';
 
   let email = '';
   let password = '';
   let error = '';
   let loading = false;
   let isLogin = true;
+  let loginAttempts = 0;
+  const maxAttempts = 5;
+  let isRateLimited = false;
+  let rateLimitTimer: ReturnType<typeof setTimeout>;
 
-  const auth = getAuth(app);
+  // Check if user is already authenticated
+  onMount(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is already signed in, redirect to main menu
+        window.location.href = '/mainMenu';
+      }
+    });
+    
+    return unsubscribe;
+  });
 
   async function handleSubmit() {
+    // Check rate limiting
+    if (isRateLimited) {
+      error = 'Too many attempts. Please wait before trying again.';
+      return;
+    }
+
+    if (loginAttempts >= maxAttempts) {
+      isRateLimited = true;
+      error = 'Too many login attempts. Please wait 5 minutes before trying again.';
+      
+      // Reset after 5 minutes
+      rateLimitTimer = setTimeout(() => {
+        isRateLimited = false;
+        loginAttempts = 0;
+        error = '';
+      }, 5 * 60 * 1000);
+      
+      return;
+    }
+
     loading = true;
     error = '';
+    loginAttempts++;
+    
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
@@ -22,11 +59,30 @@
         window.location.href = '/mainMenu';
       }
     } catch (e: any) {
-      error = e.message;
+      if (e.code === 'auth/too-many-requests') {
+        error = 'Too many requests. Please wait a moment before trying again.';
+        isRateLimited = true;
+        
+        // Reset after 2 minutes for Firebase rate limiting
+        setTimeout(() => {
+          isRateLimited = false;
+        }, 2 * 60 * 1000);
+      } else {
+        error = e.message;
+      }
     } finally {
       loading = false;
     }
   }
+
+  // Cleanup timer on component destroy
+  onMount(() => {
+    return () => {
+      if (rateLimitTimer) {
+        clearTimeout(rateLimitTimer);
+      }
+    };
+  });
 </script>
 
 <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">

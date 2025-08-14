@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getAuth, signOut, type Auth } from 'firebase/auth';
+  import { signOut, type Auth } from 'firebase/auth';
+  import { auth } from '$lib/firebase';
   import { writable, derived } from 'svelte/store';
   import { DEV_FEATURES } from '$lib/config/dev';
   import Introduction from './introduction/Introduction.svelte';
@@ -111,10 +112,7 @@
     }
   ];
 
-  let auth: Auth | undefined;
-  onMount(() => {
-    auth = getAuth();
-  });
+
 
   async function handleLogout() {
     try {
