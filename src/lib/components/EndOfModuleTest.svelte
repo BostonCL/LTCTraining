@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fullscreenStore, toggleFullscreen } from '$lib/stores/fullscreenStore';
   
   type Question = {
     text: string;
@@ -129,8 +130,8 @@
   let score = 0;
   let failThreshold = 7; // must get at least 7/10 correct
   
-  // Fullscreen state
-  let isFullscreen = false;
+  // Use centralized fullscreen store
+  $: isFullscreen = $fullscreenStore.isFullscreen;
 
   function submitAnswer(selected: number) {
     if (!showExtraQuestions) {
@@ -178,41 +179,15 @@
   }
 
   function handleToggleFullscreen() {
-    if (!isFullscreen) {
-      // Enter fullscreen
-      const playerArea = document.querySelector('[data-player-area]') as HTMLElement;
-      if (playerArea && playerArea.requestFullscreen) {
-        playerArea.requestFullscreen().then(() => {
-          isFullscreen = true;
-        }).catch(err => {
-          console.log('Failed to enter fullscreen:', err);
-        });
-      }
-    } else {
-      // Exit fullscreen
-      if (document.exitFullscreen) {
-        document.exitFullscreen().then(() => {
-          isFullscreen = false;
-        }).catch(err => {
-          console.log('Failed to exit fullscreen:', err);
-        });
-      }
+    const playerArea = document.querySelector('[data-player-area]') as HTMLElement;
+    if (playerArea) {
+      toggleFullscreen(playerArea);
     }
   }
 
-  // Check fullscreen state on mount and listen for changes
+  // Remove the onMount fullscreen logic since it's now handled globally
   onMount(() => {
-    isFullscreen = !!document.fullscreenElement;
-    
-    const handleFullscreenChange = () => {
-      isFullscreen = !!document.fullscreenElement;
-    };
-    
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
+    // Component initialization logic here
   });
 </script>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { onMount } from 'svelte';
+  import { fullscreenStore, toggleFullscreen } from '$lib/stores/fullscreenStore';
 
   export let questions: {
     id: number;
@@ -25,8 +26,8 @@
   let timeStarted: number;
   let timeCompleted: number;
 
-  // Fullscreen state
-  let isFullscreen = false;
+  // Use centralized fullscreen store
+  $: isFullscreen = $fullscreenStore.isFullscreen;
 
   $: currentQuestion = questions[currentQuestionIndex];
   $: isLastQuestion = currentQuestionIndex === questions.length - 1;
@@ -36,42 +37,12 @@
   onMount(() => {
     timeStarted = Date.now();
     selectedAnswers = new Array(questions.length).fill(null);
-    
-    // Check initial fullscreen state
-    isFullscreen = !!document.fullscreenElement;
-    
-    // Listen for fullscreen changes
-    const handleFullscreenChange = () => {
-      isFullscreen = !!document.fullscreenElement;
-    };
-    
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
   });
 
   function handleToggleFullscreen() {
-    if (!isFullscreen) {
-      // Enter fullscreen
-      const playerArea = document.querySelector('[data-player-area]') as HTMLElement;
-      if (playerArea && playerArea.requestFullscreen) {
-        playerArea.requestFullscreen().then(() => {
-          isFullscreen = true;
-        }).catch(err => {
-          console.log('Failed to enter fullscreen:', err);
-        });
-      }
-    } else {
-      // Exit fullscreen
-      if (document.exitFullscreen) {
-        document.exitFullscreen().then(() => {
-          isFullscreen = false;
-        }).catch(err => {
-          console.log('Failed to exit fullscreen:', err);
-        });
-      }
+    const playerArea = document.querySelector('[data-player-area]') as HTMLElement;
+    if (playerArea) {
+      toggleFullscreen(playerArea);
     }
   }
 

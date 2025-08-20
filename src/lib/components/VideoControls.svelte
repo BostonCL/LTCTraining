@@ -1,6 +1,7 @@
 <script lang="ts">
   import { audioStore, playPause, replay, seekTo, setVolume, toggleMute, nextClip, previousClip } from '$lib/stores/audioStore';
   import { captionEnabled } from '$lib/stores/audioStore';
+  import { fullscreenStore } from '$lib/stores/fullscreenStore';
   import { DEV_FEATURES } from '$lib/config/dev';
   export let onToggleFullscreen: () => void;
   export let fullscreen = false;
@@ -10,6 +11,9 @@
 
   let progressBar: HTMLElement;
   let volumeSlider: HTMLInputElement;
+
+  // Use centralized fullscreen state for consistency
+  $: fullscreenState = $fullscreenStore.isFullscreen;
 
   function handleProgressClick(event: MouseEvent) {
     if (!progressBar || !canSeek) return;

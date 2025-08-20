@@ -3,7 +3,8 @@ import { onMount } from 'svelte';
 import CuteCartoonAvatar from '$lib/components/CuteCartoonAvatar.svelte';
 import VideoControls from '$lib/components/VideoControls.svelte';
 import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
-import { captionEnabled, audioStore, nextClip, previousClip, fullscreenEnabled, setTotalClips, setCurrentIndex, loadProgress, saveProgress, audioElement } from '$lib/stores/audioStore';
+import { captionEnabled, audioStore, nextClip, previousClip, setTotalClips, setCurrentIndex, loadProgress, saveProgress, audioElement } from '$lib/stores/audioStore';
+import { fullscreenStore, toggleFullscreen } from '$lib/stores/fullscreenStore';
 import { preloader } from '$lib/utils/preloader';
 import { DEV_FEATURES } from '$lib/config/dev';
 
@@ -59,7 +60,10 @@ onMount(() => {
   preloadResources();
   
   const handler = () => {
-    fullscreenEnabled.set(!!document.fullscreenElement);
+    fullscreenStore.set({
+      isFullscreen: !!document.fullscreenElement,
+      currentElement: document.fullscreenElement as HTMLElement | null
+    });
   };
   document.addEventListener('fullscreenchange', handler);
   
@@ -138,18 +142,11 @@ $: if (currentScript?.image && currentScript.image !== currentImageUrl) {
 }
 
 let playerArea: HTMLDivElement;
-$: isFullscreen = $fullscreenEnabled;
+$: isFullscreen = $fullscreenStore.isFullscreen;
 
 function handleToggleFullscreen() {
-  if (!isFullscreen) {
-    // Use the player area directly for proper fullscreen
-    if (playerArea?.requestFullscreen) {
-      playerArea.requestFullscreen();
-    }
-  } else {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    }
+  if (playerArea) {
+    toggleFullscreen(playerArea);
   }
 }
 
