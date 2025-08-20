@@ -21,6 +21,14 @@
   let headTilt = 0;
   let bounceHeight = 0;
   let mouthInterval: ReturnType<typeof setInterval> | null = null;
+  let eyeBlinkInterval: ReturnType<typeof setInterval> | null = null;
+
+  // Reactive declarations for animations
+  $: if (isTalking) {
+    headTilt = Math.sin(Date.now() * 0.003) * 2;
+  } else {
+    headTilt = 0;
+  }
 
   // Preload all audio files when component mounts
   onMount(async () => {
@@ -54,6 +62,22 @@
     mouthOpen = false;
   }
 
+  // Start eye blink interval
+  $: if (isTalking) {
+    if (eyeBlinkInterval) clearInterval(eyeBlinkInterval);
+    eyeBlinkInterval = setInterval(() => {
+      eyeBlink = true;
+      setTimeout(() => {
+        eyeBlink = false;
+      }, 150);
+    }, 4000);
+  } else {
+    if (eyeBlinkInterval) {
+      clearInterval(eyeBlinkInterval);
+      eyeBlinkInterval = null;
+    }
+  }
+
   function startBounceAnimation() {
     if (!browser) return;
     
@@ -74,20 +98,7 @@
   function startFaceAnimations() {
     if (!browser) return;
     
-    // Eye blinking
-    setInterval(() => {
-      eyeBlink = true;
-      setTimeout(() => {
-        eyeBlink = false;
-      }, 150);
-    }, 4000);
-    
-    // Head tilt when talking
-    $: if (isTalking) {
-      headTilt = Math.sin(Date.now() * 0.003) * 2;
-    } else {
-      headTilt = 0;
-    }
+    // Face animations are now handled by reactive declarations
   }
 
   function playCurrent() {
@@ -174,6 +185,7 @@
   onDestroy(() => {
     if (audio) audio.pause();
     if (mouthInterval) clearInterval(mouthInterval);
+    if (eyeBlinkInterval) clearInterval(eyeBlinkInterval);
   });
 </script>
 

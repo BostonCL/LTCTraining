@@ -797,8 +797,27 @@
   <main data-fullscreen-container class="flex-1 flex flex-col items-center {!sidebarOpen ? 'sidebar-collapsed' : ''}">
     {#if mainSection === 'introduction'}
       <Introduction on:navigateToNextSubmodule={() => {
+        const wasFullscreen = !!document.fullscreenElement;
         mainSection = 'module1';
         module1SubIdx = 0;
+        
+        // If we were in fullscreen, restore it on the new content
+        if (wasFullscreen) {
+          setTimeout(() => {
+            // Check if fullscreen is already in use
+            if (document.fullscreenElement) {
+              console.log('Fullscreen is already in use, skipping restoration');
+              return;
+            }
+            
+            const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+            if (newPlayerArea && newPlayerArea.requestFullscreen) {
+              newPlayerArea.requestFullscreen().catch(err => {
+                console.log('Failed to open module1 intro in fullscreen:', err);
+              });
+            }
+          }, 1000);
+        }
       }} />
     {:else if mainSection === 'module1'}
       <Module1Intro on:navigateToNextSubmodule={next} progressId="module1_intro" nextButtonText={getNextButtonText('module1')} />
