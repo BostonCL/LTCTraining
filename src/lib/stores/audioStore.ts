@@ -24,8 +24,6 @@ export const audioStore = writable<AudioState>({
 
 export const captionEnabled = writable(false);
 
-export const fullscreenEnabled = writable(false);
-
 // Audio control functions
 export let audioElement: HTMLAudioElement | null = null;
 

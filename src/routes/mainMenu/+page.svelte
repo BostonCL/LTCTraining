@@ -259,15 +259,13 @@
     return "Next";
   }
 
-
-  
-
+  import { fullscreenStore, getFullscreenState } from '$lib/stores/fullscreenStore';
 
   // Function to log fullscreen state for debugging
   function logFullscreenState(context: string) {
-    const isFullscreen = !!document.fullscreenElement;
+    const fullscreenState = getFullscreenState();
     const playerArea = document.querySelector('[data-player-area]');
-    console.log(`[${context}] Fullscreen: ${isFullscreen}, Player area found: ${!!playerArea}`);
+    console.log(`[${context}] Fullscreen: ${fullscreenState.isFullscreen}, Player area found: ${!!playerArea}`);
   }
 
   // Function to navigate to the next destination
@@ -277,7 +275,8 @@
     console.log('nextDest:', nextDest);
     
     // Check if we're in fullscreen before navigation
-    const wasFullscreen = !!document.fullscreenElement;
+    const fullscreenState = getFullscreenState();
+    const wasFullscreen = fullscreenState.isFullscreen;
     logFullscreenState('Before navigation');
     
     if (nextDest) {
@@ -331,7 +330,8 @@
   }
 
   function goToIntroduction() {
-    const wasFullscreen = !!document.fullscreenElement;
+    const fullscreenState = getFullscreenState();
+    const wasFullscreen = fullscreenState.isFullscreen;
     mainSection = 'introduction';
     if (wasFullscreen) {
       setTimeout(() => {
@@ -345,7 +345,8 @@
     }
   }
   function goToModule1Intro() {
-    const wasFullscreen = !!document.fullscreenElement;
+    const fullscreenState = getFullscreenState();
+    const wasFullscreen = fullscreenState.isFullscreen;
     mainSection = 'module1';
     if (wasFullscreen) {
       setTimeout(() => {
@@ -359,7 +360,8 @@
     }
   }
   function goToModule1Sub(idx: number) {
-    const wasFullscreen = !!document.fullscreenElement;
+    const fullscreenState = getFullscreenState();
+    const wasFullscreen = fullscreenState.isFullscreen;
     mainSection = 'module1sub';
     module1SubIdx = idx;
     if (wasFullscreen) {
@@ -374,7 +376,8 @@
     }
   }
   function goToQuiz() {
-    const wasFullscreen = !!document.fullscreenElement;
+    const fullscreenState = getFullscreenState();
+    const wasFullscreen = fullscreenState.isFullscreen;
     mainSection = 'quiz';
     if (wasFullscreen) {
       setTimeout(() => {
@@ -397,7 +400,8 @@
       goToModule1Intro();
     } else if (mainSection === 'module1') {
       // Go to first submodule (Program Line)
-      const wasFullscreen = !!document.fullscreenElement;
+      const fullscreenState = getFullscreenState();
+      const wasFullscreen = fullscreenState.isFullscreen;
       mainSection = 'module1sub';
       module1SubIdx = 0;
       if (wasFullscreen) {
@@ -797,12 +801,12 @@
   <main data-fullscreen-container class="flex-1 flex flex-col items-center {!sidebarOpen ? 'sidebar-collapsed' : ''}">
     {#if mainSection === 'introduction'}
       <Introduction on:navigateToNextSubmodule={() => {
-        const wasFullscreen = !!document.fullscreenElement;
+        const fullscreenState = getFullscreenState();
         mainSection = 'module1';
         module1SubIdx = 0;
         
         // If we were in fullscreen, restore it on the new content
-        if (wasFullscreen) {
+        if (fullscreenState.isFullscreen) {
           setTimeout(() => {
             // Check if fullscreen is already in use
             if (document.fullscreenElement) {
@@ -833,9 +837,9 @@
       {:else if module1SubIdx === 4}
         <Length progressId="module1_length" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} on:navigateToQuiz={() => { 
           console.log('Length: navigateToQuiz called'); 
-          const wasFullscreen = !!document.fullscreenElement;
+          const fullscreenState = getFullscreenState();
           mainSection = 'lengthQuiz';
-          if (wasFullscreen) {
+          if (fullscreenState.isFullscreen) {
             setTimeout(() => {
               const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
               if (newPlayerArea && newPlayerArea.requestFullscreen) {
@@ -853,9 +857,9 @@
       {:else if module1SubIdx === 7}
         <HouseNumber progressId="module1_housenumber" nextButtonText={getNextButtonText('module1sub', module1SubIdx)} on:navigateToNextSubmodule={() => navigateToNext('module1sub', module1SubIdx)} on:moduleCompleted={e => markSubmoduleCompleted(e.detail.submoduleIndex)} on:navigateToQuiz={() => { 
           console.log('HouseNumber: navigateToQuiz called'); 
-          const wasFullscreen = !!document.fullscreenElement;
+          const fullscreenState = getFullscreenState();
           mainSection = 'houseNumberQuiz';
-          if (wasFullscreen) {
+          if (fullscreenState.isFullscreen) {
             setTimeout(() => {
               const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
               if (newPlayerArea && newPlayerArea.requestFullscreen) {
