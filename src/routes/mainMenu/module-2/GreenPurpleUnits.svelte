@@ -9,7 +9,7 @@ const dispatch = createEventDispatcher();
 export let progressId: string;
 export let nextButtonText: string = "Next";
 
-// Green & Purple Units script (updated to progressive animation)
+// Green & Purple Units script (updated to combine slides 2 & 3)
 const script = [
   {
     text: `Now let's talk about the other type of units you will see`,
@@ -17,15 +17,10 @@ const script = [
     image: '/images/introduction/basketballBackground.png'
   },
   {
-    text: `Here is a list of the purple and green units you will see on the live coverage sheet`,
-    audio: '/audio/module-2/green-purple-units/module2_greenpurpleunits_02.mp3',
-    whiteboardText: ['**__Purple & Green Units__**'],
+    text: `Here is a list of the purple and green units you will see on the live coverage sheet. These include Locals, DRs, Promos, and PSAs.`,
+    audio: '/audio/module-2/green-purple-units/module2_greenpurpleunits_02_03_combined.mp3',
+    whiteboardText: ['**__Purple & Green Units__**', '• **Locals**', '• **DRs**', '• **Promos**', '• **PSAs**'],
     titleAudio: '/audio/module-2/green-purple-units/module2_greenpurpleunits_02_title.mp3'
-  },
-  {
-    text: '',
-    audio: '/audio/module-2/green-purple-units/module2_greenpurpleunits_03.mp3',
-    whiteboardText: ['**__Purple & Green Units__**', '• **Locals**', '• **DRs**', '• **Promos**', '• **PSAs**']
   },
   {
     text: `Locals are designated time slots sold to local stations for airing community-specific content, such as local car dealership commercials. When stations lack their own material, we fill these slots with sold inventory, which is why locals are never cut without producer approval. Each local spot is strictly 90 seconds long (1 minute and 30 seconds), with no exceptions. On the Live Coverage Sheet, locals are marked in purple for easy identification.`,

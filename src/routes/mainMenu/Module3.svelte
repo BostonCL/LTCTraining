@@ -2,6 +2,9 @@
   import { onMount } from 'svelte';
   import Handsontable from 'handsontable';
   import 'handsontable/dist/handsontable.full.min.css';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
 
   // Placeholder for navigation logic
   let showStep1 = false;
@@ -68,6 +71,12 @@
     //Step 1 Check. Done for now
   let checkResult = '';
   function checkStep1() {
+    if (developerMode) {
+      checkResult = '🔧 DEV MODE: Step 1 automatically passed!';
+      setTimeout(() => { goToStep2(); }, 800);
+      return;
+    }
+
     // Find the two target rows by their unique values
     const targets = [
       { time: '09:22:22 PM', promo: 'Promo' },
@@ -107,13 +116,74 @@
       checkResult = '✅ Correct! You found and marked the unsold green promos to CUT.';
       // No popup, just show button in instructions
     } else {
-      checkResult = '❌ Not quite! Make sure you wrote CUT in column A and filled the rest of the row in red for both green promo rows in SEG. 3.';
+      checkResult = '❌ Not quite! Are you looking in break 3? Did you write CUT in column A next to the promos? Are those Promos filled red?';
     }
   }
 
   let checkResult2 = '';
   function checkStep2() {
-    // Find the two target rows by their unique values
+    if (developerMode) {
+      checkResult2 = '🔧 DEV MODE: Step 2 automatically passed!';
+      setTimeout(() => { goToStep3(); }, 800);
+      return;
+    }
+
+    // Find the OLD TRAPPER row
+    const oldTrapperRowIdx = data.findIndex(row => row[1] === '09:23:02 PM' && row[2] && row[2].toLowerCase() === 'commercial' && row[4] && row[4].toLowerCase() === 'old trapper : camping catastrophes');
+    
+    if (oldTrapperRowIdx === -1) {
+      checkResult2 = '❌ Could not find the OLD TRAPPER row.';
+      return;
+    }
+    
+    // Check if all cells in the OLD TRAPPER row are filled blue
+    let allBlue = true;
+    console.log('Checking OLD TRAPPER row colors:', oldTrapperRowIdx);
+    for (let col = 0; col < data[oldTrapperRowIdx].length; col++) {
+      const cellKey = `${oldTrapperRowIdx}-${col}`;
+      const color = (cellColors[cellKey] || '').toLowerCase();
+      console.log(`Column ${col}: ${cellKey} = ${color}`);
+      
+      // Check if the color is blue (accept various blue shades)
+      if (
+        color !== '#0070c0' &&
+        color !== 'rgb(0,112,192)' &&
+        color !== '#00b0f0' &&
+        color !== 'rgb(0,176,240)' &&
+        color !== '#0070c0'.toLowerCase() &&
+        color !== '#00b0f0'.toLowerCase()
+      ) {
+        allBlue = false;
+        console.log(`Column ${col} is not blue: ${color}`);
+        break;
+      }
+    }
+    
+    if (!allBlue) {
+      checkResult2 = '❌ The OLD TRAPPER row is not filled blue.';
+      return;
+    }
+    
+    // Check if column A has any text written
+    const columnA = (data[oldTrapperRowIdx][0] || '').trim();
+    if (!columnA) {
+      checkResult2 = '❌ Column A must have text written in it.';
+      return;
+    }
+    
+    checkResult2 = '✅ Correct! The OLD TRAPPER row is blue and has text in column A.';
+    setTimeout(() => { goToStep3(); }, 800); // Navigate to step 3 after short delay
+  }
+
+  let checkResult3 = '';
+  function checkStep3() {
+    if (developerMode) {
+      checkResult3 = '🔧 DEV MODE: Step 3 automatically passed!';
+      setTimeout(() => { goToStep4(); }, 800);
+      return;
+    }
+
+    // Find the two target rows by their unique values (the promos to cut)
     const targets = [
       { time: '09:32:00 PM', title: 'BRACKET BREAKDOWN FRIDAY 3 REV. 1' },
       { time: '09:33:40 PM', title: 'MM SWEET 16 THURSDAY' }
@@ -149,78 +219,21 @@
       if (!allCorrect) break;
     }
     if (allCorrect) {
-      checkResult2 = '✅ Correct! You found and marked the two target promos to CUT.';
-      setTimeout(() => { goToStep3(); }, 800); // Navigate to step 3 after short delay
+      checkResult3 = '✅ Correct! You found and marked the two target promos to CUT.';
+      setTimeout(() => { goToStep4(); }, 800); // Navigate to step 4 after short delay
     } else {
-      checkResult2 = '❌ Not quite! Make sure you wrote CUT in column A and filled the rest of the row in red for both target promo rows.';
+      checkResult3 = '❌ Not quite! Are both promos red with CUT next to them? Did you insert the row and paste the swap there?';
     }
-  }
-
-  let checkResult3 = '';
-  function checkStep3() {
-    // Find the source row to copy
-    const source = {
-      time: '09:23:02 PM',
-      eventType: 'Commercial',
-      title: 'OLD TRAPPER : CAMPING CATASTROPHES',
-      advertiser: 'OLD TRAPPER',
-      houseNumber: '602584',
-      orderedAs: 'ROS 24 HOUR',
-      spotEndTime: '05:59:00 AM'
-    };
-    // Find the row to insert after
-    const afterRowIdx = data.findIndex(row => row[1] === '09:33:40 PM' && row[2] && row[2].toLowerCase() === 'promo' && row[4] && row[4].toLowerCase() === 'mm sweet 16 thursday');
-    if (afterRowIdx === -1) {
-      checkResult3 = '❌ Could not find the MM SWEET 16 THURSDAY row.';
-      return;
-    }
-    // The new row should be after afterRowIdx
-    const newRowIdx = afterRowIdx + 1;
-    // Check if the new row matches the source data (except for possible column A, which could be blank or CUT)
-    const newRow = data[newRowIdx];
-    if (!newRow) {
-      checkResult3 = '❌ No new row found after MM SWEET 16 THURSDAY.';
-      return;
-    }
-    // Check columns 1-8 (skip column 0)
-    const matches =
-      newRow[1] === source.time &&
-      newRow[2] && newRow[2].toLowerCase() === source.eventType.toLowerCase() &&
-      newRow[3] === '00:00:30' &&
-      newRow[4] && newRow[4].toLowerCase() === source.title.toLowerCase() &&
-      newRow[5] && newRow[5].toLowerCase() === source.advertiser.toLowerCase() &&
-      newRow[6] === source.houseNumber &&
-      newRow[7] === source.orderedAs &&
-      newRow[8] === source.spotEndTime;
-    if (!matches) {
-      checkResult3 = '❌ The new row does not match the copied OLD TRAPPER row.';
-      return;
-    }
-    // Check if all cells in the new row are filled blue
-    let allBlue = true;
-    for (let col = 0; col < newRow.length; col++) {
-      const cellKey = `${newRowIdx}-${col}`;
-      const color = (cellColors[cellKey] || '').toLowerCase();
-      if (
-        color !== '#0070c0' &&
-        color !== 'rgb(0,112,192)' &&
-        color !== '#00b0f0' &&
-        color !== 'rgb(0,176,240)'
-      ) {
-        allBlue = false;
-        break;
-      }
-    }
-    if (!allBlue) {
-      checkResult3 = '❌ The new row is not filled blue.';
-      return;
-    }
-    checkResult3 = '✅ Correct! You copied and pasted the row and filled it blue.';
-    setTimeout(() => { goToStep4(); }, 800); // Navigate to step 4 after short delay
   }
 
   let checkResult4 = '';
   function checkStep4() {
+    if (developerMode) {
+      checkResult4 = '🔧 DEV MODE: Step 4 automatically passed!';
+      setTimeout(() => { showCongratulationsCard(); }, 800);
+      return;
+    }
+
     // Find the original OLD TRAPPER row
     const origIdx = data.findIndex(row => row[1] === '09:23:02 PM' && row[2] && row[2].toLowerCase() === 'commercial' && row[4] && row[4].toLowerCase() === 'old trapper : camping catastrophes');
     // Find the blue row (should be after MM SWEET 16 THURSDAY)
@@ -233,7 +246,7 @@
     // Check column A of original row
     const origA = (data[origIdx][0] || '').trim().toLowerCase();
     if (origA !== 'moved to b1 of 9:30') {
-      checkResult4 = '❌ In the original OLD TRAPPER row, column A must say: moved to B1 of 9:30';
+      checkResult4 = '❌ Did you mark the OLD TRAPPER unit blue and write "moved from b3 of the 9PM"?';
       return;
     }
     // Check column A of blue row
@@ -243,6 +256,7 @@
       return;
     }
     checkResult4 = '✅ Correct! You annotated both rows as required.';
+    setTimeout(() => { showCongratulationsCard(); }, 800);
   }
 
   // Fill color functions
@@ -363,9 +377,87 @@
     }
   }
 
+  // Function to reapply all colors
+  function reapplyAllColors() {
+    if (hot && !hot.isDestroyed) {
+      // Apply base colors first (event type colors)
+      const eventTypeCol = 2;
+      for (let row = 1; row < data.length; row++) {
+        for (let col = 0; col < data[row].length; col++) {
+          const cellKey = `${row}-${col}`;
+          const cellElement = hot?.getCell(row, col);
+          if (!cellElement) continue;
+          
+          // Skip if cell is cleared or has persistent color
+          if (clearedCells.has(cellKey) || cellColors[cellKey]) continue;
+          
+          // Apply event type colors
+          if (data[row][eventTypeCol]) {
+            const eventType = data[row][eventTypeCol].toLowerCase();
+            if (eventType === 'commercial' && col !== 0) {
+              cellElement.style.setProperty('background-color', '#FFFF00', 'important');
+              cellElement.style.removeProperty('color');
+            } else if (eventType === 'local' && col !== 0) {
+              cellElement.style.setProperty('background-color', '#7030A0', 'important');
+              cellElement.style.setProperty('color', '#fff', 'important');
+            } else if (eventType === 'program' && col !== 0) {
+              cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
+              cellElement.style.setProperty('font-weight', 'bold', 'important');
+            } else if (eventType === 'promo' && col !== 0) {
+              cellElement.style.setProperty('background-color', '#375623', 'important');
+              cellElement.style.setProperty('color', '#fff', 'important');
+            }
+          }
+        }
+      }
+      
+      // Apply persistent colors (user-applied colors)
+      Object.keys(cellColors).forEach(cellKey => {
+        if (clearedCells.has(cellKey)) {
+          delete cellColors[cellKey];
+          return;
+        }
+        const [row, col] = cellKey.split('-').map(Number);
+        const cellElement = hot?.getCell(row, col);
+        if (cellElement) {
+          cellElement.style.setProperty('background-color', cellColors[cellKey], 'important');
+          if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
+            cellElement.style.setProperty('color', '#fff', 'important');
+          }
+        }
+      });
+      
+      // Apply header styling (row 0)
+      for (let col = 0; col < data[0].length; col++) {
+        const cellElement = hot?.getCell(0, col);
+        if (cellElement) {
+          cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
+          cellElement.style.setProperty('color', '#0000ff', 'important');
+          cellElement.style.setProperty('font-weight', 'bold', 'important');
+        }
+      }
+      
+      // Apply special column A styling
+      for (let row = 1; row < data.length; row++) {
+        const cellElement = hot?.getCell(row, 0);
+        if (cellElement && typeof data[row][0] === 'string') {
+          const cellValue = data[row][0].toLowerCase().trim();
+          if (cellValue === 'start time' || cellValue === 'end time' || cellValue === 'start time 9:00:00') {
+            cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
+            cellElement.style.setProperty('color', '#0000ff', 'important');
+            cellElement.style.setProperty('font-weight', 'bold', 'important');
+          } else if (!cellColors[`${row}-0`] && !clearedCells.has(`${row}-0`)) {
+            cellElement.style.setProperty('background-color', '#fff', 'important');
+            cellElement.style.removeProperty('color');
+          }
+        }
+      }
+    }
+  }
+
   // Sample data for demonstration
   let data = [
-    ["Real Time", "Hit Time", "Event Type", "Length", "Title", "Advertiser", "House Number", "Ordered As", "Spot End Time"],
+    ["Real Time 9:00:00", "Hit Time", "Event Type", "Length", "Title", "Advertiser", "House Number", "Ordered As", "Spot End Time"],
     ["Start Time 9:00:00", "09:00:00 PM", "Program", "00:04:40", "Original Encore 22 [Home Court: Brian Dutcher]: SEG. 1", "", "245911", "", ""],
     ["9:03:54", "09:04:40 PM", "Promo", "00:00:20", "MM 360 TOMORROW", "CBS SPORTS NETWORK", "809812", "", ""],
     ["", "09:05:00 PM", "Commercial", "00:00:30", "BELFOR: BELFOR_RESTORING HOPE_30", "BELFOR", "604284", "NCAA REBOUND", "05:59:00 AM"],
@@ -381,7 +473,7 @@
     ["", "09:14:05 PM", "Commercial", "00:00:15", "CHASE: PM36829_CHASE 2024 INK_MICO'S HOT CHICKEN_ATTENTION_TVC_15", "CHASE", "605238", "NCAA REBOUND", "05:59:00 AM"],
     ["", "09:14:20 PM", "Local", "Local", "Local", "Local", "Local", "Local", "Local"],
     ["", "09:15:50 PM", "Program", "00:06:32", "Original Encore 22 [Home Court: Brian Dutcher]: SEG. 3", "", "245913", "", ""],
-    ["", "09:22:22 PM", "Promo", "00:00:10", "REESES COLLEGE ASG APRIL 5", "CBS SPORTS NETWORK", "809797", "", ""],
+    ["", "09:22:22 PM", "Promo", "00:00:20", "REESES COLLEGE ASG APRIL 5", "CBS SPORTS NETWORK", "809797", "", ""],
     ["", "09:22:32 PM", "Commercial", "00:00:30", "AT&T: TRUST AGAIN :30 V3 BUY NOW", "AT&T", "603354", "NCAA REBOUND", "05:59:00 AM"],
     ["", "09:23:02 PM", "Commercial", "00:00:30", "OLD TRAPPER : CAMPING CATASTROPHES", "OLD TRAPPER", "602584", "ROS 24 HOUR", "05:59:00 AM"],
     ["", "09:23:32 PM", "Commercial", "00:00:15", "HERSHEY'S: YES!", "HERSHEY'S", "605495", "NCAA REBOUND", "05:59:00 AM"],
@@ -412,6 +504,30 @@
   // Remove rows 38 to 47 (inclusive)
   data.splice(38, 10);
 
+  // Developer mode toggle
+  let developerMode = false;
+
+  // Congratulations state
+  let showCongratulations = false;
+
+  function showCongratulationsCard() {
+    showCongratulations = true;
+    // Reset all step states to prevent rendering conflicts
+    showStep1 = false;
+    showStep2 = false;
+    showStep3 = false;
+    showStep4 = false;
+  }
+
+  function toggleDeveloperMode() {
+    developerMode = !developerMode;
+    if (developerMode) {
+      console.log('🔧 Developer Mode: ENABLED - All checks will automatically pass');
+    } else {
+      console.log('🔧 Developer Mode: DISABLED - Normal validation active');
+    }
+  }
+
   onMount(() => {
     hot = new Handsontable(container, {
       data,
@@ -427,7 +543,7 @@
       contextMenu: true,
       stretchH: 'none',
       className: '', // Remove 'htCenter' to left-align content
-      colWidths: [80, 90, 80, 60, 400, 100, 100, 120, 100],
+      colWidths: [120, 90, 80, 60, 400, 100, 100, 120, 100],
       minSpareRows: 0,
       minSpareCols: 0,
       rowHeights: 25,
@@ -438,6 +554,7 @@
       outsideClickDeselects: false, // Keep selection when clicking outside
       afterChange: (changes, source) => {
         // Optionally handle changes here
+        reapplyAllColors(); // Reapply colors after any change
       },
       beforeKeyDown: (event) => {
         // Keyboard shortcuts for row coloring
@@ -470,78 +587,10 @@
         if (hot && !hot.isDestroyed && !colorsApplied) {
           colorsApplied = true;
           
-          // Apply base colors first (event type colors)
-          const eventTypeCol = 2;
-          for (let row = 1; row < data.length; row++) {
-            for (let col = 0; col < data[row].length; col++) {
-              const cellKey = `${row}-${col}`;
-              const cellElement = hot?.getCell(row, col);
-              if (!cellElement) continue;
-              
-              // Skip if cell is cleared or has persistent color
-              if (clearedCells.has(cellKey) || cellColors[cellKey]) continue;
-              
-              // Apply event type colors
-              if (data[row][eventTypeCol]) {
-                const eventType = data[row][eventTypeCol].toLowerCase();
-                if (eventType === 'commercial' && col !== 0) {
-                  cellElement.style.setProperty('background-color', '#FFFF00', 'important');
-                  cellElement.style.removeProperty('color');
-                } else if (eventType === 'local' && col !== 0) {
-                  cellElement.style.setProperty('background-color', '#7030A0', 'important');
-                  cellElement.style.setProperty('color', '#fff', 'important');
-                } else if (eventType === 'program' && col !== 0) {
-                  cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-                  cellElement.style.setProperty('font-weight', 'bold', 'important');
-                } else if (eventType === 'promo' && col !== 0) {
-                  cellElement.style.setProperty('background-color', '#375623', 'important');
-                  cellElement.style.setProperty('color', '#fff', 'important');
-                }
-              }
-            }
-          }
-          
-          // Apply persistent colors (user-applied colors)
-          Object.keys(cellColors).forEach(cellKey => {
-            if (clearedCells.has(cellKey)) {
-              delete cellColors[cellKey];
-              return;
-            }
-            const [row, col] = cellKey.split('-').map(Number);
-            const cellElement = hot?.getCell(row, col);
-            if (cellElement) {
-              cellElement.style.setProperty('background-color', cellColors[cellKey], 'important');
-              if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
-                cellElement.style.setProperty('color', '#fff', 'important');
-              }
-            }
-          });
-          
-          // Apply header styling (row 0)
-          for (let col = 0; col < data[0].length; col++) {
-            const cellElement = hot?.getCell(0, col);
-            if (cellElement) {
-              cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-              cellElement.style.setProperty('color', '#0000ff', 'important');
-              cellElement.style.setProperty('font-weight', 'bold', 'important');
-            }
-          }
-          
-          // Apply special column A styling
-          for (let row = 1; row < data.length; row++) {
-            const cellElement = hot?.getCell(row, 0);
-            if (cellElement && typeof data[row][0] === 'string') {
-              const cellValue = data[row][0].toLowerCase().trim();
-              if (cellValue === 'start time' || cellValue === 'end time' || cellValue === 'start time 9:00:00') {
-                cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-                cellElement.style.setProperty('color', '#0000ff', 'important');
-                cellElement.style.setProperty('font-weight', 'bold', 'important');
-              } else if (!cellColors[`${row}-0`] && !clearedCells.has(`${row}-0`)) {
-                cellElement.style.setProperty('background-color', '#fff', 'important');
-                cellElement.style.removeProperty('color');
-              }
-            }
-          }
+          // Apply colors with a small delay to ensure DOM is ready
+          setTimeout(() => {
+            reapplyAllColors();
+          }, 50);
         }
       },
       cells: (row, col, prop) => {
@@ -561,7 +610,39 @@
 
 <div class="excel-wrapper">
   <div class="excel-instructions">
-    {#if !showStep1 && !showStep2 && !showStep3 && !showStep4}
+    <!-- Developer Mode Toggle -->
+    <div class="developer-mode-toggle">
+      <button 
+        class="dev-mode-btn" 
+        class:dev-mode-active={developerMode}
+        on:click={toggleDeveloperMode}
+        title="Toggle Developer Mode - Automatically pass all checks"
+      >
+        🔧 {developerMode ? 'DEV MODE: ON' : 'DEV MODE: OFF'}
+      </button>
+      {#if developerMode}
+        <span class="dev-mode-notice">All checks will automatically pass!</span>
+      {/if}
+    </div>
+
+    {#if showCongratulations}
+      <div class="excel-congratulations">
+        <h2 class="excel-instructions-title">🎉 Congratulations!</h2>
+        <div class="excel-instructions-body">
+          <p>You've successfully completed the Live Coverage Sheet exercise!</p>
+          <p>You demonstrated the ability to:</p>
+          <ul>
+            <li>Identify and mark units for cutting</li>
+            <li>Properly annotate unit movements</li>
+            <li>Use color coding effectively</li>
+            <li>Follow live coverage procedures</li>
+          </ul>
+          <button class="excel-next-practice-btn" on:click={() => dispatch('navigateToNextSubmodule')}>
+            Continue to Unit Cut Practice →
+          </button>
+        </div>
+      </div>
+    {:else if !showStep1 && !showStep2 && !showStep3 && !showStep4}
       <div class="flex justify-between items-center mb-1">
         <div></div>
         <button class="excel-nav-btn excel-nav-btn-next" aria-label="Go to Step 1" on:click={goToStep1}>
@@ -569,10 +650,9 @@
         </button>
       </div>
       <h1 class="excel-instructions-title">Interactive Live Coverage Sheet</h1>
-      <p class="excel-subtitle">Below is an interactive live coverage sheet. You can edit cells, drag rows, and use right-click for more options.</p>
       <h2 class="excel-instructions-subtitle">Instructions</h2>
       <div class="excel-instructions-body">
-        The producer wants to cut 1 minute from break 3. Perform the actions to do this on the interactive excel sheet!
+        The producer wants to cut 1 minute from break 3 of the 9PM window. This is an Interactive Excel Live Coverage Sheet. Let's perform the actions. You can edit cells, drag rows, use the paint can in the upper left hand corner to correctly mark colors and right-click for more options.
       </div>
     {:else if showStep1 && !showStep2 && !showStep3 && !showStep4}
       <div class="flex justify-between items-center mb-4">
@@ -583,7 +663,7 @@
       </div>
       <h2 class="excel-instructions-title">Step 1</h2>
       <div class="excel-instructions-body">
-        <div class="excel-step-hint">Look for any <span class="excel-green">Green Promo</span> in SEG. 3 which is unsold inventory to <span class="excel-red">CUT</span>.</div>
+        <div class="excel-step-hint">Identify the break you are working in. Next, check the Ordered As column. Which units can you CUT (Mark as Dead)? Are there any? Maybe green inventory? When you find the inventory you can CUT, correctly mark it on the sheet. NOTE: there is a little paint can in the upper left hand corner of the interactive sheet. And a no fill button within that to clean up the column where you make notes.</div>
         <button class="excel-check-btn" on:click={checkStep1}>Check</button>
         {#if checkResult}
           <div class="excel-check-result">{checkResult}</div>
@@ -596,9 +676,7 @@
       <h2 class="excel-instructions-title">Step 2</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">
-          Find <b>30 more seconds</b> to cut, still focusing on the event type <span class="excel-green">Promo</span>.<br>
-          <br>
-          <b>Instructions:</b> CUT two more promos by filling them in <span class="excel-red">Red</span> and writing <span class="excel-red">CUT</span> next to them in column A.
+          You still need to find 30 more seconds to CUT within that break. Hint: you are moving a unit into Break 1 of the 9:30PM window. Is there an ROS 24 HOUR unit you can move? If so, check the spot end time. Is it valid to move? Does it conflict with anything in the break you are moving it to? In this step you just need to make it Red and write where you are moving it to.
         </div>
         <button class="excel-check-btn" on:click={checkStep2}>Check</button>
         {#if checkResult2}
@@ -609,10 +687,7 @@
       <h2 class="excel-instructions-title">Step 3</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">
-          Copy the row with <b>09:23:02 PM</b> Commercial <i>OLD TRAPPER : CAMPING CATASTROPHES</i>.<br>
-          Add a new row directly under <b>09:33:40 PM</b> Promo <i>MM SWEET 16 THURSDAY</i>.<br>
-          Paste the copied row’s data into the new row.<br>
-          Fill the new row <span style="color:#0070c0;font-weight:bold">Blue</span>.
+          What inventory can you CUT from Break 1 of the 9:30PM window? Are there any promos? Did you mark them as red with "CUT" written next to them? When that's done insert a row and copy and paste your "ROS 24 HOUR- OLD TRAPPER" unit from B3 of the 9PM window there.
         </div>
         <button class="excel-check-btn" on:click={checkStep3}>Check</button>
         {#if checkResult3}
@@ -623,8 +698,7 @@
       <h2 class="excel-instructions-title">Step 4</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">
-          In the original <b>09:23:02 PM</b> Commercial <i>OLD TRAPPER : CAMPING CATASTROPHES</i> row, write in column A: <b>moved to B1 of 9:30</b>.<br>
-          In the new blue row you added, write in column A: <b>moved from b3 of 9p.</b>
+          Look at the row you just moved. Color fill that row and write where you moved it from.
         </div>
         <button class="excel-check-btn" on:click={checkStep4}>Check</button>
         {#if checkResult4}
@@ -658,10 +732,9 @@
               <button type="button" class="excel-color-item" style="background-color: #000000" aria-label="Fill black" on:click={() => pickColor('#000000')}></button>
               <button type="button" class="excel-color-item" style="background-color: #FF0000" aria-label="Fill red" on:click={() => pickColor('#FF0000')}></button>
               <button type="button" class="excel-color-item" style="background-color: #00B050" aria-label="Fill green" on:click={() => pickColor('#00B050')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #0070C0" aria-label="Fill blue" on:click={() => pickColor('#0070C0')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #00B0F0" aria-label="Fill cyan" on:click={() => pickColor('#00B0F0')}></button>
               <button type="button" class="excel-color-item" style="background-color: #FFFF00" aria-label="Fill yellow" on:click={() => pickColor('#FFFF00')}></button>
               <button type="button" class="excel-color-item" style="background-color: #7030A0" aria-label="Fill magenta" on:click={() => pickColor('#7030A0')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #00B0F0" aria-label="Fill cyan" on:click={() => pickColor('#00B0F0')}></button>
               <button type="button" class="excel-color-item" style="background-color: #ED7D31" aria-label="Fill orange" on:click={() => pickColor('#ED7D31')}></button>
               <button type="button" class="excel-color-item" style="background-color: #A5A5A5" aria-label="Fill gray" on:click={() => pickColor('#A5A5A5')}></button>
             </div>
@@ -1023,5 +1096,64 @@
   }
   .excel-nav-btn-next:hover:not(:disabled) {
     background: #1d4ed8;
+  }
+  .developer-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    border: 1px solid #c3c3c3;
+  }
+  .dev-mode-btn {
+    background-color: #0074D9;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  }
+  .dev-mode-btn:hover {
+    background-color: #005fa3;
+  }
+  .dev-mode-btn.dev-mode-active {
+    background-color: #4CAF50; /* A different green for active */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .dev-mode-notice {
+    font-size: 0.85rem;
+    color: #555;
+    margin-left: 8px;
+  }
+  .excel-congratulations {
+    border: 2px solid #4CAF50;
+    background: #e8f5e9;
+    border-radius: 6px;
+    padding: 15px 25px;
+    margin: 10px 0 10px 0;
+    max-width: 900px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  .excel-next-practice-btn {
+    margin-top: 16px;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .excel-next-practice-btn:hover {
+    background: #388E3C;
   }
 </style> 

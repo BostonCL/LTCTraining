@@ -17,15 +17,15 @@ let container: HTMLDivElement;
 let hot: Handsontable | null = null;
 
 let data = [
-  ["Real Time", "Hit Time", "Event Type", "Length", "Title", "Advertiser", "House Number", "Ordered As", "Spot End Time"],
+  ["Real Time 08:00:00 PM", "Hit Time", "Event Type", "Length", "Title", "Advertiser", "House Number", "Ordered As", "Spot End Time"],
   ["", "08:50:00 PM", "Program", "00:45:00", "USL P1 [USL: First Round Match TBD - 11/3/24_8p]: SEG. 5", "", "327335", "", ""],
-  ["", "09:35:00 PM", "Commercial", "00:00:15", "PEPSI (MOUNTAIN DEW): MTD T&R BAJA :15", "PEPSI", "600701", "ROS 24 HOUR", "05:59:00 AM"],
+  ["09:34:27 PM", "09:35:00 PM", "Commercial", "00:00:15", "PEPSI (MOUNTAIN DEW): MTD T&R BAJA :15", "PEPSI", "600701", "ROS 24 HOUR", "05:59:00 AM"],
   ["", "09:35:15 PM", "Commercial", "00:00:30", "DRAFT KINGS: *NFL APPROVED* DRAFTKINGS / TD CELEBRATION ALL SB STATES BET 5 GET 200 LINEAR 1 - CBS + ESPN / QUARTER", "DRAFT KINGS", "600544", "STUDIO ENCORE", "05:59:00 AM"],
   ["", "09:35:45 PM", "Commercial", "00:00:30", "VERIZON: NPI202430S6X9SUSTAIN IPHONE 16 PRO IPADCCNC", "VERIZON", "601337", "STUDIO ENCORE", "05:59:00 AM"],
   ["", "09:36:15 PM", "Commercial", "00:00:15", "STANLEY STEEMER: AD EXPERT V2-15", "STANLEY STEEMER", "601124", "UNITED SOCCER LEAGUE", "05:59:00 AM"],
   ["", "09:36:30 PM", "Local", "Local", "Local", "Local", "Local", "Local", "Local"],
   ["", "09:38:00 PM", "Program", "00:17:30", "USL P1 [USL: First Round Match TBD - 11/3/24_8p]: SEG. 6", "", "327336", "", ""],
-  ["", "09:55:30 PM", "Promo", "00:00:20", "UEFA MD4 THURSDAY", "CBS SPORTS NETWORK", "801865", "", ""],
+  ["09:58:14 PM", "09:55:30 PM", "Promo", "00:00:20", "UEFA MD4 THURSDAY", "CBS SPORTS NETWORK", "801865", "", ""],
   ["", "09:55:50 PM", "Commercial", "00:00:30", "UNITED SOCCER LEAGUE: CH_PLAYOFF_HYPE_24", "United Soccer League", "601582", "UNITED SOCCER LEAGUE", "10:00:00 PM"],
   ["", "09:56:20 PM", "Commercial", "00:00:30", "STELLANTIS: BLESSED/JDP/THE CALLING/RAM/TUNGSTEN/NATIONAL/30/25 RAM 1500 4,000/PD 20/PUBLIS/NOV24", "STELLANTIS", "601703", "STUDIO ENCORE", "05:59:00 AM"],
   ["", "09:56:50 PM", "Commercial", "00:00:30", "DR PEPPER: CFB 2024 LONG DISTANCE RIVALRY :30", "DR PEPPER", "600682", "STUDIO ENCORE", "05:59:00 AM"],
@@ -38,37 +38,13 @@ let data = [
   ["", "10:07:10 PM", "National DR", "00:00:30", "GRAINGER: THE BAKER II GRAG 30", "GRAINGER", "607123", "DR ROS PRIME", "11:00:00 PM"],
   ["", "10:07:40 PM", "Promo", "00:00:20", "NWSL PERFECT STADIUM", "CBS SPORTS NETWORK", "802620", "", ""],
   ["", "10:08:00 PM", "Program", "00:06:00", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 2", "", "327342", "", ""],
-  ["", "10:14:00 PM", "National DR", "00:00:30", "TRUST & WILL: MEET TRUST AND WILL II 30", "TRUST & WILL", "604177", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:14:30 PM", "National DR", "00:00:30", "DEALDASH, INC: DD REAL DEALS 2023 NEW TESTIMONIAL :30/DEALDASH.COM", "DEALDASH, INC", "607056", "DR ROS PRIME", "12:00:00 AM"],
+  ["", "10:14:00 PM", "National DR", "00:00:15", "TRUST & WILL: MEET TRUST AND WILL II 30", "TRUST & WILL", "604177", "DR ROS PRIME", "11:00:00 PM"],
+  ["", "10:14:30 PM", "National DR", "00:00:10", "DEALDASH, INC: DD REAL DEALS 2023 NEW TESTIMONIAL :30/DEALDASH.COM", "DEALDASH, INC", "607056", "DR ROS PRIME", "12:00:00 AM"],
   ["", "10:15:00 PM", "Local", "Local", "Local", "Local", "Local", "Local", "Local"],
   ["", "10:16:30 PM", "Program", "00:07:00", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 3", "", "327343", "", ""],
   ["", "10:23:30 PM", "National DR", "00:01:00", "BOSLEY: NOT 1970 QR 60", "BOSLEY", "606670", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:24:30 PM", "National DR", "00:00:30", "MIZUHO AMERICAS: MWW MIZUHO AMERICAS PAR 3", "MIZUHO AMERICAS", "600884", "DR 24 HOUR ROS", "11:59:00 PM"],
-  ["", "10:25:00 PM", "Program", "00:09:30", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 4", "", "327344", "", ""],
-  ["", "10:34:30 PM", "Promo", "00:00:10", "CBB WICHITA ST VS W KENTUCKY TOM", "CBS SPORTS NETWORK", "802340", "", ""],
-  ["", "10:34:40 PM", "National DR", "00:00:30", "FINANCEBUZZ: TWO MINUTES 30", "FINANCEBUZZ", "600655", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:35:10 PM", "National DR", "00:00:30", "TRUST & WILL: KIDS 30", "TRUST & WILL", "609802", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:35:40 PM", "National DR", "00:00:15", "GRAINGER: MOVING FORWARD 15", "GRAINGER", "600619", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:35:55 PM", "National DR", "00:00:30", "DEALDASH, INC: DD REAL DEALS 2023 NEW TESTIMONIAL :30/DEALDASH.COM", "DEALDASH, INC", "607056", "DR ROS PRIME", "12:00:00 AM"],
-  ["", "10:36:25 PM", "National DR", "00:00:15", "INSTACART: IC-LINEAR-15S-EVERGREEN-BTS-BUNNYEARS STRATID-01", "INSTACART", "607537", "DR ROS PRIME", "12:00:00 AM"],
-  ["", "10:36:40 PM", "Promo", "00:00:20", "LGBTQ FLAG FOOTBALL", "CBS SPORTS NETWORK", "809378", "", ""],
-  ["", "10:37:00 PM", "Program", "00:05:00", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 5", "", "327345", "", ""],
-  ["", "10:42:00 PM", "National DR", "00:00:30", "NIC INDUSTRIES: CERAKOTE TRIM COAT DRIVE TO RETAIL", "NIC INDUSTRIES", "601012", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:42:30 PM", "National DR", "00:00:15", "LUME : STARTER PACK NECKROLL - JACOB - SHOPMANDO - DEAL - V1", "LUME", "609735", "DR ROS PRIME", "12:00:00 AM"],
-  ["", "10:42:45 PM", "National DR", "00:00:15", "DEALDASH, INC: DD REAL DEALS 2023 NEW TESTIMONIAL :15", "DEALDASH, INC", "607700", "DR ROS PRIME", "12:00:00 AM"],
-  ["", "10:43:00 PM", "National DR", "00:00:30", "GRAINGER: THE EXTRAORDINARY 30", "GRAINGER", "607121", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:43:30 PM", "National DR", "00:00:15", "TRUST & WILL: KIDS 15", "TRUST & WILL", "607216", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:43:45 PM", "National DR", "00:00:15", "HARRY'S USA, INC.: HARRY'S MASH UP :15", "HARRY'S USA, INC.", "601702", "DR ROS PRIME", "12:00:00 AM"],
-  ["", "10:44:00 PM", "National DR", "00:01:00", "CREDIT ASSOCIATES: THE PROGRAM 60", "CREDIT ASSOCIATES", "601357", "DR ROS PRIME", "12:00:00 AM"],
-  ["", "10:45:00 PM", "National DR", "00:00:30", "GUSTO INC: TOP CAT :30", "GUSTO INC", "601067", "DR 24 HOUR ROS", "05:58:00 AM"],
-  ["", "10:45:30 PM", "Program", "00:08:00", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 6", "", "327346", "", ""],
-  ["", "10:53:30 PM", "National DR", "00:01:00", "BOSLEY: NOT 1970 QR TFN 60", "BOSLEY", "601231", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:54:30 PM", "National DR", "00:00:30", "GORJANA: GORJANA HOLIDAY 30", "GORJANA", "601354", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:55:00 PM", "National DR", "00:00:15", "TRUST & WILL: MATHEW AND KELLY RV OFFER TRWL 15", "TRUST & WILL", "607212", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:55:15 PM", "National DR", "00:00:15", "INSTACART: IC-LINEAR-15S-EVERGREEN-BTS-BUNNYEARS STRATID-01", "INSTACART", "607537", "DR ROS PRIME", "12:00:00 AM"],
-  ["", "10:55:30 PM", "Local", "Local", "Local", "Local", "Local", "Local", "Local"],
-  ["", "10:57:00 PM", "Program", "00:05:00", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 7", "", "327347", "", ""],
-  ["", "11:02:00 PM", "Promo", "00:00:15", "UCL MD4 TUES & WED", "CBS SPORTS NETWORK", "802350", "", ""]
+  ["", "10:24:30 PM", "National DR", "00:00:10", "MIZUHO AMERICAS: MWW MIZUHO AMERICAS PAR 3", "MIZUHO AMERICAS", "600884", "DR 24 HOUR ROS", "11:59:00 PM"],
+  ["", "10:25:00 PM", "Program", "00:09:30", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 4", "", "327344", "", ""]
 ];
 
 let selectedColor = '#F2DCDB'; // Default light red
@@ -102,7 +78,25 @@ function goBackIntro() {
 let checkResult1 = '';
 let checkResult2 = '';
 
+// Developer mode toggle
+let developerMode = false;
+
+function toggleDeveloperMode() {
+  developerMode = !developerMode;
+  if (developerMode) {
+    console.log('🔧 Developer Mode: ENABLED - All checks will automatically pass');
+  } else {
+    console.log('🔧 Developer Mode: DISABLED - Normal validation active');
+  }
+}
+
 function checkStep1() {
+  if (developerMode) {
+    checkResult1 = '🔧 DEV MODE: Step 1 automatically passed!';
+    setTimeout(() => { goToStep2(); }, 800);
+    return;
+  }
+  
   // Find the BOSLEY and CREDIT ASSOCIATES rows
   const bosleyIdx = data.findIndex(row => row[1] === '10:23:30 PM' && row[2] && row[2].toLowerCase() === 'national dr' && row[4] && row[4].toLowerCase().includes('bosley'));
   const creditIdx = data.findIndex(row => row[1] === '10:44:00 PM' && row[2] && row[2].toLowerCase() === 'national dr' && row[4] && row[4].toLowerCase().includes('credit associates'));
@@ -133,8 +127,9 @@ function checkStep1() {
   }
   if (bosleyCut && bosleyRed && creditCut && creditRed) {
     checkResult1 = '✅ Correct! You CUT and color-filled both 1-minute National DR rows red.';
+    setTimeout(() => { goToStep2(); }, 800);
   } else {
-    checkResult1 = '❌ Not quite! Make sure you write CUT in column A and fill at least one cell in both rows red.';
+    checkResult1 = '❌ Not quite! Did you highlight them red? Did you write "CUT" next to them? Do they add up to 2:00 minutes?';
   }
 }
 let emailText = '';
@@ -222,7 +217,7 @@ onMount(() => {
     contextMenu: true,
     stretchH: 'none',
     className: '',
-    colWidths: [120, 90, 80, 60, 400, 100, 100, 120, 100],
+    colWidths: [120, 90, 80, 60, 500, 100, 100, 120, 100],
     minSpareRows: 0,
     minSpareCols: 0,
     rowHeights: 25,
@@ -337,6 +332,21 @@ onMount(() => {
 
 <div class="excel-wrapper">
   <div class="excel-instructions">
+    <!-- Developer Mode Toggle -->
+    <div class="developer-mode-toggle">
+      <button
+        class="dev-mode-btn"
+        class:dev-mode-active={developerMode}
+        on:click={toggleDeveloperMode}
+        title="Toggle Developer Mode - Automatically pass all checks"
+      >
+        🔧 {developerMode ? 'DEV MODE: ON' : 'DEV MODE: OFF'}
+      </button>
+      {#if developerMode}
+        <span class="dev-mode-notice">All checks will automatically pass!</span>
+      {/if}
+    </div>
+    
     {#if intro}
       <div class="flex justify-between items-center mb-1">
         <div></div>
@@ -345,10 +355,9 @@ onMount(() => {
         </button>
       </div>
       <h1 class="excel-instructions-title">Time Out Practice</h1>
-      <p class="excel-subtitle">Practice time out scenarios using the interactive Excel sheet below.</p>
       <h2 class="excel-instructions-subtitle">Instructions</h2>
       <div class="excel-instructions-body">
-        The Game went over by 2 minutes! The End Time for the 8:00pm game was 10:02:00
+        The Game went over by 2 minutes! The End Time for the 8:00:00PM window is 10:02:00 PM. Find 2 minutes to cut.
       </div>
     {:else if showStep1}
       <div class="flex justify-between items-center mb-4">
@@ -359,7 +368,7 @@ onMount(() => {
       </div>
       <h2 class="excel-instructions-title">Step 1</h2>
       <div class="excel-instructions-body">
-        <div class="excel-step-hint">Find 2 minutes to Cut!<br>Look for units from the 10:00:00pm game with the largest length to CUT</div>
+        <div class="excel-step-hint">Find 2 minutes to Cut.<br>Complete all necessary steps to make the CUT. </div>
         <button class="excel-check-btn" on:click={checkStep1}>Check</button>
         {#if checkResult1}
           <div class="excel-check-result">{checkResult1}</div>
@@ -377,7 +386,7 @@ onMount(() => {
       </div>
       <h2 class="excel-instructions-title">Step 2</h2>
       <div class="excel-instructions-body">
-        <div class="excel-step-hint">Write the email to Master Control explaining what happened!</div>
+        <div class="excel-step-hint">Write the email to Master Control</div>
         <textarea
           bind:value={emailText}
           rows="6"
@@ -393,14 +402,16 @@ onMount(() => {
             </div>
             <div class="excel-email-compare-col">
               <div class="excel-email-compare-title">Reference Email</div>
-              <pre class="excel-email-compare-content">Here is 2 mins worth of units we can cut in the overnight to get us back on time.
+              <pre class="excel-email-compare-content">Here is 2 mins worth of units to CUT in the overnight to get us back on time.
 
 10PM Game
+Break 1
+CUT: 600103
+CUT: 607123
+
 Break 3
 CUT: 606670
-
-Break 4
-CUT: 601357</pre>
+</pre>
             </div>
           </div>
         {/if}
@@ -742,5 +753,42 @@ CUT: 601357</pre>
     border-radius: 4px;
     padding: 8px;
     min-height: 120px;
+  }
+  /* New styles for developer mode toggle */
+  .developer-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border: 1px solid #c3c3c3;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #333;
+  }
+  .dev-mode-btn {
+    background-color: #0074D9;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    border: 1px solid #0074D9;
+  }
+  .dev-mode-btn:hover {
+    background-color: #0056b3;
+  }
+  .dev-mode-active {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+  }
+  .dev-mode-notice {
+    font-size: 0.8rem;
+    color: #666;
+    margin-left: 8px;
   }
 </style> 

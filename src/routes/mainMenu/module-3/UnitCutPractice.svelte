@@ -10,13 +10,13 @@ let hot: Handsontable | null = null;
 let data = [
   ["Real Time", "Hit Time", "Event Type", "Length", "Title", "Advertiser", "House Number", "Ordered As", "Spot End Time"],
   ["", "08:50:00 PM", "Program", "00:45:00", "USL P1 [USL: First Round Match TBD - 11/3/24_8p]: SEG. 5", "", "327335", "", ""],
-  ["", "09:35:00 PM", "Commercial", "00:00:15", "PEPSI (MOUNTAIN DEW): MTD T&R BAJA :15", "PEPSI", "600701", "ROS 24 HOUR", "05:59:00 AM"],
+  ["09:34:27 PM", "09:35:00 PM", "Commercial", "00:00:15", "PEPSI (MOUNTAIN DEW): MTD T&R BAJA :15", "PEPSI", "600701", "ROS 24 HOUR", "05:59:00 AM"],
   ["", "09:35:15 PM", "Commercial", "00:00:30", "DRAFT KINGS: *NFL APPROVED* DRAFTKINGS / TD CELEBRATION ALL SB STATES BET 5 GET 200 LINEAR 1 - CBS + ESPN / QUARTER", "DRAFT KINGS", "600544", "STUDIO ENCORE", "05:59:00 AM"],
   ["", "09:35:45 PM", "Commercial", "00:00:30", "VERIZON: NPI202430S6X9SUSTAIN IPHONE 16 PRO IPADCCNC", "VERIZON", "601337", "STUDIO ENCORE", "05:59:00 AM"],
   ["", "09:36:15 PM", "Commercial", "00:00:15", "STANLEY STEEMER: AD EXPERT V2-15", "STANLEY STEEMER", "601124", "UNITED SOCCER LEAGUE", "05:59:00 AM"],
   ["", "09:36:30 PM", "Local", "Local", "Local", "Local", "Local", "Local", "Local"],
   ["", "09:38:00 PM", "Program", "00:17:30", "USL P1 [USL: First Round Match TBD - 11/3/24_8p]: SEG. 6", "", "327336", "", ""],
-  ["", "09:55:30 PM", "Promo", "00:00:20", "UEFA MD4 THURSDAY", "CBS SPORTS NETWORK", "801865", "", ""],
+  ["09:58:14 PM", "09:55:30 PM", "Promo", "00:00:20", "UEFA MD4 THURSDAY", "CBS SPORTS NETWORK", "801865", "", ""],
   ["", "09:55:50 PM", "Commercial", "00:00:30", "UNITED SOCCER LEAGUE: CH_PLAYOFF_HYPE_24", "United Soccer League", "601582", "UNITED SOCCER LEAGUE", "10:00:00 PM"],
   ["", "09:56:20 PM", "Commercial", "00:00:30", "STELLANTIS: BLESSED/JDP/THE CALLING/RAM/TUNGSTEN/NATIONAL/30/25 RAM 1500 4,000/PD 20/PUBLIS/NOV24", "STELLANTIS", "601703", "STUDIO ENCORE", "05:59:00 AM"],
   ["", "09:56:50 PM", "Commercial", "00:00:30", "DR PEPPER: CFB 2024 LONG DISTANCE RIVALRY :30", "DR PEPPER", "600682", "STUDIO ENCORE", "05:59:00 AM"],
@@ -134,80 +134,50 @@ function showCustomColor() {
   showColorPicker = false;
 }
 
-// --- Step-based instructions state ---
-let showStep1 = false;
-let showStep2 = false;
-let intro = true;
-
-function goToStep1() {
-  showStep1 = true;
-  showStep2 = false;
-  intro = false;
-}
-function goToStep2() {
-  showStep2 = true;
-  showStep1 = false;
-  intro = false;
-}
-function goBackIntro() {
-  intro = true;
-  showStep1 = false;
-  showStep2 = false;
-}
-
-// --- Step check state ---
+// Check result for the main instruction
 let checkResult1 = '';
-let checkResult2 = '';
 
-// Step 1: Check if user color-filled the United Soccer unit row red and wrote CUT in column A
+// Congratulations state
+let showCongratulations = false;
+
+function showCongratulationsCard() {
+  showCongratulations = true;
+}
+
 function checkStep1() {
-  // Find the row with time '09:55:50 PM' and event type 'Commercial'
-  const rowIdx = data.findIndex(row => row[1] === '09:55:50 PM' && row[2] && row[2].toLowerCase() === 'commercial');
-  const cutCol = 0; // Column A
-  let isCut = false;
+  // Find the UNITED SOCCER Unit 601582 row
+  const unitedSoccerRowIdx = data.findIndex(row => row[5] && row[5].toLowerCase() === 'united soccer league' && row[6] === '601582');
+  
+  if (unitedSoccerRowIdx === -1) {
+    checkResult1 = '❌ Could not find the UNITED SOCCER Unit 601582.';
+    return;
+  }
+  
+  // Check if the row is marked as CUT (column A contains "CUT")
+  const columnA = (data[unitedSoccerRowIdx][0] || '').trim().toLowerCase();
+  if (columnA !== 'cut') {
+    checkResult1 = '❌ The UNITED SOCCER Unit must be marked as CUT in column A.';
+    return;
+  }
+  
+  // Check if the row is filled red (indicating it's cut)
   let isRed = false;
-  if (rowIdx !== -1) {
-    // Check if user wrote CUT in column A
-    isCut = typeof data[rowIdx][cutCol] === 'string' && data[rowIdx][cutCol].trim().toLowerCase() === 'cut';
-    // Check if any cell in columns 1+ is filled red
-    for (let col = 1; col < data[rowIdx].length; col++) {
-      const cellKey = `${rowIdx}-${col}`;
-      const color = (cellColors[cellKey] || '').toLowerCase();
-      if (
-        color === '#e53e3e' ||
-        color === '#ff0000' ||
-        color === '#E53E3E'.toLowerCase() ||
-        color === '#FF0000'.toLowerCase() ||
-        color === 'rgb(229,62,62)' ||
-        color === 'rgb(255,0,0)'
-      ) {
-        isRed = true;
-        break;
-      }
+  for (let col = 1; col < data[unitedSoccerRowIdx].length; col++) {
+    const cellKey = `${unitedSoccerRowIdx}-${col}`;
+    const color = (cellColors[cellKey] || '').toLowerCase();
+    if (color === '#ff0000' || color === '#e53e3e' || color === 'rgb(255,0,0)' || color === 'rgb(229,62,62)') {
+      isRed = true;
+      break;
     }
   }
-  if (isCut && isRed) {
-    checkResult1 = '✅ Correct! You CUT and color-filled the United Soccer unit row red.';
-  } else {
-    checkResult1 = '❌ Not quite! Make sure you write CUT in column A and fill at least one cell in the row red.';
+  
+  if (!isRed) {
+    checkResult1 = '❌ Are you sure you can move that unit? Did you mark it red with CUT next to it?';
+    return;
   }
-}
-
-// Step 2: Check if user added at least one row below End Time and added some kind of text
-function checkStep2() {
-  // Find the row with 'End Time' in column 0
-  const endTimeRowIdx = data.findIndex(row => row[0] && row[0].toString().toLowerCase().includes('end time'));
-  let foundExplanation = false;
-  if (endTimeRowIdx !== -1 && data[endTimeRowIdx + 1]) {
-    const nextRow = data[endTimeRowIdx + 1];
-    // Check if any cell in the next row contains non-empty text
-    foundExplanation = nextRow.some(cell => typeof cell === 'string' && cell.trim().length > 0);
-  }
-  if (foundExplanation) {
-    checkResult2 = '✅ Correct! You added a row with an explanation below End Time.';
-  } else {
-    checkResult2 = '❌ Not quite! Add a row below End Time and enter some explanation text.';
-  }
+  
+  checkResult1 = '✅ Correct! The UNITED SOCCER Unit 601582 is properly marked as CUT and filled red.';
+  setTimeout(() => { showCongratulationsCard(); }, 800);
 }
 
 onMount(() => {
@@ -225,7 +195,7 @@ onMount(() => {
     contextMenu: true,
     stretchH: 'none',
     className: '',
-    colWidths: [80, 90, 80, 60, 400, 100, 100, 120, 100],
+    colWidths: [120, 90, 80, 60, 500, 100, 100, 120, 100],
     minSpareRows: 0,
     minSpareCols: 0,
     rowHeights: 25,
@@ -325,97 +295,83 @@ onMount(() => {
 
 <div class="excel-wrapper">
   <div class="excel-instructions">
-    {#if intro}
-      <div class="flex justify-between items-center mb-1">
-        <div></div>
-        <button class="excel-nav-btn excel-nav-btn-next" aria-label="Go to Step 1" on:click={goToStep1}>
-          Next →
+    <h1 class="excel-instructions-title">Unit Cut Practice</h1>
+    <h2 class="excel-instructions-subtitle">Instructions</h2>
+    <div class="excel-instructions-body">
+      The UNITED SOCCER Unit 601582 in Break 6 did not air for unforeseen reasons. The game already ended. What do you do? How do you mark it on the sheet? Can you move it?
+    </div>
+    <button class="excel-check-btn" on:click={checkStep1}>Check</button>
+    {#if checkResult1}
+      <div class="excel-check-result">{checkResult1}</div>
+      {#if checkResult1.startsWith('✅')}
+        <button class="excel-next-btn" on:click={() => showCongratulations = false}>
+          Return to Practice
         </button>
-      </div>
-      <h1 class="excel-instructions-title">Unit Cut Practice</h1>
-      <p class="excel-subtitle">Practice cutting units in this interactive sheet. Follow the instructions below.</p>
-      <h2 class="excel-instructions-subtitle">Instructions</h2>
-      <div class="excel-instructions-body">
-        The UNITED SOCCER Unit @ row 10 did not air for whatever reason and the game already ended.
-      </div>
-    {:else if showStep1}
-      <div class="flex justify-between items-center mb-4">
-        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Intro" on:click={goBackIntro}>
-          ← Previous
-        </button>
-        <div></div>
-      </div>
-      <h2 class="excel-instructions-title">Step 1</h2>
-      <div class="excel-instructions-body">
-        <div class="excel-step-hint">CUT the Unit.<br>Look for any possible soccer games that the unit can air in for the rest of the night.<br>Unfortunately there is no eligible spot.</div>
-        <button class="excel-check-btn" on:click={checkStep1}>Check</button>
-        {#if checkResult1}
-          <div class="excel-check-result">{checkResult1}</div>
-          {#if checkResult1.startsWith('✅')}
-            <button class="excel-step2-next-btn" on:click={goToStep2} style="margin-top: 16px;">Go to Step 2</button>
-          {/if}
-        {/if}
-      </div>
-    {:else if showStep2}
-      <div class="flex justify-between items-center mb-4">
-        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Step 1" on:click={goToStep1}>
-          ← Previous
-        </button>
-        <div></div>
-      </div>
-      <h2 class="excel-instructions-title">Step 2</h2>
-      <div class="excel-instructions-body">
-        <div class="excel-step-hint">Add a few rows and description under the End Time with an explanation for the Cut.</div>
-        <button class="excel-check-btn" on:click={checkStep2}>Check</button>
-        {#if checkResult2}
-          <div class="excel-check-result">{checkResult2}</div>
-        {/if}
-      </div>
+      {/if}
     {/if}
   </div>
-  <div class="excel-toolbar">
-    <div class="excel-tool-group">
-      <div class="excel-fill-color">
-        <button class="excel-fill-button" on:click={applyFillColor} aria-label="Fill Color">
-          <svg class="excel-paint-bucket" viewBox="0 0 20 20" width="20" height="20" fill="none">
-            <rect x="7" y="15" width="6" height="3" rx="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
-            <path d="M7.5 13.5L3.5 9.5C3.1 9.1 3.1 8.5 3.5 8.1L8.1 3.5C8.5 3.1 9.1 3.1 9.5 3.5L13.5 7.5C13.9 7.9 13.9 8.5 13.5 8.9L8.9 13.5C8.5 13.9 7.9 13.9 7.5 13.5Z" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
-            <rect x="6.5" y="7.5" width="7" height="2" rx="1" transform="rotate(-45 6.5 7.5)" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
-            <ellipse cx="16.5" cy="16.5" rx="1.5" ry="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
-          </svg>
-          <div class="excel-color-bar" style="background-color: {selectedColor}"></div>
+  
+  {#if showCongratulations}
+    <div class="excel-congratulations">
+      <h2 class="excel-instructions-title">🎉 Congratulations!</h2>
+      <div class="excel-instructions-body">
+        <p>You've successfully completed the Unit Cut Practice exercise!</p>
+        <p>You demonstrated the ability to:</p>
+        <ul>
+          <li>Identify units that need to be cut</li>
+          <li>Properly mark units as CUT in column A</li>
+          <li>Use appropriate color coding (red) to indicate cut units</li>
+          <li>Follow proper live coverage procedures</li>
+        </ul>
+        <button class="excel-next-practice-btn" on:click={() => showCongratulations = false}>
+          Return to Practice
         </button>
-        <button class="excel-fill-dropdown" on:click={() => showColorPicker = !showColorPicker} aria-label="Fill Color Dropdown">
-          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 3l5 5 5-5z" fill="#222"/></svg>
-        </button>
-        {#if showColorPicker}
-        <div class="excel-color-dropdown">
-          <div class="excel-color-palette">
-            <div class="excel-color-row">
-              <button type="button" class="excel-color-item" style="background-color: #FFFFFF" aria-label="Fill white" on:click={() => pickColor('#FFFFFF')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #000000" aria-label="Fill black" on:click={() => pickColor('#000000')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #FF0000" aria-label="Fill red" on:click={() => pickColor('#FF0000')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #00B050" aria-label="Fill green" on:click={() => pickColor('#00B050')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #0070C0" aria-label="Fill blue" on:click={() => pickColor('#0070C0')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #FFFF00" aria-label="Fill yellow" on:click={() => pickColor('#FFFF00')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #7030A0" aria-label="Fill magenta" on:click={() => pickColor('#7030A0')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #00B0F0" aria-label="Fill cyan" on:click={() => pickColor('#00B0F0')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #ED7D31" aria-label="Fill orange" on:click={() => pickColor('#ED7D31')}></button>
-              <button type="button" class="excel-color-item" style="background-color: #A5A5A5" aria-label="Fill gray" on:click={() => pickColor('#A5A5A5')}></button>
-            </div>
-          </div>
-          <div class="excel-color-actions">
-            <button class="excel-no-fill" on:click={clearFillColor}>No Fill</button>
-            <button class="excel-more-colors" on:click={showCustomColor}>More Colors...</button>
-          </div>
-        </div>
-        {/if}
       </div>
     </div>
-  </div>
-  <div class="excel-workspace">
-    <div bind:this={container} class="excel-sheet"></div>
-  </div>
+  {:else}
+    <div class="excel-toolbar">
+      <div class="excel-tool-group">
+        <div class="excel-fill-color">
+          <button class="excel-fill-button" on:click={applyFillColor} aria-label="Fill Color">
+            <svg class="excel-paint-bucket" viewBox="0 0 20 20" width="20" height="20" fill="none">
+              <rect x="7" y="15" width="6" height="3" rx="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
+              <path d="M7.5 13.5L3.5 9.5C3.1 9.1 3.1 8.5 3.5 8.1L8.1 3.5C8.5 3.1 9.1 3.1 9.5 3.5L13.5 7.5C13.9 7.9 13.9 8.5 13.5 8.9L8.9 13.5C8.5 13.9 7.9 13.9 7.5 13.5Z" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
+              <rect x="6.5" y="7.5" width="7" height="2" rx="1" transform="rotate(-45 6.5 7.5)" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
+              <ellipse cx="16.5" cy="16.5" rx="1.5" ry="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
+            </svg>
+            <div class="excel-color-bar" style="background-color: {selectedColor}"></div>
+          </button>
+          <button class="excel-fill-dropdown" on:click={() => showColorPicker = !showColorPicker} aria-label="Fill Color Dropdown">
+            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 3l5 5 5-5z" fill="#222"/></svg>
+          </button>
+          {#if showColorPicker}
+          <div class="excel-color-dropdown">
+            <div class="excel-color-palette">
+              <div class="excel-color-row">
+                <button type="button" class="excel-color-item" style="background-color: #FFFFFF" aria-label="Fill white" on:click={() => pickColor('#FFFFFF')}></button>
+                <button type="button" class="excel-color-item" style="background-color: #000000" aria-label="Fill black" on:click={() => pickColor('#000000')}></button>
+                <button type="button" class="excel-color-item" style="background-color: #FF0000" aria-label="Fill red" on:click={() => pickColor('#FF0000')}></button>
+                <button type="button" class="excel-color-item" style="background-color: #00B050" aria-label="Fill green" on:click={() => pickColor('#00B050')}></button>
+                <button type="button" class="excel-color-item" style="background-color: #FFFF00" aria-label="Fill yellow" on:click={() => pickColor('#FFFF00')}></button>
+                <button type="button" class="excel-color-item" style="background-color: #7030A0" aria-label="Fill magenta" on:click={() => pickColor('#7030A0')}></button>
+                <button type="button" class="excel-color-item" style="background-color: #00B0F0" aria-label="Fill cyan" on:click={() => pickColor('#00B0F0')}></button>
+                <button type="button" class="excel-color-item" style="background-color: #ED7D31" aria-label="Fill orange" on:click={() => pickColor('#ED7D31')}></button>
+                <button type="button" class="excel-color-item" style="background-color: #A5A5A5" aria-label="Fill gray" on:click={() => pickColor('#A5A5A5')}></button>
+              </div>
+            </div>
+            <div class="excel-color-actions">
+              <button class="excel-no-fill" on:click={clearFillColor}>No Fill</button>
+              <button class="excel-more-colors" on:click={showCustomColor}>More Colors...</button>
+            </div>
+          </div>
+          {/if}
+        </div>
+      </div>
+    </div>
+    <div class="excel-workspace">
+      <div bind:this={container} class="excel-sheet"></div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -659,5 +615,46 @@ onMount(() => {
     margin-top: 10px;
     font-size: 1rem;
     font-weight: 500;
+  }
+  
+  .excel-next-btn:hover {
+    background: #005fa3;
+  }
+  
+  .excel-congratulations {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .excel-congratulations ul {
+    text-align: left;
+    max-width: 500px;
+    margin: 16px auto;
+    padding-left: 20px;
+  }
+  
+  .excel-congratulations li {
+    margin: 8px 0;
+    color: #1a2a3a;
+  }
+  
+  .excel-next-practice-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  }
+  
+  .excel-next-practice-btn:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
   }
 </style> 
