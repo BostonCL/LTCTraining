@@ -7,7 +7,7 @@ let container: HTMLDivElement;
 let hot: Handsontable | null = null;
 
 let data = [
-  ["Real Time", "Hit Time", "Event Type", "Length", "Title", "Advertiser", "House Number", "Ordered As", "Spot End Time"],
+  ["Real Time 08:00:00 PM", "Hit Time", "Event Type", "Length", "Title", "Advertiser", "House Number", "Ordered As", "Spot End Time"],
   ["", "08:50:00 PM", "Program", "00:45:00", "USL P1 [USL: First Round Match TBD - 11/3/24_8p]: SEG. 5", "", "327335", "", ""],
   ["Moved to B4 of 9:30P", "09:35:00 PM", "Commercial", "00:00:15", "PEPSI (MOUNTAIN DEW): MTD T&R BAJA :15", "PEPSI", "600701", "ROS 24 HOUR", "05:59:00 AM"],
   ["", "09:35:15 PM", "Commercial", "00:00:30", "DRAFT KINGS: *NFL APPROVED* DRAFTKINGS / TD CELEBRATION ALL SB STATES BET 5 GET 200 LINEAR 1 - CBS + ESPN / QUARTER", "DRAFT KINGS", "600544", "STUDIO ENCORE", "05:59:00 AM"],
@@ -96,7 +96,18 @@ let cellColors: { [key: string]: string } = {
 let clearedCells = new Set<string>();
 
 let emailTextStep1 = '';
-let emailTextStep2 = '';
+
+// Check functionality
+let checkResult1 = '';
+
+function checkStep1() {
+  // Check if user has written email text
+  if (emailTextStep1.trim().length > 0) {
+    checkResult1 = '✅ Good Job! Now, check your own work in the reference email box.';
+  } else {
+    checkResult1 = '❌ Please write an email to the MC explaining the swap.';
+  }
+}
 
 function pickColor(color: string) {
   selectedColor = color;
@@ -163,37 +174,6 @@ function showCustomColor() {
   showColorPicker = false;
 }
 
-// --- Step-based instructions state ---
-let intro = true;
-let showStep1 = false;
-let showStep2 = false;
-
-function goToStep1() {
-  showStep1 = true;
-  showStep2 = false;
-  intro = false;
-}
-function goToStep2() {
-  showStep2 = true;
-  showStep1 = false;
-  intro = false;
-}
-function goBackIntro() {
-  intro = true;
-  showStep1 = false;
-  showStep2 = false;
-}
-
-let checkResult1 = '';
-let checkResult2 = '';
-
-function checkStep1() {
-  checkResult1 = 'show';
-}
-function checkStep2() {
-  checkResult2 = 'show';
-}
-
 onMount(() => {
   hot = new Handsontable(container, {
     data,
@@ -209,7 +189,7 @@ onMount(() => {
     contextMenu: true,
     stretchH: 'none',
     className: '',
-    colWidths: [80, 90, 80, 60, 400, 100, 100, 120, 100],
+    colWidths: [120, 90, 80, 60, 500, 100, 100, 120, 100],
     minSpareRows: 0,
     minSpareCols: 0,
     rowHeights: 25,
@@ -310,93 +290,38 @@ onMount(() => {
 
 <div class="excel-wrapper">
   <div class="excel-instructions">
-    {#if intro}
-      <div class="flex justify-between items-center mb-1">
-        <div></div>
-        <button class="excel-nav-btn excel-nav-btn-next" aria-label="Go to Step 1" on:click={goToStep1}>
-          Next →
-        </button>
-      </div>
-      <h1 class="excel-instructions-title">MC Email Practice</h1>
-      <p class="excel-subtitle">Practice MC email scenarios using the interactive Excel sheet below.</p>
-      <h2 class="excel-instructions-subtitle">Instructions</h2>
-      <div class="excel-instructions-body">
-        Here we will send a practice swap email to Master Control!<br><br>
-        (We need a mock email text editing playground to write a practice email with checks.)
-      </div>
-    {:else if showStep1}
-      <div class="flex justify-between items-center mb-4">
-        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Intro" on:click={goBackIntro}>
-          ← Previous
-        </button>
-        <div></div>
-      </div>
-      <h2 class="excel-instructions-title">Step 1</h2>
-      <div class="excel-instructions-body">
-        <div class="excel-step-hint">We will write a practice swap email to Master Control. Please use the box below to compose your email.</div>
-        <textarea
-          bind:value={emailTextStep1}
-          rows="6"
-          style="width:100%;margin-bottom:10px;font-size:1rem;padding:8px;border-radius:4px;border:1px solid #ccc;resize:vertical;"
-          placeholder="Type your practice email here..."
-        ></textarea>
-        <button class="excel-check-btn" on:click={checkStep1}>Check</button>
-        {#if checkResult1 === 'show'}
-          <div class="excel-email-compare-wrapper">
-            <div class="excel-email-compare-col">
-              <div class="excel-email-compare-title">Your Email</div>
-              <pre class="excel-email-compare-content">{emailTextStep1}</pre>
-            </div>
-            <div class="excel-email-compare-col">
-              <div class="excel-email-compare-title">Reference Email</div>
-              <pre class="excel-email-compare-content">Here is the swap to save the :30 seconds from Break 11 of the 12PM game.
- 
-2PM Game 
-Break 1
-CUT: 600812
-CUT: 609735
-IN: 601521
-</pre>
-            </div>
-          </div>
-        {/if}
-      </div>
-    {:else if showStep2}
-      <div class="flex justify-between items-center mb-4">
-        <button class="excel-nav-btn excel-nav-btn-prev" aria-label="Back to Step 1" on:click={goToStep1}>
-          ← Previous
-        </button>
-        <div></div>
-      </div>
-      <h2 class="excel-instructions-title">Step 2</h2>
-      <div class="excel-instructions-body">
-        <div class="excel-step-hint">Write a swap email to Master Control to save :30 seconds from Break 11 of the 12PM game.</div>
-        <textarea
-          bind:value={emailTextStep2}
-          rows="6"
-          style="width:100%;margin-bottom:10px;font-size:1rem;padding:8px;border-radius:4px;border:1px solid #ccc;resize:vertical;"
-          placeholder="Type your practice email here..."
-        ></textarea>
-        <button class="excel-check-btn" on:click={checkStep2}>Check</button>
-        {#if checkResult2 === 'show'}
-          <div class="excel-email-compare-wrapper">
-            <div class="excel-email-compare-col">
-              <div class="excel-email-compare-title">Your Email</div>
-              <pre class="excel-email-compare-content">{emailTextStep2}</pre>
-            </div>
-            <div class="excel-email-compare-col">
-              <div class="excel-email-compare-title">Reference Email</div>
-              <pre class="excel-email-compare-content">Here is the swap to save the :30 seconds from Break 11 of the 12PM game.
- 
-2PM Game 
-Break 1
-CUT: 600812
-CUT: 609735
-IN: 601521
-</pre>
-            </div>
-          </div>
-        {/if}
+    <h1 class="excel-instructions-title">MC Email Practice</h1>
+    <h2 class="excel-instructions-subtitle">Instructions</h2>
+    <div class="excel-instructions-body">
+      Below is a correctly marked swap on the Live Coverage Sheet. How would you notate this in an email to the MC?
+    </div>
+    
+    <textarea
+      bind:value={emailTextStep1}
+      rows="6"
+      style="width:100%;margin-bottom:10px;font-size:1rem;padding:8px;border-radius:4px;border:1px solid #ccc;resize:vertical;"
+      placeholder="Type your email to the MC explaining the swap..."
+    ></textarea>
+    <button class="excel-check-btn" on:click={checkStep1}>Check</button>
+    {#if checkResult1}
+      <div class="excel-check-result">{checkResult1}</div>
+    {/if}
+    
+    {#if checkResult1 === '✅ Good! You have written an email to the MC.'}
+      <div class="excel-email-compare-wrapper">
+        <div class="excel-email-compare-col">
+          <div class="excel-email-compare-title">Your Email</div>
+          <pre class="excel-email-compare-content">{emailTextStep1}</pre>
+        </div>
+        <div class="excel-email-compare-col">
+          <div class="excel-email-compare-title">Reference Email</div>
+          <pre class="excel-email-compare-content">Here is the swap to save :15 seconds from Break 5 of the 8PM game.
+
+10PM Game 
+Break 4
+CUT: 600619
+IN: 600701</pre>
+        </div>
       </div>
     {/if}
   </div>

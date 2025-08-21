@@ -9,7 +9,7 @@ const dispatch = createEventDispatcher();
 export let progressId: string;
 export let nextButtonText: string = "Next";
 
-// The Yellow Unit script (updated to a single animation slide)
+// The Yellow Unit script (updated to combine slides 2 & 3)
 const script = [
   {
     text: `Let's start with the basics: The Yellow Unit category. On the next slide, they are listed from most to least important. As you might remember, they are located in the "Ordered As" column on the live coverage sheet.`,
@@ -17,13 +17,8 @@ const script = [
     image: '/images/introduction/basketballBackground.png'
   },
   {
-    text: 'This is our Unit Prioritization List, ranked from highest to lowest importance.',
-    audio: '/audio/module-2/yellow-unit/module2_yellowunit_02.mp3',
-    whiteboardText: ['**__Unit Prioritization List__**']
-  },
-  {
-    text: 'Show Specific',
-    audio: '/audio/module-2/yellow-unit/module2_yellowunit_03.mp3',
+    text: `This is our Unit Prioritization List, ranked from highest to lowest importance. Starting with Show Specific, which is the highest priority.`,
+    audio: '/audio/module-2/yellow-unit/module2_yellowunit_02_03_combined.mp3',
     whiteboardText: ['**__Unit Prioritization List__**', '• **Show Specific**']
   },
   {

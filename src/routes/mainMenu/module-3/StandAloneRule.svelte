@@ -26,9 +26,9 @@ const script = [
     audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02.mp3',
     whiteboardText: [
       'Not Allowed:',
-      '![Not Allowed](/images/module-3/stand-alone-rule/NotAllowed.jpg)',
+      '![Not Allowed](/images/module-3/stand-alone-rule/NotAllowedv2.jpg)',
       'Allowed:',
-      '![Allowed](/images/module-3/stand-alone-rule/Allowed.jpg)',
+      '![Allowed](/images/module-3/stand-alone-rule/Allowedv2.jpg)',
       'In this example, the Hershey\'s unit creates the necessary separation between the insurance and alcohol units.'
     ],
     titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02_title.mp3'
