@@ -20,7 +20,7 @@ import { DEV_FEATURES } from '$lib/config/dev';
   }> = [];
   export let title: string = '';
   export let image: string | undefined = undefined;
-  export let showAvatar: boolean = true;
+  // Avatar is always shown in this component
   export let onNextSubmodule: (() => void) | undefined;
   export let completionButtonText: string | undefined = undefined;
   export let onCompletionButtonClick: (() => void) | undefined = undefined;

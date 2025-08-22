@@ -2,6 +2,9 @@
 import { onMount } from 'svelte';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.full.min.css';
+import { createEventDispatcher } from 'svelte';
+
+const dispatch = createEventDispatcher();
 
 let container: HTMLDivElement;
 let hot: Handsontable | null = null;
@@ -140,11 +143,29 @@ let checkResult1 = '';
 // Congratulations state
 let showCongratulations = false;
 
+// Developer mode toggle
+let developerMode = false;
+
+function toggleDeveloperMode() {
+  developerMode = !developerMode;
+  if (developerMode) {
+    console.log('🔧 Developer Mode: ENABLED - Check will automatically pass');
+  } else {
+    console.log('🔧 Developer Mode: DISABLED - Normal validation active');
+  }
+}
+
 function showCongratulationsCard() {
   showCongratulations = true;
 }
 
 function checkStep1() {
+  if (developerMode) {
+    checkResult1 = '🔧 DEV MODE: Check automatically passed!';
+    setTimeout(() => { showCongratulationsCard(); }, 800);
+    return;
+  }
+
   // Find the UNITED SOCCER Unit 601582 row
   const unitedSoccerRowIdx = data.findIndex(row => row[5] && row[5].toLowerCase() === 'united soccer league' && row[6] === '601582');
   
@@ -295,83 +316,94 @@ onMount(() => {
 
 <div class="excel-wrapper">
   <div class="excel-instructions">
-    <h1 class="excel-instructions-title">Unit Cut Practice</h1>
-    <h2 class="excel-instructions-subtitle">Instructions</h2>
-    <div class="excel-instructions-body">
-      The UNITED SOCCER Unit 601582 in Break 6 did not air for unforeseen reasons. The game already ended. What do you do? How do you mark it on the sheet? Can you move it?
-    </div>
-    <button class="excel-check-btn" on:click={checkStep1}>Check</button>
-    {#if checkResult1}
-      <div class="excel-check-result">{checkResult1}</div>
-      {#if checkResult1.startsWith('✅')}
-        <button class="excel-next-btn" on:click={() => showCongratulations = false}>
-          Return to Practice
-        </button>
+    <!-- Developer Mode Toggle -->
+    <div class="developer-mode-toggle">
+      <button 
+        class="dev-mode-btn" 
+        class:dev-mode-active={developerMode}
+        on:click={toggleDeveloperMode}
+        title="Toggle Developer Mode - Automatically pass the check"
+      >
+        🔧 {developerMode ? 'DEV MODE: ON' : 'DEV MODE: OFF'}
+      </button>
+      {#if developerMode}
+        <span class="dev-mode-notice">Check will automatically pass!</span>
       {/if}
+    </div>
+
+    {#if showCongratulations}
+      <div class="excel-congratulations">
+        <h2 class="excel-instructions-title">🎉 Congratulations!</h2>
+        <div class="excel-instructions-body">
+          <p>You've successfully completed the Unit Cut Practice exercise!</p>
+          <button class="excel-next-practice-btn" on:click={() => dispatch('navigateToNextSubmodule', 'module3_mcemailpractice')}>
+            Continue to Next Practice →
+          </button>
+        </div>
+      </div>
+    {:else}
+      <h1 class="excel-instructions-title">Unit Cut Practice</h1>
+      <h2 class="excel-instructions-subtitle">Instructions</h2>
+      <div class="excel-instructions-body">
+        The UNITED SOCCER Unit 601582 in Break 6 did not air for unforeseen reasons. The game already ended. What do you do? How do you mark it on the sheet? Can you move it?
+      </div>
+      <div class="excel-check-section">
+        <button class="excel-check-btn" on:click={checkStep1}>Check</button>
+        {#if checkResult1}
+          <div class="excel-check-result">{checkResult1}</div>
+          {#if checkResult1.startsWith('✅')}
+            <button class="excel-next-btn" on:click={() => showCongratulations = false}>
+              Return to Practice
+            </button>
+          {/if}
+        {/if}
+      </div>
     {/if}
   </div>
   
-  {#if showCongratulations}
-    <div class="excel-congratulations">
-      <h2 class="excel-instructions-title">🎉 Congratulations!</h2>
-      <div class="excel-instructions-body">
-        <p>You've successfully completed the Unit Cut Practice exercise!</p>
-        <p>You demonstrated the ability to:</p>
-        <ul>
-          <li>Identify units that need to be cut</li>
-          <li>Properly mark units as CUT in column A</li>
-          <li>Use appropriate color coding (red) to indicate cut units</li>
-          <li>Follow proper live coverage procedures</li>
-        </ul>
-        <button class="excel-next-practice-btn" on:click={() => showCongratulations = false}>
-          Return to Practice
+  <div class="excel-toolbar">
+    <div class="excel-tool-group">
+      <div class="excel-fill-color">
+        <button class="excel-fill-button" on:click={applyFillColor} aria-label="Fill Color">
+          <svg class="excel-paint-bucket" viewBox="0 0 20 20" width="20" height="20" fill="none">
+            <rect x="7" y="15" width="6" height="3" rx="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
+            <path d="M7.5 13.5L3.5 9.5C3.1 9.1 3.1 8.5 3.5 8.1L8.1 3.5C8.5 3.1 9.1 3.1 9.5 3.5L13.5 7.5C13.9 7.9 13.9 8.5 13.5 8.9L8.9 13.5C8.5 13.9 7.9 13.9 7.5 13.5Z" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
+            <rect x="6.5" y="7.5" width="7" height="2" rx="1" transform="rotate(-45 6.5 7.5)" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
+            <ellipse cx="16.5" cy="16.5" rx="1.5" ry="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
+          </svg>
+          <div class="excel-color-bar" style="background-color: {selectedColor}"></div>
         </button>
-      </div>
-    </div>
-  {:else}
-    <div class="excel-toolbar">
-      <div class="excel-tool-group">
-        <div class="excel-fill-color">
-          <button class="excel-fill-button" on:click={applyFillColor} aria-label="Fill Color">
-            <svg class="excel-paint-bucket" viewBox="0 0 20 20" width="20" height="20" fill="none">
-              <rect x="7" y="15" width="6" height="3" rx="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
-              <path d="M7.5 13.5L3.5 9.5C3.1 9.1 3.1 8.5 3.5 8.1L8.1 3.5C8.5 3.1 9.1 3.1 9.5 3.5L13.5 7.5C13.9 7.9 13.9 8.5 13.5 8.9L8.9 13.5C8.5 13.9 7.9 13.9 7.5 13.5Z" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
-              <rect x="6.5" y="7.5" width="7" height="2" rx="1" transform="rotate(-45 6.5 7.5)" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
-              <ellipse cx="16.5" cy="16.5" rx="1.5" ry="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
-            </svg>
-            <div class="excel-color-bar" style="background-color: {selectedColor}"></div>
-          </button>
-          <button class="excel-fill-dropdown" on:click={() => showColorPicker = !showColorPicker} aria-label="Fill Color Dropdown">
-            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 3l5 5 5-5z" fill="#222"/></svg>
-          </button>
-          {#if showColorPicker}
-          <div class="excel-color-dropdown">
-            <div class="excel-color-palette">
-              <div class="excel-color-row">
-                <button type="button" class="excel-color-item" style="background-color: #FFFFFF" aria-label="Fill white" on:click={() => pickColor('#FFFFFF')}></button>
-                <button type="button" class="excel-color-item" style="background-color: #000000" aria-label="Fill black" on:click={() => pickColor('#000000')}></button>
-                <button type="button" class="excel-color-item" style="background-color: #FF0000" aria-label="Fill red" on:click={() => pickColor('#FF0000')}></button>
-                <button type="button" class="excel-color-item" style="background-color: #00B050" aria-label="Fill green" on:click={() => pickColor('#00B050')}></button>
-                <button type="button" class="excel-color-item" style="background-color: #FFFF00" aria-label="Fill yellow" on:click={() => pickColor('#FFFF00')}></button>
-                <button type="button" class="excel-color-item" style="background-color: #7030A0" aria-label="Fill magenta" on:click={() => pickColor('#7030A0')}></button>
-                <button type="button" class="excel-color-item" style="background-color: #00B0F0" aria-label="Fill cyan" on:click={() => pickColor('#00B0F0')}></button>
-                <button type="button" class="excel-color-item" style="background-color: #ED7D31" aria-label="Fill orange" on:click={() => pickColor('#ED7D31')}></button>
-                <button type="button" class="excel-color-item" style="background-color: #A5A5A5" aria-label="Fill gray" on:click={() => pickColor('#A5A5A5')}></button>
-              </div>
-            </div>
-            <div class="excel-color-actions">
-              <button class="excel-no-fill" on:click={clearFillColor}>No Fill</button>
-              <button class="excel-more-colors" on:click={showCustomColor}>More Colors...</button>
+        <button class="excel-fill-dropdown" on:click={() => showColorPicker = !showColorPicker} aria-label="Fill Color Dropdown">
+          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 3l5 5 5-5z" fill="#222"/></svg>
+        </button>
+        {#if showColorPicker}
+        <div class="excel-color-dropdown">
+          <div class="excel-color-palette">
+            <div class="excel-color-row">
+              <button type="button" class="excel-color-item" style="background-color: #FFFFFF" aria-label="Fill white" on:click={() => pickColor('#FFFFFF')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #000000" aria-label="Fill black" on:click={() => pickColor('#000000')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #FF0000" aria-label="Fill red" on:click={() => pickColor('#FF0000')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #00B050" aria-label="Fill green" on:click={() => pickColor('#00B050')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #FFFF00" aria-label="Fill yellow" on:click={() => pickColor('#FFFF00')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #7030A0" aria-label="Fill magenta" on:click={() => pickColor('#7030A0')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #00B0F0" aria-label="Fill cyan" on:click={() => pickColor('#00B0F0')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #ED7D31" aria-label="Fill orange" on:click={() => pickColor('#ED7D31')}></button>
+              <button type="button" class="excel-color-item" style="background-color: #A5A5A5" aria-label="Fill gray" on:click={() => pickColor('#A5A5A5')}></button>
             </div>
           </div>
-          {/if}
+          <div class="excel-color-actions">
+            <button class="excel-no-fill" on:click={clearFillColor}>No Fill</button>
+            <button class="excel-more-colors" on:click={showCustomColor}>More Colors...</button>
+          </div>
         </div>
+        {/if}
       </div>
     </div>
-    <div class="excel-workspace">
-      <div bind:this={container} class="excel-sheet"></div>
-    </div>
-  {/if}
+  </div>
+  
+  <div class="excel-workspace">
+    <div bind:this={container} class="excel-sheet"></div>
+  </div>
 </div>
 
 <style>
@@ -386,11 +418,7 @@ onMount(() => {
     display: flex;
     flex-direction: column;
   }
-  .excel-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin: 0 0 12px 0;
-  }
+
   .excel-instructions {
     border: 2px solid #0074D9;
     background: #f0f6ff;
@@ -549,9 +577,7 @@ onMount(() => {
     overflow: auto;
   }
 
-  .excel-step-hint {
-    color: #1a2a3a;
-  }
+
   .excel-check-btn {
     background: #0074D9;
     color: #fff;
@@ -567,50 +593,8 @@ onMount(() => {
   .excel-check-btn:hover {
     background: #005fa3;
   }
-  .excel-step2-next-btn {
-    background: #0074D9;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 16px;
-    font-size: 1rem;
-    font-weight: 500;
-    margin-top: 12px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .excel-step2-next-btn:hover {
-    background: #005fa3;
-  }
-  .excel-nav-btn {
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    font-size: 0.9rem;
-  }
-  .excel-nav-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  .excel-nav-btn-prev {
-    background: #f1f5f9;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
-  }
-  .excel-nav-btn-prev:hover:not(:disabled) {
-    background: #e2e8f0;
-  }
-  .excel-nav-btn-next {
-    background: #2563eb;
-    color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-  .excel-nav-btn-next:hover:not(:disabled) {
-    background: #1d4ed8;
-  }
+
+
   .excel-check-result {
     margin-top: 10px;
     font-size: 1rem;
@@ -622,39 +606,73 @@ onMount(() => {
   }
   
   .excel-congratulations {
-    text-align: center;
-    padding: 20px;
+    border: 2px solid #4CAF50;
+    background: #e8f5e9;
+    border-radius: 6px;
+    padding: 15px 25px;
+    margin: 10px 0 10px 0;
+    max-width: 900px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: relative;
   }
   
-  .excel-congratulations ul {
-    text-align: left;
-    max-width: 500px;
-    margin: 16px auto;
-    padding-left: 20px;
-  }
-  
-  .excel-congratulations li {
-    margin: 8px 0;
-    color: #1a2a3a;
-  }
+
   
   .excel-next-practice-btn {
+    margin-top: 16px;
     background: #4CAF50;
-    color: white;
+    color: #fff;
     border: none;
-    border-radius: 8px;
-    padding: 12px 32px;
+    border-radius: 5px;
+    padding: 10px 28px;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 20px;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    transition: background 0.2s;
   }
   
   .excel-next-practice-btn:hover {
-    background: #45a049;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+    background: #388E3C;
+  }
+
+  .developer-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  .dev-mode-btn {
+    background-color: #0074D9;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .dev-mode-btn:hover {
+    background-color: #005fa3;
+  }
+
+  .dev-mode-btn.dev-mode-active {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .dev-mode-notice {
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
   }
 </style> 

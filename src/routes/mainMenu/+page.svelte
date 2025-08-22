@@ -107,7 +107,7 @@
           <li>Rule 2: [Add your rule here]</li>
           <li>Rule 3: [Add your rule here]</li>
         </ul>
-        <p class="text-blue-700 font-semibold">Let’s get started with Module 3!</p>
+        <p class="text-blue-700 font-semibold">Let's get started with Module 3!</p>
       </div>`
     }
   ];
@@ -127,7 +127,7 @@
 
   // Sidebar and navigation state
   let sidebarOpen = true;
-  let mainSection: string = 'introduction'; // 'introduction', 'module1', 'module1sub', 'quiz', or 'other'
+  let mainSection: string = 'introduction'; // Can be any valid section identifier including all module sections
   let module1SubIdx = 0;
   let submodulesOpen = true;
   
@@ -225,7 +225,7 @@
     'module3_excelsheet': { next: 'module3_unitcutpractice' },
     'module3_unitcutpractice': { next: 'module3_mcemailpractice' },
     'module3_mcemailpractice': { next: 'module3_timeoutpractice' },
-    'module3_timeoutpractice': { next: 'introduction' } // Back to introduction when complete
+    'module3_timeoutpractice': { next: 'finalexam' } // Continue to final exam when complete
   };
 
   // Function to get the next destination based on current location
@@ -344,6 +344,23 @@
       }, 800);
     }
   }
+
+  // Helper function to navigate to final exam (bypasses TypeScript inference issues)
+  function goToFinalExam() {
+    const fullscreenState = getFullscreenState();
+    const wasFullscreen = fullscreenState.isFullscreen;
+    mainSection = 'finalexam';
+    if (wasFullscreen) {
+      setTimeout(() => {
+        const newPlayerArea = document.querySelector('[data-player-area]') as HTMLElement;
+        if (newPlayerArea && newPlayerArea.requestFullscreen) {
+          newPlayerArea.requestFullscreen().catch(err => {
+            console.log('Failed to open final exam in fullscreen:', err);
+          });
+        }
+      }, 800);
+    }
+  }
   function goToModule1Intro() {
     const fullscreenState = getFullscreenState();
     const wasFullscreen = fullscreenState.isFullscreen;
@@ -447,7 +464,7 @@
       "An individual or organization promoting products, services, or ideas to a target audience",
       "The same as a Commercial Break"
     ], correctAnswer: 2 },
-    { id: 2, question: "What is another word for “Unit”?", options: [
+    { id: 2, question: "What is another word for \"Unit\"?", options: [
       "Floater",
       "Program line",
       "Window",
@@ -459,7 +476,7 @@
       "A tab in the Live Coverage Sheet",
       "A program segment"
     ], correctAnswer: 1 },
-    { id: 4, question: "In Traffic, what does the term “Window” mean?", options: [
+    { id: 4, question: "In Traffic, what does the term \"Window\" mean?", options: [
       "A computer screen",
       "A spreadsheet column",
       "The time period a program or game airs",
@@ -471,13 +488,13 @@
       "To record only game scores",
       "To communicate with advertisers"
     ], correctAnswer: 1 },
-    { id: 6, question: "What does “Swaps” mean in the Traffic Department?", options: [
+    { id: 6, question: "What does \"Swaps\" mean in the Traffic Department?", options: [
       "Creating new commercials",
       "Making real-time changes on the Live Coverage Sheet to adjust commercial placements",
       "Changing program titles",
       "Moving a Window"
     ], correctAnswer: 1 },
-    { id: 7, question: "If a unit is marked “Dead,” what does that mean?", options: [
+    { id: 7, question: "If a unit is marked \"Dead,\" what does that mean?", options: [
       "It will air next week",
       "It will air later that day",
       "It will not air at all that day or night",
@@ -506,25 +523,25 @@
     { id: 11, question: "What information does the Length column show?", options: [
       "Program end time",
       "How long each unit is",
-      "The advertiser’s budget",
+      "The advertiser's budget",
       "The House Number"
     ], correctAnswer: 1 },
     { id: 12, question: "What does the Title column show?", options: [
-      "The advertiser’s email",
+      "The advertiser's email",
       "The show title and segment numbers",
       "The length of the break",
       "The Real Time of the show"
     ], correctAnswer: 1 },
     { id: 13, question: "Why is the House Number important?", options: [
       "It shows how much the ad cost",
-      "It’s used by MC to identify the specific ad",
-      "It gives the brand’s phone number",
+      "It's used by MC to identify the specific ad",
+      "It gives the brand's phone number",
       "It determines the Window time"
     ], correctAnswer: 1 },
-    { id: 14, question: "What does “Ordered As” tell you?", options: [
+    { id: 14, question: "What does \"Ordered As\" tell you?", options: [
       "The cost of the commercial",
       "The Window a commercial is sold to",
-      "The advertiser’s name",
+      "The advertiser's name",
       "The float time"
     ], correctAnswer: 1 },
     { id: 15, question: "What does Spot End Time show?", options: [
@@ -539,7 +556,7 @@
       "Extra sold units that need to air during the game",
       "The same as a Program line"
     ], correctAnswer: 2 },
-    { id: 17, question: "What is the “Key” tab on the Live Coverage Sheet mainly used for?", options: [
+    { id: 17, question: "What is the \"Key\" tab on the Live Coverage Sheet mainly used for?", options: [
       "To sell commercials",
       "To watch live games",
       "For reference of contingency information",
@@ -578,7 +595,7 @@
   const endOfModule2MainQuestions = [
     { id: 1, question: "Which color represents SOLD commercials on the Live Coverage Sheet?", options: ["Green", "Yellow", "Purple", "Blue"], correctAnswer: 1 },
     { id: 2, question: "Which type of unit is tied to a specific show and cannot be placed elsewhere if cut?", options: ["ROS 24 Hour", "Studio Encore", "Show Specific", "DRs"], correctAnswer: 2 },
-    { id: 3, question: "What is the primary reason GREEN-coded commercials are cut first?", options: ["They’re too long", "They’re unapproved", "They’re not mandatory to air and don’t generate as much revenue", "They’re duplicate content"], correctAnswer: 2 },
+    { id: 3, question: "What is the primary reason GREEN-coded commercials are cut first?", options: ["They're too long", "They're unapproved", "They're not mandatory to air and don't generate as much revenue", "They're duplicate content"], correctAnswer: 2 },
     { id: 4, question: "Which of the following has a strict time restriction of 7 PM – 12 AM?", options: ["Studio Encore", "ROS Prime", "Sports Spectacular", "PSAs"], correctAnswer: 1 },
     { id: 5, question: "Which unit has the widest airing flexibility?", options: ["ROS 24 Hour", "ROS Prime", "Locals", "DRs"], correctAnswer: 0 },
     { id: 6, question: "Which unit category includes commercials used during reruns and typically holds no monetary value?", options: ["Show Specific", "Studio Encore", "Sports Spectacular", "DRs"], correctAnswer: 1 },
@@ -988,7 +1005,7 @@
     {:else if mainSection === 'module3'}
       <Module3Intro progressId="module3_intro" on:navigateToNextSubmodule={() => navigateToNext('module3')} nextButtonText={getNextButtonText('module3')} />
     {:else if mainSection === 'module3_excelsheet'}
-      <Module3 />
+      <Module3 on:navigateToNextSubmodule={() => mainSection = 'module3_unitcutpractice'} />
     {:else if mainSection === 'module3_commercialtimes'}
       <CommercialTimes progressId="module3_commercialtimes" on:navigateToNextSubmodule={() => navigateToNext('module3_commercialtimes')} nextButtonText={getNextButtonText('module3_commercialtimes')} />
     {:else if mainSection === 'module3_brandsep'}
@@ -996,13 +1013,13 @@
     {:else if mainSection === 'module3_advertiserconflicts'}
       <AdvertiserConflicts progressId="module3_advertiserconflicts" on:navigateToNextSubmodule={() => navigateToNext('module3_advertiserconflicts')} nextButtonText={getNextButtonText('module3_advertiserconflicts')} />
     {:else if mainSection === 'module3_standalonerule'}
-      <StandAloneRule progressId="module3_standalonerule" on:navigateToNextSubmodule={() => navigateToNext('module3_standalonerule')} nextButtonText={getNextButtonText('module3_standalonerule')} />
+      <StandAloneRule on:navigateToNextSubmodule={() => navigateToNext('module3_standalonerule')} nextButtonText={getNextButtonText('module3_standalonerule')} />
     {:else if mainSection === 'module3_unitcutpractice'}
-      <UnitCutPractice />
+      <UnitCutPractice on:navigateToNextSubmodule={(event) => mainSection = event.detail || 'module3_mcemailpractice'} />
     {:else if mainSection === 'module3_mcemailpractice'}
-      <MCEmailPractice />
+      <MCEmailPractice on:navigateToNextSubmodule={(event) => mainSection = event.detail || 'module3_timeoutpractice'} />
     {:else if mainSection === 'module3_timeoutpractice'}
-      <TimeOutPractice on:navigateToNextSubmodule={() => navigateToNext('module3_timeoutpractice')} nextButtonText={getNextButtonText('module3_timeoutpractice')} />
+      <TimeOutPractice on:navigateToNextSubmodule={goToFinalExam} nextButtonText={getNextButtonText('module3_timeoutpractice')} />
     {:else if mainSection === 'module3_swaps'}
       <Swaps progressId="module3_swaps" on:navigateToNextSubmodule={() => navigateToNext('module3_swaps')} nextButtonText={getNextButtonText('module3_swaps')} />
     {:else if mainSection === 'module3_mastercontrolemail'}
@@ -1010,7 +1027,7 @@
     {:else if mainSection === 'module3_localswaps'}
       <LocalSwaps progressId="module3_localswaps" on:navigateToNextSubmodule={() => navigateToNext('module3_localswaps')} nextButtonText={getNextButtonText('module3_localswaps')} />
     {:else if mainSection === 'finalexam'}
-      <FinalExam progressId="finalexam" on:navigateToNextSubmodule={() => navigateToNext('finalexam')} nextButtonText="Complete Training" />
+      <FinalExam on:navigateToNextSubmodule={() => navigateToNext('finalexam')} nextButtonText="Complete Training" />
     {/if}
 
   </main>

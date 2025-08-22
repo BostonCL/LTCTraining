@@ -6,7 +6,6 @@ import { createEventDispatcher } from 'svelte';
 const dispatch = createEventDispatcher();
 
 // Props
-export let progressId: string;
 export let nextButtonText: string = "Next";
 
 // STAND ALONE Rule script (placeholder, update as needed)
