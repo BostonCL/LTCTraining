@@ -147,7 +147,6 @@
 	<YouTubeTemplate 
 		script={introScript} 
 		title="Introduction" 
-		showAvatar={true}
 		progressId="introduction"
 		nextButtonText="Continue to Module 1"
 		onNextSubmodule={() => {

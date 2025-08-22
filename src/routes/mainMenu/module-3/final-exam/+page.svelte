@@ -11,4 +11,4 @@ function handleNext() {
 }
 </script>
 
-<FinalExam {progressId} {nextButtonText} on:navigateToNextSubmodule={handleNext} /> 
+<FinalExam {nextButtonText} on:navigateToNextSubmodule={handleNext} /> 

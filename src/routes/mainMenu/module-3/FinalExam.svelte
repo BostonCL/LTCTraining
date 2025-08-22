@@ -4,7 +4,6 @@ import { onMount } from 'svelte';
 
 const dispatch = createEventDispatcher();
 
-export let progressId: string;
 export let nextButtonText: string = "Complete Module";
 
 let currentQuestion = 0;

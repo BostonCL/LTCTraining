@@ -2,6 +2,9 @@
 import { onMount } from 'svelte';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.full.min.css';
+import { createEventDispatcher } from 'svelte';
+
+const dispatch = createEventDispatcher();
 
 let container: HTMLDivElement;
 let hot: Handsontable | null = null;
@@ -96,6 +99,13 @@ let cellColors: { [key: string]: string } = {
 let clearedCells = new Set<string>();
 
 let emailTextStep1 = '';
+
+// Congratulations state
+let showCongratulations = false;
+
+function showCongratulationsCard() {
+  showCongratulations = true;
+}
 
 // Check functionality
 let checkResult1 = '';
@@ -290,39 +300,55 @@ onMount(() => {
 
 <div class="excel-wrapper">
   <div class="excel-instructions">
-    <h1 class="excel-instructions-title">MC Email Practice</h1>
-    <h2 class="excel-instructions-subtitle">Instructions</h2>
-    <div class="excel-instructions-body">
-      Below is a correctly marked swap on the Live Coverage Sheet. How would you notate this in an email to the MC?
-    </div>
-    
-    <textarea
-      bind:value={emailTextStep1}
-      rows="6"
-      style="width:100%;margin-bottom:10px;font-size:1rem;padding:8px;border-radius:4px;border:1px solid #ccc;resize:vertical;"
-      placeholder="Type your email to the MC explaining the swap..."
-    ></textarea>
-    <button class="excel-check-btn" on:click={checkStep1}>Check</button>
-    {#if checkResult1}
-      <div class="excel-check-result">{checkResult1}</div>
-    {/if}
-    
-    {#if checkResult1 === '✅ Good! You have written an email to the MC.'}
-      <div class="excel-email-compare-wrapper">
-        <div class="excel-email-compare-col">
-          <div class="excel-email-compare-title">Your Email</div>
-          <pre class="excel-email-compare-content">{emailTextStep1}</pre>
+    {#if showCongratulations}
+      <div class="excel-congratulations">
+        <h2 class="excel-instructions-title">🎉 Congratulations!</h2>
+        <div class="excel-instructions-body">
+          <p>You've successfully completed the MC Email Practice exercise!</p>
+          <button class="excel-next-practice-btn" on:click={() => dispatch('navigateToNextSubmodule', 'module3_timeoutpractice')}>
+            Continue to Next Practice →
+          </button>
         </div>
-        <div class="excel-email-compare-col">
-          <div class="excel-email-compare-title">Reference Email</div>
-          <pre class="excel-email-compare-content">Here is the swap to save :15 seconds from Break 5 of the 8PM game.
+      </div>
+    {:else}
+      <h1 class="excel-instructions-title">MC Email Practice</h1>
+      <h2 class="excel-instructions-subtitle">Instructions</h2>
+      <div class="excel-instructions-body">
+        Below is a correctly marked swap on the Live Coverage Sheet. How would you notate this in an email to the MC?
+      </div>
+      
+      <textarea
+        bind:value={emailTextStep1}
+        rows="6"
+        style="width:100%;margin-bottom:10px;font-size:1rem;padding:8px;border-radius:4px;border:1px solid #ccc;resize:vertical;"
+        placeholder="Type your email to the MC explaining the swap..."
+      ></textarea>
+      {#if !checkResult1 || checkResult1.includes('❌')}
+        <button class="excel-check-btn" on:click={checkStep1}>Check</button>
+      {:else}
+        <button class="excel-check-btn" on:click={() => showCongratulationsCard()}>Continue →</button>
+      {/if}
+      {#if checkResult1}
+        <div class="excel-check-result">{checkResult1}</div>
+      {/if}
+      
+      {#if checkResult1 === '✅ Good Job! Now, check your own work in the reference email box.'}
+        <div class="excel-email-compare-wrapper">
+          <div class="excel-email-compare-col">
+            <div class="excel-email-compare-title">Your Email</div>
+            <pre class="excel-email-compare-content">{emailTextStep1}</pre>
+          </div>
+          <div class="excel-email-compare-col">
+            <div class="excel-email-compare-title">Reference Email</div>
+            <pre class="excel-email-compare-content">Here is the swap to save :15 seconds from Break 5 of the 8PM game.
 
 10PM Game 
 Break 4
 CUT: 600619
 IN: 600701</pre>
+          </div>
         </div>
-      </div>
+      {/if}
     {/if}
   </div>
   <div class="excel-toolbar">
@@ -382,11 +408,7 @@ IN: 600701</pre>
     display: flex;
     flex-direction: column;
   }
-  .excel-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin: 0 0 12px 0;
-  }
+
   .excel-instructions {
     border: 2px solid #0074D9;
     background: #f0f6ff;
@@ -574,7 +596,20 @@ IN: 600701</pre>
     padding: 8px;
     min-height: 120px;
   }
-  .excel-nav-btn {
+
+  .excel-congratulations {
+    border: 2px solid #4CAF50; /* A green border for congratulations */
+    background: #e8f5e9; /* A light green background */
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin: 10px 0 10px 0;
+    max-width: 900px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  .excel-next-practice-btn {
+    background: #4CAF50;
+    color: white;
     padding: 8px 16px;
     border-radius: 6px;
     font-weight: 600;
@@ -582,25 +617,33 @@ IN: 600701</pre>
     transition: all 0.2s;
     border: none;
     font-size: 0.9rem;
+    margin-top: 15px;
   }
-  .excel-nav-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  .excel-next-practice-btn:hover {
+    background: #388E3C;
   }
-  .excel-nav-btn-prev {
-    background: #f1f5f9;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
-  }
-  .excel-nav-btn-prev:hover:not(:disabled) {
-    background: #e2e8f0;
-  }
-  .excel-nav-btn-next {
-    background: #2563eb;
+  
+  .excel-check-btn {
+    background: #0074D9;
     color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
   }
-  .excel-nav-btn-next:hover:not(:disabled) {
-    background: #1d4ed8;
+  
+  .excel-check-btn:hover {
+    background: #0056b3;
+  }
+  
+  .excel-check-result {
+    margin: 10px 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: 500;
   }
 </style> 

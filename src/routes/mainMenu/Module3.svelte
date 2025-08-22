@@ -630,13 +630,6 @@
         <h2 class="excel-instructions-title">🎉 Congratulations!</h2>
         <div class="excel-instructions-body">
           <p>You've successfully completed the Live Coverage Sheet exercise!</p>
-          <p>You demonstrated the ability to:</p>
-          <ul>
-            <li>Identify and mark units for cutting</li>
-            <li>Properly annotate unit movements</li>
-            <li>Use color coding effectively</li>
-            <li>Follow live coverage procedures</li>
-          </ul>
           <button class="excel-next-practice-btn" on:click={() => dispatch('navigateToNextSubmodule')}>
             Continue to Unit Cut Practice →
           </button>
@@ -766,11 +759,7 @@
     flex-direction: column;
   }
 
-  .excel-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin: 0 0 12px 0;
-  }
+
 
   .excel-toolbar {
     margin-top: 8px;
@@ -1018,14 +1007,7 @@
     color: #1a2a3a;
   }
 
-  .excel-green {
-    color: #375623;
-    font-weight: bold;
-  }
-  .excel-red {
-    color: #E53E3E;
-    font-weight: bold;
-  }
+
 
   
   @keyframes fadeIn {
