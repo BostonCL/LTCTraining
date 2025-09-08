@@ -12,14 +12,15 @@ let showResults = false;
 let score = 0;
 let totalQuestions = 20;
 
-const questions = [
+// Complete test bank with all questions
+const allQuestions = [
   {
     question: "What is the primary purpose of Live Traffic at CBS Sports Network?",
     options: [
       "To create advertisements",
       "To track game highlights", 
       "To ensure commercials air properly and meet contractual obligations",
-      "To design show formats"
+      "To design show format"
     ],
     correctAnswer: "C"
   },
@@ -28,7 +29,7 @@ const questions = [
     options: [
       "Media Content",
       "Master Control",
-      "Marketing Coordination", 
+      "Marketing Coordination",
       "Main Commercial"
     ],
     correctAnswer: "B"
@@ -222,8 +223,161 @@ const questions = [
       "A cut unit"
     ],
     correctAnswer: "C"
+  },
+  {
+    question: "What is the job of Master Control (MC)?",
+    options: [
+      "To pick games",
+      "To sell commercials",
+      "To send the commercials to air",
+      "To announce scores"
+    ],
+    correctAnswer: "C"
+  },
+  {
+    question: "What color are sold units on the Live Coverage Sheet?",
+    options: [
+      "Blue",
+      "Purple",
+      "Red",
+      "Yellow, purple, green"
+    ],
+    correctAnswer: "D"
+  },
+  {
+    question: "What kind of units are highlighted in green?",
+    options: [
+      "Must-air commercials",
+      "Flexible, optional ads like PSAs or DRs",
+      "Show-specific commercials",
+      "Locals"
+    ],
+    correctAnswer: "B"
+  },
+  {
+    question: "What does PSA stand for?",
+    options: [
+      "Paid Station Advertisement",
+      "Public Service Announcement",
+      "Prime Spot Ad",
+      "Program Sales Agreement"
+    ],
+    correctAnswer: "B"
+  },
+  {
+    question: "What do you do if two competing brands are in the same break?",
+    options: [
+      "Email them both",
+      "Remove one to avoid a conflict",
+      "Let them air together",
+      "Tell the audience"
+    ],
+    correctAnswer: "B"
+  },
+  {
+    question: "What is a Local unit?",
+    options: [
+      "A type of break",
+      "A national commercial",
+      "A 1:30 ad for community or regional content",
+      "A game highlight"
+    ],
+    correctAnswer: "C"
+  },
+  {
+    question: "Can locals air in the same break together?",
+    options: [
+      "Yes, always",
+      "Only if they're short",
+      "No, only one local per break",
+      "Yes, if it's past 9 PM"
+    ],
+    correctAnswer: "C"
+  },
+  {
+    question: "What is the first thing to check before moving a commercial?",
+    options: [
+      "The Advertiser name",
+      "The color of the row",
+      "The \"Ordered As\" column",
+      "The show title"
+    ],
+    correctAnswer: "C"
+  },
+  {
+    question: "What happens if a commercial airs too late past its Spot End Time?",
+    options: [
+      "Nothing",
+      "The game restarts",
+      "The advertiser will not pay",
+      "It gets marked yellow"
+    ],
+    correctAnswer: "C"
+  },
+  {
+    question: "What does a blue highlight mean on the Live Coverage Sheet?",
+    options: [
+      "A backup commercial",
+      "A cut unit",
+      "A unit that was moved and aired",
+      "A brand conflict"
+    ],
+    correctAnswer: "C"
+  },
+  {
+    question: "Why do we take notes in the spreadsheet when making swaps?",
+    options: [
+      "For training",
+      "To avoid brand SEP",
+      "So producers can call advertisers",
+      "To keep track and avoid mistakes"
+    ],
+    correctAnswer: "D"
+  },
+  {
+    question: "Who do we email when we move a commercial?",
+    options: [
+      "The Advertiser",
+      "CBS Executives",
+      "Master Control (MC)",
+      "The public"
+    ],
+    correctAnswer: "C"
+  },
+  {
+    question: "What do you use to mark the exact time a commercial airs?",
+    options: [
+      "A clock",
+      "A calculator",
+      "A promo sheet",
+      "The game announcer"
+    ],
+    correctAnswer: "A"
+  },
+  {
+    question: "Why is it important that commercials air as planned?",
+    options: [
+      "So producers don't get bored",
+      "So we can watch the game",
+      "So advertisers get what they paid for",
+      "So fans don't miss plays"
+    ],
+    correctAnswer: "C"
   }
 ];
+
+// Function to shuffle array and select random questions
+function shuffleArray(array: any[]) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Select 20 random questions from the test bank
+let questions = shuffleArray(allQuestions).slice(0, 20);
 
 function selectAnswer(answer: string) {
   userAnswers[currentQuestion] = answer;
@@ -266,7 +420,8 @@ function getScorePercentage(): number {
 }
 
 function completeModule() {
-  dispatch('navigateToNextSubmodule');
+  // Navigate to congratulations page instead of dispatching event
+  window.location.href = '/mainMenu/module-3/congratulations';
 }
 
 onMount(() => {

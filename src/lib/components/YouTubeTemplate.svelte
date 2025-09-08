@@ -11,8 +11,8 @@ import { DEV_FEATURES } from '$lib/config/dev';
   // Props
   export let script: Array<{
     text: string;
-    audio: string;
-    whiteboardText?: string[];
+    audio: string | string[];
+    whiteboardText?: string[] | string[][];
     image?: string;
     titleAudio?: string;
     imageStyle?: string;
@@ -107,7 +107,9 @@ $: showNextButton = DEV_FEATURES.developerMode ?
   currentIdx === script.length - 1 :
   (currentIdx === script.length - 1 && audioState.progress >= 99);
 
-$: accumulatedWhiteboardText = currentScript.whiteboardText || [];
+$: accumulatedWhiteboardText = Array.isArray(currentScript.whiteboardText) && Array.isArray(currentScript.whiteboardText[0]) 
+  ? currentScript.whiteboardText[currentScript.whiteboardText.length - 1] || []
+  : currentScript.whiteboardText || [];
 
 // Delay main audio when there's title audio
 let titleAudioDelay = false;
@@ -201,14 +203,17 @@ function getImageSrc(imageUrl: string): string {
   <!-- Video Player Area -->
   <div bind:this={playerArea} data-player-area class="w-full bg-black rounded-lg overflow-hidden shadow-lg mb-6 relative">
     <div class="relative aspect-video bg-black w-full overflow-hidden">
-      {#if accumulatedWhiteboardText.length > 0}
+      {#if accumulatedWhiteboardText.length > 0 || (Array.isArray(currentScript.whiteboardText) && Array.isArray(currentScript.whiteboardText[0]))}
         <!-- Whiteboard Animation -->
         <div class="absolute inset-0 z-10 bg-white">
                       <WhiteboardAnimation 
-              textLines={accumulatedWhiteboardText}
+              textLines={Array.isArray(currentScript.whiteboardText) && Array.isArray(currentScript.whiteboardText[0]) 
+                ? currentScript.whiteboardText as string[][]
+                : accumulatedWhiteboardText as string[]}
               drawSpeed={0.03}
               audioText={currentScript.text}
               titleAudio={currentScript.titleAudio || ''}
+              audioSegments={Array.isArray(currentScript.audio) ? currentScript.audio as string[] : []}
               startWithAudio={(progressId === 'module2_intro' && currentIdx === 1) || (progressId === 'standalone_rule' && currentIdx === 1)}
               showAllAtOnce={progressId === 'standalone_rule' && currentIdx === 1}
               on:titleAudioComplete={onTitleAudioComplete}

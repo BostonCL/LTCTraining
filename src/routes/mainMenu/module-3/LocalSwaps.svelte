@@ -36,7 +36,7 @@ const script = [
     image: '/images/module-3/local-swaps/Local5v2.jpg'
   },
   {
-    text: "In this example, we're moving the local unit into Break 5 of the 10 PM game. When you email MC, update the title to: 'Here are the swaps to save 2 minutes from Break 11 of the 12 PM game.' Note the new location: 10 PM game Break 5 cut: 6 0 0 8 1 2 and 6 0 9 7 3 5 IN: 1:30 local, please use a fill list",
+    text: "In this example, we're moving the local unit into Break 5 of the 10 PM game. When you write the email to MC, update the title to: 'Here are the swaps to save 2 minutes from Break 11 of the 12 PM game.' Note the new location: 10 PM game Break 5 cut: House Numbers IN: 1:30 local, please use a fill list",
     audio: '/audio/module-3/local-swaps/module3_localswaps_06.mp3',
     image: '/images/module-3/local-swaps/Local6.png'
   },
@@ -45,18 +45,14 @@ const script = [
     audio: '/audio/module-3/local-swaps/module3_localswaps_07_08_combined.mp3',
     image: '/images/module-3/local-swaps/Local2.png'
   },
-  {
-    text: "Then, paste the local unit into its new spot. Mark it blue to show it's airing there.",
-    audio: '/audio/module-3/local-swaps/module3_localswaps_09.mp3',
-    image: '/images/module-3/local-swaps/Local9.png'
-  },
+
   {
     text: "Add a note that says: 'Moved to Break 5 of the 10 PM game.'",
     audio: '/audio/module-3/local-swaps/module3_localswaps_10.mp3',
     image: '/images/module-3/local-swaps/LocalV2.jpg'
   },
   {
-    text: "Add a note that says: 'Moved from Break 11 of the 12 PM game.' After you insert the local: In your spreadsheet, mark it as \"No fill\".",
+    text: "Then, paste the local unit into its new spot. Mark it blue to show it's airing there. Add a note that says: 'Moved from Break 11 of the 12 PM game.'",
     audio: '/audio/module-3/local-swaps/module3_localswaps_10_11_combined.mp3',
     image: '/images/module-3/local-swaps/Local10v2.jpg'
   },
