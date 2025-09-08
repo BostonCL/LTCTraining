@@ -71,8 +71,18 @@
 		},
 		{ 
 			text: 'What is live coverage? Managing and airing all Commercials/Units during live games. Communicating with the network producer and Master Control through phone and email. We will refer to Master Control as MC from here on. They are the people that ultimately send the commercials to air. We communicate with them the most. So be nice to them! Marking down airing times.',
-			audio: '/audio/introduction/intro_12.mp3',
-			whiteboardText: ['**__What is live coverage?__**', '• Airing Commercials', '• Constantly Communicating through Phone & Email', '• Marking down airing times'],
+			audio: [
+				'/audio/introduction/intro_12_title.mp3',
+				'/audio/introduction/intro_12_segment1.mp3',
+				'/audio/introduction/intro_12_segment2.mp3',
+				'/audio/introduction/intro_12_segment3.mp3'
+			],
+			whiteboardText: [
+				['**__What is live coverage?__**'],
+				['**__What is live coverage?__**', '• Airing Commercials'],
+				['**__What is live coverage?__**', '• Airing Commercials', '• Constantly Communicating through Phone & Email'],
+				['**__What is live coverage?__**', '• Airing Commercials', '• Constantly Communicating through Phone & Email', '• Marking down airing times']
+			],
 			titleAudio: '/audio/introduction/intro_12_title.mp3'
 		},
 		{ 

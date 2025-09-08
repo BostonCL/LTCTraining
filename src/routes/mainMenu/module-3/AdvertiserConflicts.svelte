@@ -20,7 +20,7 @@ const script = [
       'Do not place competing brands in the same break.',
       'It is critical to never schedule units from competing brands in the same commercial break.'
     ],
-    titleAudio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_01_title.mp3',
+
     image: '/images/introduction/basketballBackground.png'
   },
   {
@@ -31,7 +31,7 @@ const script = [
       '• Geico and USAA should not air together, as they both sell insurance',
       '• Lowe\'s and Home Depot are direct competitors in home improvement and must also be kept separate.'
     ],
-    titleAudio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_02_title.mp3',
+
     image: '/images/introduction/basketballBackground.png'
   },
   {
@@ -42,7 +42,7 @@ const script = [
       'If you\'re unsure what a specific brand or unit is,',
       'research or ask the Traffic Department to confirm.'
     ],
-    titleAudio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_03_title.mp3',
+
     image: '/images/introduction/basketballBackground.png'
   },
   {
@@ -54,7 +54,7 @@ const script = [
       'the network will not get paid for either commercial,',
       'which results in a significant financial loss.'
     ],
-    titleAudio: '/audio/module-3/advertiser-conflicts/module3_advertiserconflicts_04_title.mp3',
+
     image: '/images/introduction/basketballBackground.png'
   }
 ];

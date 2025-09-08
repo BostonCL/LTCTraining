@@ -39,8 +39,6 @@
   let hot: Handsontable | null = null;
   let selectedColor = '#F2DCDB'; // Default light red
   let showColorPicker = false;
-  let colorTimeout: ReturnType<typeof setTimeout> | null = null;
-  let colorsApplied = false;
   let cellColors: { [key: string]: string } = {
     // Default colors for the header row (row 0) - Standard grey
     '0-0': '#A5A5A5', // Real Time - Grey
@@ -128,51 +126,47 @@
       return;
     }
 
-    // Find the OLD TRAPPER row
-    const oldTrapperRowIdx = data.findIndex(row => row[1] === '09:23:02 PM' && row[2] && row[2].toLowerCase() === 'commercial' && row[4] && row[4].toLowerCase() === 'old trapper : camping catastrophes');
-    
-    if (oldTrapperRowIdx === -1) {
-      checkResult2 = '❌ Could not find the OLD TRAPPER row.';
-      return;
-    }
-    
-    // Check if all cells in the OLD TRAPPER row are filled blue
-    let allBlue = true;
-    console.log('Checking OLD TRAPPER row colors:', oldTrapperRowIdx);
-    for (let col = 0; col < data[oldTrapperRowIdx].length; col++) {
-      const cellKey = `${oldTrapperRowIdx}-${col}`;
-      const color = (cellColors[cellKey] || '').toLowerCase();
-      console.log(`Column ${col}: ${cellKey} = ${color}`);
-      
-      // Check if the color is blue (accept various blue shades)
-      if (
-        color !== '#0070c0' &&
-        color !== 'rgb(0,112,192)' &&
-        color !== '#00b0f0' &&
-        color !== 'rgb(0,176,240)' &&
-        color !== '#0070c0'.toLowerCase() &&
-        color !== '#00b0f0'.toLowerCase()
-      ) {
-        allBlue = false;
-        console.log(`Column ${col} is not blue: ${color}`);
+    // Find the two target rows by their unique values (the promos to cut)
+    const targets = [
+      { time: '09:32:00 PM', title: 'BRACKET BREAKDOWN FRIDAY 3 REV. 1' },
+      { time: '09:33:40 PM', title: 'MM SWEET 16 THURSDAY' }
+    ];
+    let allCorrect = true;
+    for (const target of targets) {
+      const rowIdx = data.findIndex(row => row[1] === target.time && row[2] && row[2].toLowerCase() === 'promo' && row[4] && row[4].toLowerCase() === target.title.toLowerCase());
+      if (rowIdx === -1) {
+        allCorrect = false;
         break;
       }
+      // Check column A for 'CUT' (case insensitive, trimmed)
+      if (!data[rowIdx][0] || data[rowIdx][0].trim().toLowerCase() !== 'cut') {
+        allCorrect = false;
+        break;
+      }
+      // Check if all columns except A are filled red
+      for (let col = 1; col < data[rowIdx].length; col++) {
+        const cellKey = `${rowIdx}-${col}`;
+        const color = (cellColors[cellKey] || '').toLowerCase();
+        if (
+          color !== '#e53e3e' &&
+          color !== '#ff0000' &&
+          color !== '#E53E3E'.toLowerCase() &&
+          color !== '#FF0000'.toLowerCase() &&
+          color !== 'rgb(229,62,62)' &&
+          color !== 'rgb(255,0,0)'
+        ) {
+          allCorrect = false;
+          break;
+        }
+      }
+      if (!allCorrect) break;
     }
-    
-    if (!allBlue) {
-      checkResult2 = '❌ The OLD TRAPPER row is not filled blue.';
-      return;
+    if (allCorrect) {
+      checkResult2 = '✅ Correct! You found and marked the two target promos to CUT.';
+      setTimeout(() => { goToStep3(); }, 800); // Navigate to step 3 after short delay
+    } else {
+      checkResult2 = '❌ Not quite! Are both promos red with CUT next to them? Did you insert the row and paste the swap there?';
     }
-    
-    // Check if column A has any text written
-    const columnA = (data[oldTrapperRowIdx][0] || '').trim();
-    if (!columnA) {
-      checkResult2 = '❌ Column A must have text written in it.';
-      return;
-    }
-    
-    checkResult2 = '✅ Correct! The OLD TRAPPER row is blue and has text in column A.';
-    setTimeout(() => { goToStep3(); }, 800); // Navigate to step 3 after short delay
   }
 
   let checkResult3 = '';
@@ -218,12 +212,62 @@
       }
       if (!allCorrect) break;
     }
-    if (allCorrect) {
-      checkResult3 = '✅ Correct! You found and marked the two target promos to CUT.';
-      setTimeout(() => { goToStep4(); }, 800); // Navigate to step 4 after short delay
-    } else {
-      checkResult3 = '❌ Not quite! Are both promos red with CUT next to them? Did you insert the row and paste the swap there?';
+    if (!allCorrect) {
+      checkResult3 = '❌ Not quite! Are both promos red with CUT next to them?';
+      return;
     }
+
+    // Now check if the OLD TRAPPER unit has been inserted into a new row
+    // Find the MM SWEET 16 THURSDAY promo row
+    const mmSweetRowIdx = data.findIndex(row => row[1] === '09:33:40 PM' && row[2] && row[2].toLowerCase() === 'promo' && row[4] && row[4].toLowerCase() === 'mm sweet 16 thursday');
+    
+    if (mmSweetRowIdx === -1) {
+      checkResult3 = '❌ Could not find the MM SWEET 16 THURSDAY promo row.';
+      return;
+    }
+
+    // Check if there's a row after MM SWEET 16 THURSDAY that contains the OLD TRAPPER unit
+    const insertedRowIdx = mmSweetRowIdx + 1;
+    if (!data[insertedRowIdx] || !data[insertedRowIdx][4]) {
+      checkResult3 = '❌ Did you insert a new row after MM SWEET 16 THURSDAY?';
+      return;
+    }
+
+    // Check if the inserted row contains the OLD TRAPPER unit
+    const insertedTitle = (data[insertedRowIdx][4] || '').toLowerCase();
+    if (!insertedTitle.includes('old trapper') && !insertedTitle.includes('camping catastrophes')) {
+      checkResult3 = '❌ Did you copy and paste the OLD TRAPPER unit into the new row?';
+      return;
+    }
+
+    // Check if the inserted row has the correct data structure
+    const expectedData = [
+      '', // Column A (empty)
+      '09:23:02 PM', // Hit Time
+      'Commercial', // Event Type
+      '00:00:30', // Length
+      'OLD TRAPPER : CAMPING CATASTROPHES', // Title
+      'OLD TRAPPER', // Advertiser
+      '602584', // House Number
+      'ROS 24 HOUR', // Ordered As
+      '05:59:00 AM' // Spot End Time
+    ];
+
+    let dataMatches = true;
+    for (let col = 1; col < expectedData.length; col++) {
+      if (data[insertedRowIdx][col] !== expectedData[col]) {
+        dataMatches = false;
+        break;
+      }
+    }
+
+    if (!dataMatches) {
+      checkResult3 = '❌ The inserted row data doesn\'t match the OLD TRAPPER unit. Make sure you copied all the data correctly.';
+      return;
+    }
+
+    checkResult3 = '✅ Correct! You found and marked the two target promos to CUT, and inserted the OLD TRAPPER unit into a new row.';
+    setTimeout(() => { goToStep4(); }, 800); // Navigate to step 4 after short delay
   }
 
   let checkResult4 = '';
@@ -282,17 +326,11 @@
               const cellKey = `${row}-${col}`;
               cellColors[cellKey] = selectedColor;
               clearedCells.delete(cellKey); // If user fills, remove from cleared
-              
-              // Apply color directly to cell element
-              const cellElement = hot?.getCell(row, col);
-              if (cellElement) {
-                cellElement.style.backgroundColor = selectedColor;
-                cellElement.style.setProperty('background-color', selectedColor, 'important');
-                cellElement.setAttribute('style', `background-color: ${selectedColor} !important`);
-              }
             }
           }
         });
+        // Trigger re-render to apply the new colors
+        hot.render();
       }
     }
   }
@@ -313,17 +351,11 @@
               const cellKey = `${row}-${col}`;
               delete cellColors[cellKey];
               clearedCells.add(cellKey); // Mark as user cleared
-
-              // Clear color from cell element
-              const cell = hot?.getCell(row, col);
-              if (cell) {
-                cell.style.backgroundColor = '';
-                cell.style.removeProperty('background-color');
-                cell.removeAttribute('style');
-              }
             }
           }
         });
+        // Trigger re-render to apply the cleared colors
+        hot.render();
       }
     }
     showColorPicker = false;
@@ -332,6 +364,111 @@
   function showCustomColor() {
     // For now, just close the picker. Could implement custom color picker later
     showColorPicker = false;
+  }
+
+  // Cell renderer function to handle all coloring logic
+  function cellRenderer(this: any, instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) {
+    // Call the default renderer first
+    Handsontable.renderers.TextRenderer.apply(this, [instance, td, row, col, prop, value, cellProperties]);
+    
+    const cellKey = `${row}-${col}`;
+    
+    // Reset any existing styling
+    td.style.backgroundColor = '';
+    td.style.color = '';
+    td.style.fontWeight = '';
+    td.style.removeProperty('background-color');
+    td.style.removeProperty('color');
+    td.style.removeProperty('font-weight');
+    
+    // Apply header styling (row 0)
+    if (row === 0) {
+      td.style.setProperty('background-color', '#d9d9d9', 'important');
+      td.style.setProperty('color', '#0000ff', 'important');
+      td.style.setProperty('font-weight', 'bold', 'important');
+      return;
+    }
+    
+    // Apply special column A styling
+    if (col === 0) {
+      if (typeof data[row][0] === 'string') {
+        const cellValue = data[row][0].toLowerCase().trim();
+        if (cellValue === 'start time' || cellValue === 'end time' || cellValue === 'start time 9:00:00') {
+          td.style.setProperty('background-color', '#d9d9d9', 'important');
+          td.style.setProperty('color', '#0000ff', 'important');
+          td.style.setProperty('font-weight', 'bold', 'important');
+          return;
+        }
+      }
+      // Default white background for column A if not special case
+      if (!cellColors[cellKey] && !clearedCells.has(cellKey)) {
+        td.style.setProperty('background-color', '#fff', 'important');
+      }
+    }
+    
+    // Skip if cell is cleared
+    if (clearedCells.has(cellKey)) {
+      return;
+    }
+    
+    // Apply user-applied persistent colors (highest priority)
+    if (cellColors[cellKey]) {
+      td.style.setProperty('background-color', cellColors[cellKey], 'important');
+      if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
+        td.style.setProperty('color', '#fff', 'important');
+      }
+      return;
+    }
+    
+    // Apply event type colors (only for non-column A cells)
+    if (col !== 0 && data[row][2]) {
+      const eventType = data[row][2].toLowerCase();
+      if (eventType === 'commercial') {
+        td.style.setProperty('background-color', '#FFFF00', 'important');
+      } else if (eventType === 'local') {
+        td.style.setProperty('background-color', '#7030A0', 'important');
+        td.style.setProperty('color', '#fff', 'important');
+      } else if (eventType === 'program') {
+        td.style.setProperty('background-color', '#d9d9d9', 'important');
+        td.style.setProperty('font-weight', 'bold', 'important');
+      } else if (eventType === 'promo') {
+        td.style.setProperty('background-color', '#375623', 'important');
+        td.style.setProperty('color', '#fff', 'important');
+      }
+    }
+  }
+
+  // Function to insert a row at a specific index
+  function insertRowAtIndex(index: number) {
+    if (hot && !hot.isDestroyed) {
+      // Insert empty row in data array
+      const emptyRow = new Array(data[0].length).fill('');
+      data.splice(index, 0, emptyRow);
+      
+      // Update the table
+      hot.loadData(data);
+      
+      // Trigger re-render after a short delay
+      setTimeout(() => {
+        hot?.render();
+      }, 100);
+    }
+  }
+
+  // Function to delete a row at a specific index
+  function deleteRowAtIndex(index: number) {
+    if (hot && !hot.isDestroyed) {
+      // Remove row from data array
+      data.splice(index, 1);
+      
+      // Update the table
+      hot.loadData(data);
+      
+      // Trigger re-render after a short delay
+      setTimeout(() => {
+        hot?.render();
+      }, 100);
+    }
   }
 
   function pickColor(color: string) {
@@ -377,83 +514,6 @@
     }
   }
 
-  // Function to reapply all colors
-  function reapplyAllColors() {
-    if (hot && !hot.isDestroyed) {
-      // Apply base colors first (event type colors)
-      const eventTypeCol = 2;
-      for (let row = 1; row < data.length; row++) {
-        for (let col = 0; col < data[row].length; col++) {
-          const cellKey = `${row}-${col}`;
-          const cellElement = hot?.getCell(row, col);
-          if (!cellElement) continue;
-          
-          // Skip if cell is cleared or has persistent color
-          if (clearedCells.has(cellKey) || cellColors[cellKey]) continue;
-          
-          // Apply event type colors
-          if (data[row][eventTypeCol]) {
-            const eventType = data[row][eventTypeCol].toLowerCase();
-            if (eventType === 'commercial' && col !== 0) {
-              cellElement.style.setProperty('background-color', '#FFFF00', 'important');
-              cellElement.style.removeProperty('color');
-            } else if (eventType === 'local' && col !== 0) {
-              cellElement.style.setProperty('background-color', '#7030A0', 'important');
-              cellElement.style.setProperty('color', '#fff', 'important');
-            } else if (eventType === 'program' && col !== 0) {
-              cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-              cellElement.style.setProperty('font-weight', 'bold', 'important');
-            } else if (eventType === 'promo' && col !== 0) {
-              cellElement.style.setProperty('background-color', '#375623', 'important');
-              cellElement.style.setProperty('color', '#fff', 'important');
-            }
-          }
-        }
-      }
-      
-      // Apply persistent colors (user-applied colors)
-      Object.keys(cellColors).forEach(cellKey => {
-        if (clearedCells.has(cellKey)) {
-          delete cellColors[cellKey];
-          return;
-        }
-        const [row, col] = cellKey.split('-').map(Number);
-        const cellElement = hot?.getCell(row, col);
-        if (cellElement) {
-          cellElement.style.setProperty('background-color', cellColors[cellKey], 'important');
-          if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
-            cellElement.style.setProperty('color', '#fff', 'important');
-          }
-        }
-      });
-      
-      // Apply header styling (row 0)
-      for (let col = 0; col < data[0].length; col++) {
-        const cellElement = hot?.getCell(0, col);
-        if (cellElement) {
-          cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-          cellElement.style.setProperty('color', '#0000ff', 'important');
-          cellElement.style.setProperty('font-weight', 'bold', 'important');
-        }
-      }
-      
-      // Apply special column A styling
-      for (let row = 1; row < data.length; row++) {
-        const cellElement = hot?.getCell(row, 0);
-        if (cellElement && typeof data[row][0] === 'string') {
-          const cellValue = data[row][0].toLowerCase().trim();
-          if (cellValue === 'start time' || cellValue === 'end time' || cellValue === 'start time 9:00:00') {
-            cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-            cellElement.style.setProperty('color', '#0000ff', 'important');
-            cellElement.style.setProperty('font-weight', 'bold', 'important');
-          } else if (!cellColors[`${row}-0`] && !clearedCells.has(`${row}-0`)) {
-            cellElement.style.setProperty('background-color', '#fff', 'important');
-            cellElement.style.removeProperty('color');
-          }
-        }
-      }
-    }
-  }
 
   // Sample data for demonstration
   let data = [
@@ -540,7 +600,40 @@
       manualColumnMove: true,
       manualColumnResize: true,
       manualRowResize: true,
-      contextMenu: true,
+      contextMenu: {
+        items: {
+          'row_above': {
+            name: 'Insert row above',
+            callback: function() {
+              const selected = this.getSelected();
+              if (selected && selected.length > 0) {
+                const rowIndex = selected[0][0];
+                insertRowAtIndex(rowIndex);
+              }
+            }
+          },
+          'row_below': {
+            name: 'Insert row below',
+            callback: function() {
+              const selected = this.getSelected();
+              if (selected && selected.length > 0) {
+                const rowIndex = selected[0][0] + 1;
+                insertRowAtIndex(rowIndex);
+              }
+            }
+          },
+          'remove_row': {
+            name: 'Remove row',
+            callback: function() {
+              const selected = this.getSelected();
+              if (selected && selected.length > 0) {
+                const rowIndex = selected[0][0];
+                deleteRowAtIndex(rowIndex);
+              }
+            }
+          }
+        }
+      },
       stretchH: 'none',
       className: '', // Remove 'htCenter' to left-align content
       colWidths: [120, 90, 80, 60, 400, 100, 100, 120, 100],
@@ -554,7 +647,72 @@
       outsideClickDeselects: false, // Keep selection when clicking outside
       afterChange: (changes, source) => {
         // Optionally handle changes here
-        reapplyAllColors(); // Reapply colors after any change
+        hot?.render(); // Trigger re-render after changes
+      },
+      afterCreateRow: (index, amount, source) => {
+        // Handle row insertion - shift existing color mappings
+        const newCellColors: { [key: string]: string } = {};
+        Object.keys(cellColors).forEach(cellKey => {
+          const [row, col] = cellKey.split('-').map(Number);
+          if (row >= index) {
+            // Shift rows down by the amount of inserted rows
+            newCellColors[`${row + amount}-${col}`] = cellColors[cellKey];
+          } else {
+            // Keep rows above the insertion point unchanged
+            newCellColors[cellKey] = cellColors[cellKey];
+          }
+        });
+        cellColors = newCellColors;
+        
+        // Also shift cleared cells
+        const newClearedCells = new Set<string>();
+        clearedCells.forEach(cellKey => {
+          const [row, col] = cellKey.split('-').map(Number);
+          if (row >= index) {
+            newClearedCells.add(`${row + amount}-${col}`);
+          } else {
+            newClearedCells.add(cellKey);
+          }
+        });
+        clearedCells = newClearedCells;
+        
+        // Trigger re-render after a short delay to ensure DOM is updated
+        setTimeout(() => {
+          hot?.render();
+        }, 100);
+      },
+      afterRemoveRow: (index, amount, source) => {
+        // Handle row deletion - shift existing color mappings
+        const newCellColors: { [key: string]: string } = {};
+        Object.keys(cellColors).forEach(cellKey => {
+          const [row, col] = cellKey.split('-').map(Number);
+          if (row < index) {
+            // Keep rows above the deletion point unchanged
+            newCellColors[cellKey] = cellColors[cellKey];
+          } else if (row >= index + amount) {
+            // Shift rows above the deletion point down
+            newCellColors[`${row - amount}-${col}`] = cellColors[cellKey];
+          }
+          // Rows within the deletion range are removed
+        });
+        cellColors = newCellColors;
+        
+        // Also shift cleared cells
+        const newClearedCells = new Set<string>();
+        clearedCells.forEach(cellKey => {
+          const [row, col] = cellKey.split('-').map(Number);
+          if (row < index) {
+            newClearedCells.add(cellKey);
+          } else if (row >= index + amount) {
+            newClearedCells.add(`${row - amount}-${col}`);
+          }
+        });
+        clearedCells = newClearedCells;
+        
+        // Trigger re-render after a short delay to ensure DOM is updated
+        setTimeout(() => {
+          hot?.render();
+        }, 100);
       },
       beforeKeyDown: (event) => {
         // Keyboard shortcuts for row coloring
@@ -582,26 +740,13 @@
       afterSelection: (row, col, row2, col2) => {
         // This ensures the selection is properly tracked
       },
-      afterRender: () => {
-        // Use a flag to prevent multiple applications
-        if (hot && !hot.isDestroyed && !colorsApplied) {
-          colorsApplied = true;
-          
-          // Apply colors with a small delay to ensure DOM is ready
-          setTimeout(() => {
-            reapplyAllColors();
-          }, 50);
-        }
-      },
-      cells: (row, col, prop) => {
-        // This allows for custom cell styling
-        return {
-          className: ''
-        };
+      cells: function(row: number, col: number) {
+        const cellProperties: any = {};
+        cellProperties.renderer = cellRenderer;
+        return cellProperties;
       }
     });
     
-    hot.render();
     return () => hot?.destroy();
   });
 </script>
@@ -669,7 +814,7 @@
       <h2 class="excel-instructions-title">Step 2</h2>
       <div class="excel-instructions-body">
         <div class="excel-step-hint">
-          You still need to find 30 more seconds to CUT within that break. Hint: you are moving a unit into Break 1 of the 9:30PM window. Is there an ROS 24 HOUR unit you can move? If so, check the spot end time. Is it valid to move? Does it conflict with anything in the break you are moving it to? In this step you just need to make it Red and write where you are moving it to.
+          Now you need to CUT two promos from Break 1 of the 9:30PM window to make room for the unit you're moving. Find the two promos: "BRACKET BREAKDOWN FRIDAY 3 REV. 1" at 9:32:00 PM and "MM SWEET 16 THURSDAY" at 9:33:40 PM. Mark both of them as CUT in column A and fill all their cells red (except column A).
         </div>
         <button class="excel-check-btn" on:click={checkStep2}>Check</button>
         {#if checkResult2}

@@ -11,7 +11,7 @@ let hot: Handsontable | null = null;
 
 let data = [
   ["Real Time 08:00:00 PM", "Hit Time", "Event Type", "Length", "Title", "Advertiser", "House Number", "Ordered As", "Spot End Time"],
-  ["", "08:50:00 PM", "Program", "00:45:00", "USL P1 [USL: First Round Match TBD - 11/3/24_8p]: SEG. 5", "", "327335", "", ""],
+  ["Start Time 08:00:00 PM", "08:00:00 PM", "Program", "00:45:00", "USL P1 [USL: First Round Match TBD - 11/3/24_8p]: SEG. 5", "", "327335", "", ""],
   ["09:34:27 PM", "09:35:00 PM", "Commercial", "00:00:15", "PEPSI (MOUNTAIN DEW): MTD T&R BAJA :15", "PEPSI", "600701", "ROS 24 HOUR", "05:59:00 AM"],
   ["", "09:35:15 PM", "Commercial", "00:00:30", "DRAFT KINGS: *NFL APPROVED* DRAFTKINGS / TD CELEBRATION ALL SB STATES BET 5 GET 200 LINEAR 1 - CBS + ESPN / QUARTER", "DRAFT KINGS", "600544", "STUDIO ENCORE", "05:59:00 AM"],
   ["", "09:35:45 PM", "Commercial", "00:00:30", "VERIZON: NPI202430S6X9SUSTAIN IPHONE 16 PRO IPADCCNC", "VERIZON", "601337", "STUDIO ENCORE", "05:59:00 AM"],
@@ -29,14 +29,13 @@ let data = [
   ["", "10:06:30 PM", "Promo", "00:00:10", "INSIDE COLLEGE FOOTBALL TUES", "CBS SPORTS NETWORK", "801070", "", ""],
   ["", "10:06:40 PM", "National DR", "00:00:30", "NIC INDUSTRIES: CERAKOTE HEADLIGHT RESTORATION DRIVE TO RETAIL", "NIC INDUSTRIES", "600103", "DR ROS PRIME", "11:00:00 PM"],
   ["", "10:07:10 PM", "National DR", "00:00:30", "GRAINGER: THE BAKER II GRAG 30", "GRAINGER", "607123", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:07:40 PM", "Promo", "00:00:20", "NWSL PERFECT STADIUM", "CBS SPORTS NETWORK", "802620", "", ""],
   ["", "10:08:00 PM", "Program", "00:06:00", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 2", "", "327342", "", ""],
   ["", "10:14:00 PM", "National DR", "00:00:15", "TRUST & WILL: MEET TRUST AND WILL II 30", "TRUST & WILL", "604177", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:14:30 PM", "National DR", "00:00:10", "DEALDASH, INC: DD REAL DEALS 2023 NEW TESTIMONIAL :30/DEALDASH.COM", "DEALDASH, INC", "607056", "DR ROS PRIME", "12:00:00 AM"],
+  ["", "10:14:30 PM", "National DR", "00:00:05", "DEALDASH, INC: DD REAL DEALS 2023 NEW TESTIMONIAL :30/DEALDASH.COM", "DEALDASH, INC", "607056", "DR ROS PRIME", "12:00:00 AM"],
   ["", "10:15:00 PM", "Local", "Local", "Local", "Local", "Local", "Local", "Local"],
   ["", "10:16:30 PM", "Program", "00:07:00", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 3", "", "327343", "", ""],
   ["", "10:23:30 PM", "National DR", "00:01:00", "BOSLEY: NOT 1970 QR 60", "BOSLEY", "606670", "DR ROS PRIME", "11:00:00 PM"],
-  ["", "10:24:30 PM", "National DR", "00:00:10", "MIZUHO AMERICAS: MWW MIZUHO AMERICAS PAR 3", "MIZUHO AMERICAS", "600884", "DR 24 HOUR ROS", "11:59:00 PM"],
+  ["", "10:24:30 PM", "National DR", "00:00:05", "MIZUHO AMERICAS: MWW MIZUHO AMERICAS PAR 3", "MIZUHO AMERICAS", "600884", "DR 24 HOUR ROS", "11:59:00 PM"],
   ["", "10:25:00 PM", "Program", "00:09:30", "Volleyball Special Event R5 [AVP Beach Volleyball: AVP League - Week 8]: SEG. 4", "", "327344", "", ""]
 ];
 
@@ -93,43 +92,67 @@ function checkStep1() {
     return;
   }
   
-  // Find the BOSLEY and CREDIT ASSOCIATES rows
+  // Find the three National DR rows that add up to 2 minutes total
+  const nicIndustriesIdx = data.findIndex(row => row[1] === '10:06:40 PM' && row[2] && row[2].toLowerCase() === 'national dr' && row[4] && row[4].toLowerCase().includes('nic industries'));
+  const graingerIdx = data.findIndex(row => row[1] === '10:07:10 PM' && row[2] && row[2].toLowerCase() === 'national dr' && row[4] && row[4].toLowerCase().includes('grainger'));
   const bosleyIdx = data.findIndex(row => row[1] === '10:23:30 PM' && row[2] && row[2].toLowerCase() === 'national dr' && row[4] && row[4].toLowerCase().includes('bosley'));
-  const creditIdx = data.findIndex(row => row[1] === '10:44:00 PM' && row[2] && row[2].toLowerCase() === 'national dr' && row[4] && row[4].toLowerCase().includes('credit associates'));
   
-  let bosleyCut = false, bosleyRed = false, creditCut = false, creditRed = false;
+  let nicIndustriesCut = false, nicIndustriesRed = false;
+  let graingerCut = false, graingerRed = false;
+  let bosleyCut = false, bosleyRed = false;
   
-  // Check BOSLEY row
+  // Check NIC INDUSTRIES row (30 seconds)
+  if (nicIndustriesIdx !== -1) {
+    nicIndustriesCut = typeof data[nicIndustriesIdx][0] === 'string' && data[nicIndustriesIdx][0].trim().toLowerCase() === 'cut';
+    // Check if all columns except A are filled red
+    let allRed = true;
+    for (let col = 1; col < data[nicIndustriesIdx].length; col++) {
+      const cellKey = `${nicIndustriesIdx}-${col}`;
+      const color = (cellColors[cellKey] || '').toLowerCase();
+      if (color !== '#e53e3e' && color !== '#ff0000' && color !== 'rgb(229,62,62)' && color !== 'rgb(255,0,0)') {
+        allRed = false;
+        break;
+      }
+    }
+    nicIndustriesRed = allRed;
+  }
+  
+  // Check GRAINGER row (30 seconds)
+  if (graingerIdx !== -1) {
+    graingerCut = typeof data[graingerIdx][0] === 'string' && data[graingerIdx][0].trim().toLowerCase() === 'cut';
+    // Check if all columns except A are filled red
+    let allRed = true;
+    for (let col = 1; col < data[graingerIdx].length; col++) {
+      const cellKey = `${graingerIdx}-${col}`;
+      const color = (cellColors[cellKey] || '').toLowerCase();
+      if (color !== '#e53e3e' && color !== '#ff0000' && color !== 'rgb(229,62,62)' && color !== 'rgb(255,0,0)') {
+        allRed = false;
+        break;
+      }
+    }
+    graingerRed = allRed;
+  }
+  
+  // Check BOSLEY row (1 minute)
   if (bosleyIdx !== -1) {
     bosleyCut = typeof data[bosleyIdx][0] === 'string' && data[bosleyIdx][0].trim().toLowerCase() === 'cut';
+    // Check if all columns except A are filled red
+    let allRed = true;
     for (let col = 1; col < data[bosleyIdx].length; col++) {
       const cellKey = `${bosleyIdx}-${col}`;
       const color = (cellColors[cellKey] || '').toLowerCase();
-      if (color === '#e53e3e' || color === '#ff0000' || color === 'rgb(229,62,62)' || color === 'rgb(255,0,0)') {
-        bosleyRed = true;
+      if (color !== '#e53e3e' && color !== '#ff0000' && color !== 'rgb(229,62,62)' && color !== 'rgb(255,0,0)') {
+        allRed = false;
         break;
       }
     }
+    bosleyRed = allRed;
   }
   
-  // Check CREDIT ASSOCIATES row
-  if (creditIdx !== -1) {
-    creditCut = typeof data[creditIdx][0] === 'string' && data[creditIdx][0].trim().toLowerCase() === 'cut';
-    for (let col = 1; col < data[creditIdx].length; col++) {
-      const cellKey = `${creditIdx}-${col}`;
-      const color = (cellColors[cellKey] || '').toLowerCase();
-      if (color === '#e53e3e' || color === '#ff0000' || color === 'rgb(229,62,62)' || color === 'rgb(255,0,0)') {
-        creditRed = true;
-        break;
-      }
-    }
-  }
-  
-  if (bosleyCut && bosleyRed && creditCut && creditRed) {
-    checkResult1 = '✅ Correct! You CUT and color-filled both 1-minute National DR rows red.';
-    setTimeout(() => { goToStep2(); }, 800);
+  if (nicIndustriesCut && nicIndustriesRed && graingerCut && graingerRed && bosleyCut && bosleyRed) {
+    checkResult1 = '✅ Correct! You CUT 2:00 minutes of inventory.';
   } else {
-    checkResult1 = '❌ Not quite! Did you highlight them red? Did you write "CUT" next to them? Do they add up to 2:00 minutes?';
+    checkResult1 = '❌ Not quite! You need to CUT 2 minutes total. Find the NIC INDUSTRIES (30s), GRAINGER (30s), and BOSLEY (1:00) National DR rows, write "CUT" in column A, and fill all other columns red.';
   }
 }
 
@@ -144,10 +167,9 @@ function checkStep2() {
   
   // Check if user has written email text
   if (emailText.trim().length > 0) {
-    checkResult2 = '✅ Great job! You have written an email to Master Control.';
-    setTimeout(() => { showCongratulationsCard(); }, 800);
+    checkResult2 = '✅ Good Job! Now, check your own work in the reference email box.';
   } else {
-    checkResult2 = '❌ Please write an email to Master Control explaining the cuts.';
+    checkResult2 = '❌ Please write a detailed email to Master Control explaining the cuts you made to save 2 minutes.';
   }
 }
 
@@ -171,15 +193,11 @@ function applyFillColor() {
             const cellKey = `${row}-${col}`;
             cellColors[cellKey] = selectedColor;
             clearedCells.delete(cellKey);
-            const cellElement = hot?.getCell(row, col);
-            if (cellElement) {
-              cellElement.style.backgroundColor = selectedColor;
-              cellElement.style.setProperty('background-color', selectedColor, 'important');
-              cellElement.setAttribute('style', `background-color: ${selectedColor} !important`);
-            }
           }
         }
       });
+      // Trigger re-render to apply the new colors
+      hot.render();
     }
   }
 }
@@ -198,115 +216,156 @@ function clearFillColor() {
             const cellKey = `${row}-${col}`;
             delete cellColors[cellKey];
             clearedCells.add(cellKey);
-            const cellElement = hot?.getCell(row, col);
-            if (cellElement) {
-              cellElement.style.backgroundColor = '';
-              cellElement.style.removeProperty('background-color');
-              cellElement.removeAttribute('style');
-            }
           }
         }
       });
+      // Trigger re-render to apply the cleared colors
+      hot.render();
     }
   }
 }
 
-function reapplyAllColors() {
+// Function to insert a row at a specific index
+function insertRowAtIndex(index: number) {
+  if (hot && !hot.isDestroyed) {
+    // Insert empty row in data array
+    const emptyRow = new Array(data[0].length).fill('');
+    data.splice(index, 0, emptyRow);
+    
+    // Update the table
+    hot.loadData(data);
+    
+    // Trigger re-render after a short delay
+    setTimeout(() => {
+      hot?.render();
+    }, 100);
+  }
+}
+
+// Function to delete a row at a specific index
+function deleteRowAtIndex(index: number) {
+  if (hot && !hot.isDestroyed) {
+    // Remove row from data array
+    data.splice(index, 1);
+    
+    // Update the table
+    hot.loadData(data);
+    
+    // Trigger re-render after a short delay
+    setTimeout(() => {
+      hot?.render();
+    }, 100);
+  }
+}
+
+// Row coloring functions
+function colorSelectedRows(color: string) {
   if (hot) {
-    // Apply base colors first (event type colors)
-    const eventTypeCol = 2;
-    for (let row = 1; row < data.length; row++) {
-      for (let col = 0; col < data[row].length; col++) {
-        const cellKey = `${row}-${col}`;
-        const cellElement = hot?.getCell(row, col);
-        if (!cellElement) {
-          continue;
-        }
-        
-        // Skip if cell is cleared or has persistent color
-        if (clearedCells.has(cellKey) || cellColors[cellKey]) continue;
-        
-        // Check if color is already applied to prevent re-application
-        const currentBgColor = cellElement.style.backgroundColor;
-        if (currentBgColor && currentBgColor !== 'rgba(0, 0, 0, 0)' && currentBgColor !== 'transparent') continue;
-        
-        // Apply event type colors
-        if (data[row][eventTypeCol]) {
-          const eventType = data[row][eventTypeCol].toLowerCase();
-          if (eventType === 'commercial' && col !== 0) {
-            cellElement.style.setProperty('background-color', '#FFFF00', 'important');
-            cellElement.style.removeProperty('color');
-          } else if (eventType === 'local' && col !== 0) {
-            cellElement.style.setProperty('background-color', '#7030A0', 'important');
-            cellElement.style.setProperty('color', '#fff', 'important');
-          } else if (eventType === 'program' && col !== 0) {
-            cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-            cellElement.style.setProperty('font-weight', 'bold', 'important');
-          } else if (eventType === 'promo' && col !== 0) {
-            cellElement.style.setProperty('background-color', '#375623', 'important');
-            cellElement.style.setProperty('color', '#fff', 'important');
-          } else if (eventType === 'national dr' && col !== 0) {
-            cellElement.style.setProperty('background-color', '#375623', 'important');
-            cellElement.style.setProperty('color', '#fff', 'important');
+    const selected = hot.getSelected();
+    if (selected && selected.length > 0) {
+      selected.forEach(range => {
+        for (let row = range[0]; row <= range[2]; row++) {
+          for (let col = range[1]; col <= range[3]; col++) {
+            const cellKey = `${row}-${col}`;
+            cellColors[cellKey] = color;
+            clearedCells.delete(cellKey);
           }
         }
-      }
+      });
+      hot.render();
     }
-    
-    // Apply persistent colors (user-applied colors)
-    Object.keys(cellColors).forEach(cellKey => {
-      if (clearedCells.has(cellKey)) {
-        delete cellColors[cellKey];
+  }
+}
+
+function clearSelectedRowColors() {
+  if (hot) {
+    const selected = hot.getSelected();
+    if (selected && selected.length > 0) {
+      selected.forEach(range => {
+        for (let row = range[0]; row <= range[2]; row++) {
+          for (let col = range[1]; col <= range[3]; col++) {
+            const cellKey = `${row}-${col}`;
+            delete cellColors[cellKey];
+            clearedCells.add(cellKey);
+          }
+        }
+      });
+      hot.render();
+    }
+  }
+}
+
+// Cell renderer function to handle all coloring logic
+function cellRenderer(this: any, instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) {
+  // Call the default renderer first
+  Handsontable.renderers.TextRenderer.apply(this, [instance, td, row, col, prop, value, cellProperties]);
+  
+  const cellKey = `${row}-${col}`;
+  
+  // Reset any existing styling
+  td.style.backgroundColor = '';
+  td.style.color = '';
+  td.style.fontWeight = '';
+  td.style.removeProperty('background-color');
+  td.style.removeProperty('color');
+  td.style.removeProperty('font-weight');
+  
+  // Apply header styling (row 0)
+  if (row === 0) {
+    td.style.setProperty('background-color', '#d9d9d9', 'important');
+    td.style.setProperty('color', '#0000ff', 'important');
+    td.style.setProperty('font-weight', 'bold', 'important');
+    return;
+  }
+  
+  // Apply special column A styling
+  if (col === 0) {
+    if (typeof data[row][0] === 'string') {
+      const cellValue = data[row][0].toLowerCase().trim();
+      if (cellValue.startsWith('start time') || cellValue.startsWith('end time')) {
+        td.style.setProperty('background-color', '#d9d9d9', 'important');
+        td.style.setProperty('color', '#0000ff', 'important');
+        td.style.setProperty('font-weight', 'bold', 'important');
         return;
       }
-      const [row, col] = cellKey.split('-').map(Number);
-      const cellElement = hot?.getCell(row, col);
-      if (cellElement) {
-        cellElement.style.setProperty('background-color', cellColors[cellKey], 'important');
-        if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
-          cellElement.style.setProperty('color', '#fff', 'important');
-        }
-      }
-    });
-    
-    // Apply header styling (row 0)
-    for (let col = 0; col < data[0].length; col++) {
-      const cellElement = hot?.getCell(0, col);
-      if (cellElement) {
-        cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-        cellElement.style.setProperty('color', '#0000ff', 'important');
-        cellElement.style.setProperty('font-weight', 'bold', 'important');
-      }
     }
-    
-    // Apply special column A styling
-    for (let row = 1; row < data.length; row++) {
-      const cellElement = hot?.getCell(row, 0);
-      if (cellElement && typeof data[row][0] === 'string') {
-        const cellValue = data[row][0].toLowerCase().trim();
-        if (cellValue === 'start time' || cellValue === 'end time' || cellValue === 'end time 10:02:00') {
-          cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-          cellElement.style.setProperty('color', '#0000ff', 'important');
-          cellElement.style.setProperty('font-weight', 'bold', 'important');
-        } else if (!cellColors[`${row}-0`] && !clearedCells.has(`${row}-0`)) {
-          cellElement.style.setProperty('background-color', '#fff', 'important');
-          cellElement.style.removeProperty('color');
-        }
-      }
+    // Default white background for column A if not special case
+    if (!cellColors[cellKey] && !clearedCells.has(cellKey)) {
+      td.style.setProperty('background-color', '#fff', 'important');
     }
-    
-    // Style End Time's 10:02:00 cell blue
-    const endTimeCell = hot?.getCell(13, 1);
-    if (endTimeCell && data[13][0] && data[13][0].toLowerCase().trim() === 'end time') {
-      endTimeCell.style.setProperty('color', '#0000ff', 'important');
-      endTimeCell.style.setProperty('font-weight', 'bold', 'important');
+  }
+  
+  // Skip if cell is cleared
+  if (clearedCells.has(cellKey)) {
+    return;
+  }
+  
+  // Apply user-applied persistent colors (highest priority)
+  if (cellColors[cellKey]) {
+    td.style.setProperty('background-color', cellColors[cellKey], 'important');
+    if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
+      td.style.setProperty('color', '#fff', 'important');
     }
-    
-    // Style cell 13-1 with white text
-    const endTimeWhiteCell = hot?.getCell(13, 1);
-    if (endTimeWhiteCell && data[13][1] === '09:57:50 PM') {
-      endTimeWhiteCell.style.setProperty('color', '#fff', 'important');
-      endTimeWhiteCell.style.setProperty('font-weight', 'bold', 'important');
+    return;
+  }
+  
+  // Apply event type colors (only for non-column A cells)
+  if (col !== 0 && data[row][2]) {
+    const eventType = data[row][2].toLowerCase();
+    if (eventType === 'commercial') {
+      td.style.setProperty('background-color', '#FFFF00', 'important');
+    } else if (eventType === 'local') {
+      td.style.setProperty('background-color', '#7030A0', 'important');
+      td.style.setProperty('color', '#fff', 'important');
+    } else if (eventType === 'program') {
+      td.style.setProperty('background-color', '#d9d9d9', 'important');
+      td.style.setProperty('font-weight', 'bold', 'important');
+    } else if (eventType === 'promo') {
+      td.style.setProperty('background-color', '#375623', 'important');
+      td.style.setProperty('color', '#fff', 'important');
+    } else if (eventType === 'national dr') {
+      td.style.setProperty('background-color', '#375623', 'important');
+      td.style.setProperty('color', '#fff', 'important');
     }
   }
 }
@@ -317,27 +376,159 @@ onMount(() => {
       data: data,
       colHeaders: true,
       rowHeaders: true,
-      height: 'auto',
+      height: '100%',
       width: '100%',
       licenseKey: 'non-commercial-and-evaluation',
-      colWidths: [120, 120, 120, 80, 500, 120, 120, 120, 120],
-      stretchH: 'none',
-      autoWrapRow: true,
-      autoWrapCol: true,
-      wordWrap: true,
-      contextMenu: true,
-      rowHeights: 30,
-      minSpareRows: 0,
-      minSpareCols: 0,
-      afterChange: function(changes, source) {
-        if (source === 'edit') {
-          setTimeout(() => {
-            reapplyAllColors();
-          }, 50);
+      manualRowMove: true,
+      manualColumnMove: true,
+      manualColumnResize: true,
+      manualRowResize: true,
+      contextMenu: {
+        items: {
+          'row_above': {
+            name: 'Insert row above',
+            callback: function() {
+              const selected = this.getSelected();
+              if (selected && selected.length > 0) {
+                const rowIndex = selected[0][0];
+                insertRowAtIndex(rowIndex);
+              }
+            }
+          },
+          'row_below': {
+            name: 'Insert row below',
+            callback: function() {
+              const selected = this.getSelected();
+              if (selected && selected.length > 0) {
+                const rowIndex = selected[0][0] + 1;
+                insertRowAtIndex(rowIndex);
+              }
+            }
+          },
+          'remove_row': {
+            name: 'Remove row',
+            callback: function() {
+              const selected = this.getSelected();
+              if (selected && selected.length > 0) {
+                const rowIndex = selected[0][0];
+                deleteRowAtIndex(rowIndex);
+              }
+            }
+          }
         }
       },
-      afterRender: function() {
-        reapplyAllColors();
+      stretchH: 'none',
+      className: '',
+      colWidths: [120, 90, 80, 60, 500, 100, 100, 120, 100],
+      minSpareRows: 0,
+      minSpareCols: 0,
+      rowHeights: 25,
+      columnSorting: true,
+      filters: true,
+      dropdownMenu: true,
+      selectionMode: 'range',
+      outsideClickDeselects: false,
+      afterChange: function(changes, source) {
+        // Trigger re-render after changes
+        if (changes && source !== 'loadData') {
+          hot?.render();
+        }
+      },
+      afterCreateRow: (index, amount, source) => {
+        // Handle row insertion - shift existing color mappings
+        const newCellColors: { [key: string]: string } = {};
+        Object.keys(cellColors).forEach(cellKey => {
+          const [row, col] = cellKey.split('-').map(Number);
+          if (row >= index) {
+            // Shift rows down by the amount of inserted rows
+            newCellColors[`${row + amount}-${col}`] = cellColors[cellKey];
+          } else {
+            // Keep rows above the insertion point unchanged
+            newCellColors[cellKey] = cellColors[cellKey];
+          }
+        });
+        cellColors = newCellColors;
+        
+        // Also shift cleared cells
+        const newClearedCells = new Set<string>();
+        clearedCells.forEach(cellKey => {
+          const [row, col] = cellKey.split('-').map(Number);
+          if (row >= index) {
+            newClearedCells.add(`${row + amount}-${col}`);
+          } else {
+            newClearedCells.add(cellKey);
+          }
+        });
+        clearedCells = newClearedCells;
+        
+        // Trigger re-render after a short delay to ensure DOM is updated
+        setTimeout(() => {
+          hot?.render();
+        }, 100);
+      },
+      afterRemoveRow: (index, amount, source) => {
+        // Handle row deletion - shift existing color mappings
+        const newCellColors: { [key: string]: string } = {};
+        Object.keys(cellColors).forEach(cellKey => {
+          const [row, col] = cellKey.split('-').map(Number);
+          if (row < index) {
+            // Keep rows above the deletion point unchanged
+            newCellColors[cellKey] = cellColors[cellKey];
+          } else if (row >= index + amount) {
+            // Shift rows above the deletion point down
+            newCellColors[`${row - amount}-${col}`] = cellColors[cellKey];
+          }
+          // Rows within the deletion range are removed
+        });
+        cellColors = newCellColors;
+        
+        // Also shift cleared cells
+        const newClearedCells = new Set<string>();
+        clearedCells.forEach(cellKey => {
+          const [row, col] = cellKey.split('-').map(Number);
+          if (row < index) {
+            newClearedCells.add(cellKey);
+          } else if (row >= index + amount) {
+            newClearedCells.add(`${row - amount}-${col}`);
+          }
+        });
+        clearedCells = newClearedCells;
+        
+        // Trigger re-render after a short delay to ensure DOM is updated
+        setTimeout(() => {
+          hot?.render();
+        }, 100);
+      },
+      beforeKeyDown: (event) => {
+        // Keyboard shortcuts for row coloring
+        if (event.ctrlKey || event.metaKey) {
+          switch(event.key) {
+            case '1':
+              event.stopImmediatePropagation();
+              colorSelectedRows('#ffebee'); // Light red
+              break;
+            case '2':
+              event.stopImmediatePropagation();
+              colorSelectedRows('#e3f2fd'); // Light blue
+              break;
+            case '3':
+              event.stopImmediatePropagation();
+              colorSelectedRows('#f3e5f5'); // Light purple
+              break;
+            case '0':
+              event.stopImmediatePropagation();
+              clearSelectedRowColors();
+              break;
+          }
+        }
+      },
+      afterSelection: (row, col, row2, col2) => {
+        // This ensures the selection is properly tracked
+      },
+      cells: function(row: number, col: number) {
+        const cellProperties: any = {};
+        cellProperties.renderer = cellRenderer;
+        return cellProperties;
       }
     });
     
@@ -395,7 +586,8 @@ onMount(() => {
         </div>
         <h2 class="excel-instructions-title">Step 1</h2>
         <div class="excel-instructions-body">
-          <div class="excel-step-hint">Find 2 minutes to Cut.<br>Complete all necessary steps to make the CUT. </div>
+          <div class="excel-step-hint">Find 2 minutes to Cut.<br>Complete all necessary steps to make the CUT: Write "CUT" in column A and fill all other columns red for the three National DR units that total 2 minutes. P.S. Make your life easier, CUT the larger unsold inventory first.
+          </div>
           <button class="excel-check-btn" on:click={checkStep1}>Check</button>
           {#if checkResult1}
             <div class="excel-check-result">{checkResult1}</div>
@@ -413,25 +605,51 @@ onMount(() => {
         </div>
         <h2 class="excel-instructions-title">Step 2</h2>
         <div class="excel-instructions-body">
-          <div class="excel-step-hint">Write the email to Master Control below.</div>
+          <div class="excel-step-hint">Write an email to Master Control explaining the cuts you made to save 2 minutes.</div>
           <textarea
             bind:value={emailText}
             rows="6"
             style="width:100%;margin-bottom:10px;font-size:1rem;padding:8px;border-radius:4px;border:1px solid #ccc;resize:vertical;"
             placeholder="Type your practice email here..."
           ></textarea>
-          <button class="excel-check-btn" on:click={checkStep2}>Check</button>
+          {#if !checkResult2 || checkResult2.includes('❌')}
+            <button class="excel-check-btn" on:click={checkStep2}>Check</button>
+          {:else}
+            <button class="excel-check-btn" on:click={() => showCongratulationsCard()}>Continue →</button>
+          {/if}
           {#if checkResult2}
             <div class="excel-check-result">{checkResult2}</div>
-            {#if checkResult2.startsWith('✅')}
-              <div class="excel-email-compare-wrapper">
-                <div class="excel-email-compare-col">
-                  <div class="excel-email-compare-title">Your Email</div>
-                  <pre class="excel-email-compare-content">{emailText}</pre>
-                </div>
-                <div class="excel-email-compare-col">
-                  <div class="excel-email-compare-title">Reference Email</div>
-                  <pre class="excel-email-compare-content">Here is 2 mins worth of units to CUT in the overnight to get us back on time.
+          {/if}
+          
+          {#if checkResult2 === '✅ Good Job! Now, check your own work in the reference email box.'}
+            <div class="excel-email-compare-wrapper">
+              <div class="excel-email-compare-col">
+                <div class="excel-email-compare-title">Your Email</div>
+                <pre class="excel-email-compare-content">{emailText}</pre>
+              </div>
+              <div class="excel-email-compare-col">
+                <div class="excel-email-compare-title">Reference Email</div>
+                <pre class="excel-email-compare-content">Here are three different ways to write the email. They are all correct.
+
+Here is 2 mins worth of inventory to cut.
+
+10PM Volleyball
+Break 1
+CUT: 600103 and 607123
+Break 3
+CUT:606670
+
+OR
+
+10PM Volleyball
+Break 1
+CUT: 600103
+CUT: 607123
+
+Break 3
+CUT:606670
+
+OR
 
 10PM Game
 Break 1
@@ -439,59 +657,58 @@ CUT: 600103
 CUT: 607123
 
 Break 3
-CUT: 606670
-CUT: 601357</pre>
-                </div>
+CUT:606670</pre>
               </div>
-              <button class="excel-continue-btn" on:click={() => showCongratulationsCard()}>Continue →</button>
-            {/if}
+            </div>
           {/if}
         </div>
       {/if}
     {/if}
   </div>
-  
+
   <div class="excel-toolbar">
-    <div class="excel-tool-group">
-      <div class="excel-fill-color">
-        <button class="excel-fill-button" on:click={applyFillColor} aria-label="Fill Color">
-          <svg class="excel-paint-bucket" viewBox="0 0 20 20" width="20" height="20" fill="none">
-            <rect x="7" y="15" width="6" height="3" rx="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
-            <path d="M7.5 13.5L3.5 9.5C3.1 9.1 3.1 8.5 3.5 8.1L8.1 3.5C8.5 3.1 9.1 3.1 9.5 3.5L13.5 7.5C13.9 7.9 13.9 8.5 13.5 8.9L8.9 13.5C8.5 13.9 7.9 13.9 7.5 13.5Z" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
-            <rect x="6.5" y="7.5" width="7" height="2" rx="1" transform="rotate(-45 6.5 7.5)" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
-            <ellipse cx="16.5" cy="16.5" rx="1.5" ry="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
-          </svg>
-          <div class="excel-color-bar" style="background-color: {selectedColor}"></div>
-        </button>
-        <button class="excel-fill-dropdown" on:click={() => showColorPicker = !showColorPicker} aria-label="Fill Color Dropdown">
-          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 3l5 5 5-5z" fill="#222"/></svg>
-        </button>
-        {#if showColorPicker}
-        <div class="excel-color-dropdown">
-          <div class="excel-color-palette">
-            <div class="excel-color-row">
-              <button class="excel-color-btn" style="background-color: #FFFFFF" on:click={() => pickColor('#FFFFFF')} aria-label="White"></button>
-              <button class="excel-color-btn" style="background-color: #000000" on:click={() => pickColor('#000000')} aria-label="Black"></button>
-              <button class="excel-color-btn" style="background-color: #FF0000" on:click={() => pickColor('#FF0000')} aria-label="Red"></button>
-              <button class="excel-color-btn" style="background-color: #00B050" on:click={() => pickColor('#00B050')} aria-label="Green"></button>
-              <button class="excel-color-btn" style="background-color: #FFFF00" on:click={() => pickColor('#FFFF00')} aria-label="Yellow"></button>
+          <div class="excel-tool-group">
+        <div class="excel-fill-color">
+          <button class="excel-fill-button" on:click={applyFillColor} aria-label="Fill Color">
+            <svg class="excel-paint-bucket" viewBox="0 0 20 20" width="20" height="20" fill="none">
+              <rect x="7" y="15" width="6" height="3" rx="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
+              <path d="M7.5 13.5L3.5 9.5C3.1 9.1 3.1 8.5 3.5 8.1L8.1 3.5C8.5 3.1 9.1 3.1 9.5 3.5L13.5 7.5C13.9 7.9 13.9 8.5 13.5 8.9L8.9 13.5C8.5 13.9 7.9 13.9 7.5 13.5Z" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
+              <rect x="6.5" y="7.5" width="7" height="2" rx="1" transform="rotate(-45 6.5 7.5)" fill="#B0B0B0" stroke="#444" stroke-width="0.7"/>
+              <ellipse cx="16.5" cy="16.5" rx="1.5" ry="1" fill="#F4B400" stroke="#B8860B" stroke-width="0.7"/>
+            </svg>
+            <div class="excel-color-bar" style="background-color: {selectedColor}"></div>
+          </button>
+          <button class="excel-fill-dropdown" on:click={() => showColorPicker = !showColorPicker} aria-label="Fill Color Dropdown">
+            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 3l5 5 5-5z" fill="#222"/></svg>
+          </button>
+          {#if showColorPicker}
+          <div class="excel-color-dropdown">
+            <div class="excel-color-palette">
+              <div class="excel-color-row">
+                <button class="excel-color-btn" style="background-color: #FFFFFF" on:click={() => pickColor('#FFFFFF')} aria-label="White"></button>
+                <button class="excel-color-btn" style="background-color: #000000" on:click={() => pickColor('#000000')} aria-label="Black"></button>
+                <button class="excel-color-btn" style="background-color: #FF0000" on:click={() => pickColor('#FF0000')} aria-label="Red"></button>
+                <button class="excel-color-btn" style="background-color: #00B050" on:click={() => pickColor('#00B050')} aria-label="Green"></button>
+                <button class="excel-color-btn" style="background-color: #FFFF00" on:click={() => pickColor('#FFFF00')} aria-label="Yellow"></button>
+              </div>
+              <div class="excel-color-row">
+                <button class="excel-color-btn" style="background-color: #7030A0" on:click={() => pickColor('#7030A0')} aria-label="Magenta"></button>
+                <button class="excel-color-btn" style="background-color: #00B0F0" on:click={() => pickColor('#00B0F0')} aria-label="Cyan"></button>
+                <button class="excel-color-btn" style="background-color: #ED7D31" on:click={() => pickColor('#ED7D31')} aria-label="Orange"></button>
+                <button class="excel-color-btn" style="background-color: #A5A5A0" on:click={() => pickColor('#A5A5A0')} aria-label="Gray"></button>
+                <button class="excel-color-btn" style="background-color: #375623" on:click={() => pickColor('#375623')} aria-label="Dark Green"></button>
+              </div>
             </div>
-            <div class="excel-color-row">
-              <button class="excel-color-btn" style="background-color: #7030A0" on:click={() => pickColor('#7030A0')} aria-label="Magenta"></button>
-              <button class="excel-color-btn" style="background-color: #00B0F0" on:click={() => pickColor('#00B0F0')} aria-label="Cyan"></button>
-              <button class="excel-color-btn" style="background-color: #ED7D31" on:click={() => pickColor('#ED7D31')} aria-label="Orange"></button>
-              <button class="excel-color-btn" style="background-color: #A5A5A0" on:click={() => pickColor('#A5A5A0')} aria-label="Gray"></button>
-              <button class="excel-color-btn" style="background-color: #375623" on:click={() => pickColor('#375623')} aria-label="Dark Green"></button>
-            </div>
+            <button class="excel-clear-btn" on:click={clearFillColor}>No Fill</button>
           </div>
-          <button class="excel-clear-btn" on:click={clearFillColor}>No Fill</button>
+          {/if}
         </div>
-        {/if}
       </div>
-    </div>
   </div>
   
-  <div bind:this={container} class="excel-table"></div>
+  <div class="excel-workspace">
+    <div bind:this={container} class="excel-sheet"></div>
+  </div>
 </div>
 
 <style>
@@ -653,24 +870,103 @@ CUT: 601357</pre>
     background: #f0f0f0;
   }
   
-  .excel-table {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: visible;
+  
+  .excel-workspace {
+    background: #f0f0f0;
+    border: 1px solid #c3c3c3;
+    height: 100vh;
     width: 100%;
     min-width: 0;
-    margin-top: 20px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .excel-sheet {
+    background: white;
+    border: 1px solid #c3c3c3;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    overflow: auto;
+  }
+
+  /* Basic Excel styling */
+  :global(.handsontable) {
+    font-family: 'Calibri', 'Segoe UI', sans-serif !important;
+    font-size: 11px !important;
+  }
+
+  /* All cells same height */
+  :global(.handsontable .htCore th),
+  :global(.handsontable .htCore td) {
+    height: 25px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Headers */
+  :global(.handsontable .htColHeaders th) {
+    background: #f8f9fa !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+    border: 1px solid #c3c3c3 !important;
+    border-bottom: 2px solid #c3c3c3 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
+  :global(.handsontable .htRowHeaders th) {
+    background: #f8f9fa !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+    border: 1px solid #c3c3c3 !important;
+    border-right: 2px solid #c3c3c3 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    width: 40px !important;
+  }
+
+  /* Data cells */
+  :global(.handsontable .htCore td) {
+    border: 1px solid #c3c3c3 !important;
+    background: white !important;
+    vertical-align: middle !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100%;
+    text-align: left !important;
+  }
+
+  /* Corner cell */
+  :global(.handsontable .htCore .corner) {
+    background: #f8f9fa !important;
+    border: 1px solid #c3c3c3 !important;
+    border-right: 2px solid #c3c3c3 !important;
+    border-bottom: 2px solid #c3c3c3 !important;
+    width: 40px !important;
+  }
+
+  /* Current cell */
+  :global(.handsontable .htCore .current) {
+    border: 2px solid #0078d4 !important;
+  }
+
+  /* Hover effect */
+  :global(.handsontable .htCore td:hover) {
+    background: #f0f7ff !important;
   }
   
   .excel-step-hint {
-    background: #fff3cd;
-    border: 1px solid #ffeaa7;
-    border-radius: 4px;
-    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
     margin: 8px 0;
-    color: #856404;
-    font-style: italic;
+    color: #1a2a3a;
+    font-style: normal;
+    font-weight: 500;
   }
   
   .excel-check-btn {
@@ -741,55 +1037,6 @@ CUT: 601357</pre>
   
   .excel-nav-btn-next:hover {
     background: #0056b3;
-  }
-  
-  .excel-email-compare-wrapper {
-    display: flex;
-    gap: 20px;
-    margin-top: 20px;
-  }
-  
-  .excel-email-compare-col {
-    flex: 1;
-    border: 1px solid #d0d0d0;
-    border-radius: 6px;
-    padding: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  }
-  
-  .excel-email-compare-title {
-    font-weight: bold;
-    color: #0074D9;
-    margin-bottom: 8px;
-    font-size: 1rem;
-  }
-  
-  .excel-email-compare-content {
-    font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
-    font-size: 0.98rem;
-    white-space: pre-wrap;
-    color: #222;
-    background: #fff;
-    border-radius: 4px;
-    padding: 8px;
-    min-height: 120px;
-  }
-  
-  .excel-continue-btn {
-    background: #28a745;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    font-size: 0.9rem;
-    margin-top: 15px;
-  }
-  
-  .excel-continue-btn:hover {
-    background: #218838;
   }
   
   .excel-congratulations {
@@ -873,5 +1120,39 @@ CUT: 601357</pre>
   
   .mb-4 {
     margin-bottom: 1rem;
+  }
+  
+  .excel-email-compare-wrapper {
+    display: flex;
+    gap: 24px;
+    margin-top: 18px;
+  }
+  
+  .excel-email-compare-col {
+    flex: 1 1 0;
+    min-width: 0;
+    background: #f9f9f9;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  
+  .excel-email-compare-title {
+    font-weight: bold;
+    color: #0074D9;
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+  
+  .excel-email-compare-content {
+    font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+    font-size: 0.98rem;
+    white-space: pre-wrap;
+    color: #222;
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    min-height: 120px;
   }
 </style> 

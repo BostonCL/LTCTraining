@@ -67,7 +67,6 @@ let data = [
 
 let selectedColor = '#F2DCDB'; // Default light red
 let showColorPicker = false;
-let colorTimeout: ReturnType<typeof setTimeout> | null = null;
 let cellColors: { [key: string]: string } = {
   '2-1': '#FF0000',
   '2-2': '#FF0000',
@@ -139,15 +138,11 @@ function applyFillColor() {
             const cellKey = `${row}-${col}`;
             cellColors[cellKey] = selectedColor;
             clearedCells.delete(cellKey);
-            const cellElement = hot?.getCell(row, col);
-            if (cellElement) {
-              cellElement.style.backgroundColor = selectedColor;
-              cellElement.style.setProperty('background-color', selectedColor, 'important');
-              cellElement.setAttribute('style', `background-color: ${selectedColor} !important`);
-            }
           }
         }
       });
+      // Trigger re-render to apply the new colors
+      hot.render();
     }
   }
 }
@@ -166,15 +161,11 @@ function clearFillColor() {
             const cellKey = `${row}-${col}`;
             delete cellColors[cellKey];
             clearedCells.add(cellKey);
-            const cell = hot?.getCell(row, col);
-            if (cell) {
-              cell.style.backgroundColor = '';
-              cell.style.removeProperty('background-color');
-              cell.removeAttribute('style');
-            }
           }
         }
       });
+      // Trigger re-render to apply the cleared colors
+      hot.render();
     }
   }
   showColorPicker = false;
@@ -182,6 +173,81 @@ function clearFillColor() {
 
 function showCustomColor() {
   showColorPicker = false;
+}
+
+// Cell renderer function to handle all coloring logic
+function cellRenderer(this: any, instance: any, td: HTMLTableCellElement, row: number, col: number, prop: string | number, value: any, cellProperties: any) {
+  // Call the default renderer first
+  Handsontable.renderers.TextRenderer.apply(this, [instance, td, row, col, prop, value, cellProperties]);
+  
+  const cellKey = `${row}-${col}`;
+  
+  // Reset any existing styling
+  td.style.backgroundColor = '';
+  td.style.color = '';
+  td.style.fontWeight = '';
+  td.style.removeProperty('background-color');
+  td.style.removeProperty('color');
+  td.style.removeProperty('font-weight');
+  
+  // Apply header styling (row 0)
+  if (row === 0) {
+    td.style.setProperty('background-color', '#d9d9d9', 'important');
+    td.style.setProperty('color', '#0000ff', 'important');
+    td.style.setProperty('font-weight', 'bold', 'important');
+    return;
+  }
+  
+  // Apply special column A styling
+  if (col === 0) {
+    if (typeof data[row][0] === 'string') {
+      const cellValue = data[row][0].toLowerCase().trim();
+      if (cellValue === 'start time' || cellValue === 'end time') {
+        td.style.setProperty('background-color', '#d9d9d9', 'important');
+        td.style.setProperty('color', '#0000ff', 'important');
+        td.style.setProperty('font-weight', 'bold', 'important');
+        return;
+      }
+    }
+    // Default white background for column A if not special case
+    if (!cellColors[cellKey] && !clearedCells.has(cellKey)) {
+      td.style.setProperty('background-color', '#fff', 'important');
+    }
+  }
+  
+  // Skip if cell is cleared
+  if (clearedCells.has(cellKey)) {
+    return;
+  }
+  
+  // Apply user-applied persistent colors (highest priority)
+  if (cellColors[cellKey]) {
+    td.style.setProperty('background-color', cellColors[cellKey], 'important');
+    if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
+      td.style.setProperty('color', '#fff', 'important');
+    }
+    return;
+  }
+  
+  // Apply event type colors (only for non-column A cells)
+  if (col !== 0 && data[row][2]) {
+    const eventType = data[row][2].toLowerCase();
+    if (eventType === 'commercial') {
+      td.style.setProperty('background-color', '#FFFF00', 'important');
+    } else if (eventType === 'local') {
+      td.style.setProperty('background-color', '#7030A0', 'important');
+      td.style.setProperty('color', '#fff', 'important');
+    } else if (eventType === 'program') {
+      td.style.setProperty('background-color', '#d9d9d9', 'important');
+      td.style.setProperty('font-weight', 'bold', 'important');
+    } else if (eventType === 'promo') {
+      td.style.setProperty('background-color', '#375623', 'important');
+      td.style.setProperty('color', '#fff', 'important');
+    } else if (eventType === 'national dr') {
+      td.style.setProperty('background-color', '#375623', 'important');
+      td.style.setProperty('color', '#fff', 'important');
+    }
+  }
 }
 
 onMount(() => {
@@ -208,94 +274,14 @@ onMount(() => {
     dropdownMenu: true,
     selectionMode: 'range',
     outsideClickDeselects: false,
-    afterRender: () => {
-      // Debounce color application to prevent flickering
-      if (hot && !hot.isDestroyed) {
-        if (colorTimeout) clearTimeout(colorTimeout);
-        colorTimeout = setTimeout(() => {
-          if (!hot || hot.isDestroyed) return;
-        
-        // Apply base colors first (event type colors)
-        const eventTypeCol = 2;
-        for (let row = 1; row < data.length; row++) {
-          for (let col = 0; col < data[row].length; col++) {
-            const cellKey = `${row}-${col}`;
-            const cellElement = hot?.getCell(row, col);
-            if (!cellElement) continue;
-            
-            // Skip if cell is cleared or has persistent color
-            if (clearedCells.has(cellKey) || cellColors[cellKey]) continue;
-            
-            // Apply event type colors
-            if (data[row][eventTypeCol]) {
-              const eventType = data[row][eventTypeCol].toLowerCase();
-              if (eventType === 'commercial' && col !== 0) {
-                cellElement.style.setProperty('background-color', '#FFFF00', 'important');
-                cellElement.style.removeProperty('color');
-              } else if (eventType === 'local' && col !== 0) {
-                cellElement.style.setProperty('background-color', '#7030A0', 'important');
-                cellElement.style.setProperty('color', '#fff', 'important');
-              } else if (eventType === 'program' && col !== 0) {
-                cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-                cellElement.style.setProperty('font-weight', 'bold', 'important');
-              } else if (eventType === 'promo' && col !== 0) {
-                cellElement.style.setProperty('background-color', '#375623', 'important');
-                cellElement.style.setProperty('color', '#fff', 'important');
-              } else if (eventType === 'national dr' && col !== 0) {
-                cellElement.style.setProperty('background-color', '#375623', 'important');
-                cellElement.style.setProperty('color', '#fff', 'important');
-              }
-            }
-          }
-        }
-        
-        // Apply persistent colors (user-applied colors)
-        Object.keys(cellColors).forEach(cellKey => {
-          if (clearedCells.has(cellKey)) {
-            delete cellColors[cellKey];
-            return;
-          }
-          const [row, col] = cellKey.split('-').map(Number);
-          const cellElement = hot?.getCell(row, col);
-          if (cellElement) {
-            cellElement.style.setProperty('background-color', cellColors[cellKey], 'important');
-            if (cellColors[cellKey] === '#375623' || cellColors[cellKey] === '#7030A0') {
-              cellElement.style.setProperty('color', '#fff', 'important');
-            }
-          }
-        });
-        
-        // Apply header styling (row 0)
-        for (let col = 0; col < data[0].length; col++) {
-          const cellElement = hot?.getCell(0, col);
-          if (cellElement) {
-            cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-            cellElement.style.setProperty('color', '#0000ff', 'important');
-            cellElement.style.setProperty('font-weight', 'bold', 'important');
-          }
-        }
-        
-        // Apply special column A styling
-        for (let row = 1; row < data.length; row++) {
-          const cellElement = hot?.getCell(row, 0);
-          if (cellElement && typeof data[row][0] === 'string') {
-            const cellValue = data[row][0].toLowerCase().trim();
-            if (cellValue === 'start time' || cellValue === 'end time') {
-              cellElement.style.setProperty('background-color', '#d9d9d9', 'important');
-              cellElement.style.setProperty('color', '#0000ff', 'important');
-              cellElement.style.setProperty('font-weight', 'bold', 'important');
-            } else if (!cellColors[`${row}-0`] && !clearedCells.has(`${row}-0`)) {
-              cellElement.style.setProperty('background-color', '#fff', 'important');
-              cellElement.style.removeProperty('color');
-            }
-          }
-        }
-      }, 50); // 50ms debounce
-        }
-      }
-    });
-    return () => hot?.destroy();
+    cells: function(row: number, col: number) {
+      const cellProperties: any = {};
+      cellProperties.renderer = cellRenderer;
+      return cellProperties;
+    }
   });
+  return () => hot?.destroy();
+});
 </script>
 
 <div class="excel-wrapper">

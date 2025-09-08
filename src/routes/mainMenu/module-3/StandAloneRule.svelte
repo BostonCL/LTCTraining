@@ -21,7 +21,7 @@ const script = [
     image: '/images/introduction/basketballBackground.png'
   },
   {
-    text: `Not Allowed:\nAllowed:\nIn this example, the Hershey's unit creates the necessary separation between the insurance and alcohol units.`,
+    text: `Not Allowed:\nAllowed:\nIn the allowed example, you can see the Hershey's unit creates the necessary separation between the insurance and alcohol units.`,
     audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02.mp3',
     whiteboardText: [
       'Not Allowed:',
@@ -29,8 +29,7 @@ const script = [
       'Allowed:',
       '![Allowed](/images/module-3/stand-alone-rule/Allowedv2.jpg)',
       'In this example, the Hershey\'s unit creates the necessary separation between the insurance and alcohol units.'
-    ],
-    titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02_title.mp3'
+    ]
   }
 ];
 

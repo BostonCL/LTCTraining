@@ -5,7 +5,7 @@
   import { browser } from '$app/environment';
   import { preloader } from '$lib/utils/preloader';
 
-  export let scripts: { text: string; audio: string }[] = [];
+  export let scripts: { text: string; audio: string | string[]; whiteboardText?: string[] | string[][]; image?: string; titleAudio?: string; imageStyle?: string; additionalImage?: string; }[] = [];
   export let currentIdx: number = 0;
   export let onComplete: () => void = () => {};
   export let showAvatar: boolean = true;
@@ -33,7 +33,9 @@
   // Preload all audio files when component mounts
   onMount(async () => {
     if (browser && scripts.length > 0) {
-      const audioUrls = scripts.map(script => script.audio);
+      const audioUrls = scripts.map(script => 
+        Array.isArray(script.audio) ? script.audio[0] : script.audio
+      );
       await preloader.preloadAudio(audioUrls);
     }
     
@@ -110,8 +112,12 @@
     try {
       isLoading = true;
       
+      // Handle both string and array audio types
+      const currentAudio = scripts[currentIdx].audio;
+      const audioUrl = Array.isArray(currentAudio) ? currentAudio[0] : currentAudio;
+      
       // Try to get cached audio first
-      const cachedAudio = preloader.getCachedAudio(scripts[currentIdx].audio);
+      const cachedAudio = preloader.getCachedAudio(audioUrl);
       
       if (audio) {
         audio.pause();
@@ -123,7 +129,7 @@
         audio = cachedAudio.cloneNode() as HTMLAudioElement;
       } else {
         // Fallback to creating new audio
-        audio = new Audio(scripts[currentIdx].audio);
+        audio = new Audio(audioUrl);
       }
 
       audio.onended = handleAudioEnd;
