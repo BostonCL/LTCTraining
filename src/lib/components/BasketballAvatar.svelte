@@ -4,167 +4,74 @@
   import { audioStore, setAudioElement, setDuration, setCurrentIndex, setTotalClips, updateProgress } from '$lib/stores/audioStore';
   import { browser } from '$app/environment';
   import { preloader } from '$lib/utils/preloader';
-  import * as THREE from 'three';
 
-  export let scripts: { text: string; audio: string }[] = [];
+  export let scripts: { text: string; audio: string | string[]; whiteboardText?: string[] | string[][]; image?: string; titleAudio?: string; imageStyle?: string; additionalImage?: string; }[] = [];
   export let currentIdx: number = 0;
   export let onComplete: () => void = () => {};
-  export let showAvatar: boolean = false;
-
-
+  export let showAvatar: boolean = true;
 
   let isDone = false;
   let audio: HTMLAudioElement | null = null;
   let isLoading = false;
   let avatarVisible = false;
   let isTalking = false;
-  let container: HTMLDivElement;
-  
-  // Three.js variables
-  let scene: THREE.Scene;
-  let camera: THREE.PerspectiveCamera;
-  let renderer: THREE.WebGLRenderer;
-  let avatar: any; // Ready Player Me avatar
-  let mixer: THREE.AnimationMixer;
-  let clock = new THREE.Clock();
+  let bounceHeight = 0;
+  let isExiting = false;
+  let hasEntered = false;
+
+  // Reactive declarations for animations
 
   // Preload all audio files when component mounts
   onMount(async () => {
     if (browser && scripts.length > 0) {
-      const audioUrls = scripts.map(script => script.audio);
+      const audioUrls = scripts.map(script => 
+        Array.isArray(script.audio) ? script.audio[0] : script.audio
+      );
       await preloader.preloadAudio(audioUrls);
     }
     
     // Show avatar after a short delay
     setTimeout(() => {
       avatarVisible = true;
-      initThreeJS();
-      loadAvatar();
+      startBounceAnimation();
     }, 500);
   });
 
-  // Watch audio state for talking animation
+  // Watch audio state for talking animation and entrance/exit
   $: isTalking = $audioStore.isPlaying;
   
-  // Handle talking animation
-  $: if (isTalking && avatar) {
-    startTalkingAnimation();
-  } else if (avatar) {
-    stopTalkingAnimation();
+  // Handle entrance animation when audio starts
+  $: if (isTalking && !hasEntered) {
+    hasEntered = true;
+    avatarVisible = true;
+    startBounceAnimation();
+  }
+  
+  // Handle exit animation when audio ends
+  $: if (!isTalking && hasEntered && !isExiting) {
+    isExiting = true;
+    setTimeout(() => {
+      avatarVisible = false;
+    }, 1000); // Give time for exit animation
   }
 
-  async function initThreeJS() {
-    if (!browser || !container) return;
-
-    // Scene setup
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x00000000); // Transparent
-
-    // Camera setup
-    camera = new THREE.PerspectiveCamera(
-      75,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(0, 1.6, 2);
-
-    // Renderer setup
-    renderer = new THREE.WebGLRenderer({ 
-      alpha: true, 
-      antialias: true 
-    });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    container.appendChild(renderer.domElement);
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(0, 10, 5);
-    scene.add(directionalLight);
-
-    // Animation loop
+  function startBounceAnimation() {
+    if (!browser) return;
+    
+    let time = 0;
+    const animate = () => {
+      time += 0.016; // 60fps
+      
+      // Gentle floating motion
+      const bounce = Math.sin(time * 0.8) * 3;
+      bounceHeight = bounce;
+      
+      requestAnimationFrame(animate);
+    };
+    
     animate();
   }
 
-  async function loadAvatar() {
-    if (!browser) return;
-
-    try {
-      // Load Ready Player Me avatar
-      // You can replace this URL with your own avatar
-      const avatarUrl = 'https://models.readyplayer.me/64f7b8b8b8b8b8b8b8b8b8b.glb';
-      
-      const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
-      const loader = new GLTFLoader();
-      
-      loader.load(avatarUrl, (gltf: any) => {
-        avatar = gltf.scene;
-        avatar.scale.set(1, 1, 1);
-        avatar.position.set(0, 0, 0);
-        scene.add(avatar);
-
-        // Setup animation mixer
-        mixer = new THREE.AnimationMixer(avatar);
-        
-        // Add idle animation
-        if (gltf.animations.length > 0) {
-          const idleAction = mixer.clipAction(gltf.animations[0]);
-          idleAction.play();
-        }
-      });
-    } catch (error) {
-      console.error('Error loading avatar:', error);
-      // Fallback to simple basketball if avatar fails to load
-      createSimpleBasketball();
-    }
-  }
-
-  function createSimpleBasketball() {
-    // Create a simple basketball as fallback
-    const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    const material = new THREE.MeshLambertMaterial({ 
-      color: 0xff8c00,
-      transparent: true,
-      opacity: 0.9
-    });
-    
-    avatar = new THREE.Mesh(geometry, material);
-    scene.add(avatar);
-  }
-
-  function startTalkingAnimation() {
-    if (!avatar || !mixer) return;
-    
-    // Add talking animation
-    // This would be a mouth movement animation
-    // For now, we'll just scale the avatar slightly
-    avatar.scale.set(1.05, 1.05, 1.05);
-  }
-
-  function stopTalkingAnimation() {
-    if (!avatar) return;
-    
-    // Return to normal scale
-    avatar.scale.set(1, 1, 1);
-  }
-
-  function animate() {
-    if (!browser) return;
-    
-    requestAnimationFrame(animate);
-    
-    if (mixer) {
-      mixer.update(clock.getDelta());
-    }
-    
-    if (renderer && scene && camera) {
-      renderer.render(scene, camera);
-    }
-  }
 
   function playCurrent() {
     if (!browser) return;
@@ -175,8 +82,12 @@
     try {
       isLoading = true;
       
+      // Handle both string and array audio types
+      const currentAudio = scripts[currentIdx].audio;
+      const audioUrl = Array.isArray(currentAudio) ? currentAudio[0] : currentAudio;
+      
       // Try to get cached audio first
-      const cachedAudio = preloader.getCachedAudio(scripts[currentIdx].audio);
+      const cachedAudio = preloader.getCachedAudio(audioUrl);
       
       if (audio) {
         audio.pause();
@@ -188,7 +99,7 @@
         audio = cachedAudio.cloneNode() as HTMLAudioElement;
       } else {
         // Fallback to creating new audio
-        audio = new Audio(scripts[currentIdx].audio);
+        audio = new Audio(audioUrl);
       }
 
       audio.onended = handleAudioEnd;
@@ -242,6 +153,12 @@
       onComplete();
     }
   }
+  
+  function resetAvatarState() {
+    hasEntered = false;
+    isExiting = false;
+    avatarVisible = false;
+  }
 
   $: if (browser && scripts.length && typeof currentIdx === 'number') {
     playCurrent();
@@ -249,42 +166,38 @@
 
   onDestroy(() => {
     if (audio) audio.pause();
-    if (renderer) {
-      renderer.dispose();
-    }
   });
 </script>
 
 {#if showAvatar && avatarVisible}
   <div 
-    class="absolute left-8 md:left-12 bottom-12 md:bottom-16 z-30 flex flex-col items-center avatar-slide-in"
+    class="absolute left-8 md:left-12 bottom-12 md:bottom-16 z-30 flex flex-col items-center"
+    class:bounce-in={hasEntered && !isExiting}
+    class:bounce-out={isExiting}
   >
-    <!-- 3D Avatar Container -->
-    <div 
-      bind:this={container}
-      class="relative w-32 h-32 md:w-40 md:h-40"
-      style="transform: translateY({isTalking ? -5 : 0}px);"
-      transition:scale={{ duration: 300 }}
-    >
-      <!-- Three.js canvas will be inserted here -->
-    </div>
-    
-    <!-- Speech Bubble -->
-    {#if $audioStore.isPlaying}
+    <!-- Custom Basketball Image -->
+    <div class="relative flex flex-col items-center">
       <div 
-        class="absolute -top-8 md:-top-10 -right-4 md:-right-6 bg-white border-2 border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 shadow-lg speech-pulse"
-        in:scale={{ duration: 200 }}
-        out:scale={{ duration: 200 }}
+        class="relative"
+        style="transform: translateY({-bounceHeight}px);"
+        transition:scale={{ duration: 300 }}
       >
-        <div class="flex items-center space-x-1">
-          <div class="w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-500 rounded-full animate-pulse"></div>
-          <div class="w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
-          <div class="w-2 h-2 md:w-2.5 md:h-2.5 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+        
+        <!-- Basketball with custom video -->
+        <div class="relative w-80 h-80 md:w-96 md:h-96">
+          <!-- Basketball video background -->
+          <video 
+            src="/images/basketball_avatar_larger_crop.mp4" 
+            class="absolute inset-0 w-full h-full object-cover rounded-full"
+            autoplay
+            loop
+            muted
+            playsinline
+          ></video>
         </div>
-        <!-- Speech bubble tail -->
-        <div class="absolute -bottom-1 left-4 w-2 h-2 bg-white border-r-2 border-b-2 border-gray-300 transform rotate-45"></div>
       </div>
-    {/if}
+      
+    </div>
   </div>
 {/if}
 
@@ -293,4 +206,156 @@
   <div class="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm animate-pulse">
     Loading...
   </div>
-{/if} 
+{/if}
+
+<style>
+  .bounce-in {
+    animation: bounceInFromLeft 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  
+  .bounce-out {
+    animation: bounceOutToRight 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  
+  @keyframes bounceInFromLeft {
+    0% { 
+      opacity: 0; 
+      transform: translateX(-300px) translateY(0px) scale(0.6); 
+    }
+    15% { 
+      opacity: 0.8; 
+      transform: translateX(-200px) translateY(-80px) scale(0.7); 
+    }
+    30% { 
+      opacity: 0.9; 
+      transform: translateX(-100px) translateY(0px) scale(0.8); 
+    }
+    45% { 
+      opacity: 1; 
+      transform: translateX(-50px) translateY(-60px) scale(0.9); 
+    }
+    60% { 
+      opacity: 1; 
+      transform: translateX(-20px) translateY(0px) scale(0.95); 
+    }
+    75% { 
+      opacity: 1; 
+      transform: translateX(-5px) translateY(-30px) scale(1.0); 
+    }
+    90% { 
+      opacity: 1; 
+      transform: translateX(0px) translateY(0px) scale(1.0); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateX(0) translateY(0) scale(1); 
+    }
+  }
+  
+  @keyframes bounceOutToRight {
+    0% { 
+      opacity: 1; 
+      transform: translateX(0) translateY(0) scale(1) rotate(0deg); 
+    }
+    4% { 
+      opacity: 1; 
+      transform: translateX(80px) translateY(-40px) scale(1.15) rotate(12deg); 
+    }
+    8% { 
+      opacity: 1; 
+      transform: translateX(160px) translateY(0px) scale(0.9) rotate(24deg); 
+    }
+    12% { 
+      opacity: 1; 
+      transform: translateX(250px) translateY(-35px) scale(1.1) rotate(36deg); 
+    }
+    16% { 
+      opacity: 1; 
+      transform: translateX(340px) translateY(5px) scale(0.85) rotate(48deg); 
+    }
+    20% { 
+      opacity: 1; 
+      transform: translateX(430px) translateY(-30px) scale(1.05) rotate(60deg); 
+    }
+    24% { 
+      opacity: 1; 
+      transform: translateX(520px) translateY(8px) scale(0.8) rotate(72deg); 
+    }
+    28% { 
+      opacity: 1; 
+      transform: translateX(610px) translateY(-25px) scale(0.95) rotate(84deg); 
+    }
+    32% { 
+      opacity: 1; 
+      transform: translateX(700px) translateY(10px) scale(0.75) rotate(96deg); 
+    }
+    36% { 
+      opacity: 1; 
+      transform: translateX(790px) translateY(-20px) scale(0.9) rotate(108deg); 
+    }
+    40% { 
+      opacity: 1; 
+      transform: translateX(880px) translateY(12px) scale(0.7) rotate(120deg); 
+    }
+    44% { 
+      opacity: 1; 
+      transform: translateX(970px) translateY(-15px) scale(0.85) rotate(132deg); 
+    }
+    48% { 
+      opacity: 1; 
+      transform: translateX(1060px) translateY(8px) scale(0.65) rotate(144deg); 
+    }
+    52% { 
+      opacity: 1; 
+      transform: translateX(1150px) translateY(-10px) scale(0.8) rotate(156deg); 
+    }
+    56% { 
+      opacity: 1; 
+      transform: translateX(1240px) translateY(5px) scale(0.6) rotate(168deg); 
+    }
+    60% { 
+      opacity: 1; 
+      transform: translateX(1330px) translateY(-8px) scale(0.75) rotate(180deg); 
+    }
+    64% { 
+      opacity: 1; 
+      transform: translateX(1420px) translateY(3px) scale(0.55) rotate(192deg); 
+    }
+    68% { 
+      opacity: 1; 
+      transform: translateX(1510px) translateY(-5px) scale(0.7) rotate(204deg); 
+    }
+    72% { 
+      opacity: 1; 
+      transform: translateX(1600px) translateY(2px) scale(0.5) rotate(216deg); 
+    }
+    76% { 
+      opacity: 0.9; 
+      transform: translateX(1690px) translateY(-3px) scale(0.6) rotate(228deg); 
+    }
+    80% { 
+      opacity: 0.8; 
+      transform: translateX(1780px) translateY(1px) scale(0.45) rotate(240deg); 
+    }
+    84% { 
+      opacity: 0.6; 
+      transform: translateX(1870px) translateY(-2px) scale(0.5) rotate(252deg); 
+    }
+    88% { 
+      opacity: 0.4; 
+      transform: translateX(1960px) translateY(0px) scale(0.35) rotate(264deg); 
+    }
+    92% { 
+      opacity: 0.2; 
+      transform: translateX(2050px) translateY(0px) scale(0.3) rotate(276deg); 
+    }
+    96% { 
+      opacity: 0.1; 
+      transform: translateX(2140px) translateY(0px) scale(0.25) rotate(288deg); 
+    }
+    100% { 
+      opacity: 0; 
+      transform: translateX(2230px) translateY(0px) scale(0.2) rotate(300deg); 
+    }
+  }
+</style>
