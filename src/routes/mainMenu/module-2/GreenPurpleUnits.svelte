@@ -14,7 +14,8 @@ const script = [
   {
     text: `Now let's talk about the other type of units you will see`,
     audio: '/audio/module-2/green-purple-units/module2_greenpurpleunits_01.mp3',
-    image: '/images/introduction/basketballBackground.png'
+    image: '/images/introduction/basketballBackground.png',
+    videoAnimation: '/images/ballsackm2s4_green_purple_units.mov'
   },
   {
     text: `Here is a list of the purple and green units you will see on the live coverage sheet. These include Locals, DRs, Promos, and PSAs.`,

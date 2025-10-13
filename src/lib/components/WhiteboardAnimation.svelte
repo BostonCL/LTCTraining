@@ -1104,24 +1104,33 @@
       console.log('Resumed main audio after title audio');
     }
     
-    const shouldStartImmediately = audioTextMatchesWhiteboard();
+    // For Module 2 intro slide 2, always start animation and audio together after title audio
+    const isModule2IntroSlide2 = titleAudio && titleAudio.includes('module2_01_part1.mp3');
     
-    if (shouldStartImmediately) {
-      console.log('Audio matches whiteboard text - playing together');
+    if (isModule2IntroSlide2) {
+      console.log('Module 2 intro slide 2 - starting animation and audio together');
       // Start animation for the remaining content (skip first line since it's already shown)
       startAnimationForRemainingContent();
     } else {
-      console.log('Audio does not match whiteboard text - playing audio first, then animation');
-      // Wait for audio to finish before starting animation
-      const checkAudioProgress = () => {
-        if ($audioStore.progress >= 99) {
-          console.log('Audio finished, starting animation');
-          startAnimationForRemainingContent();
-        } else {
-          setTimeout(checkAudioProgress, 100);
-        }
-      };
-      checkAudioProgress();
+      const shouldStartImmediately = audioTextMatchesWhiteboard();
+      
+      if (shouldStartImmediately) {
+        console.log('Audio matches whiteboard text - playing together');
+        // Start animation for the remaining content (skip first line since it's already shown)
+        startAnimationForRemainingContent();
+      } else {
+        console.log('Audio does not match whiteboard text - playing audio first, then animation');
+        // Wait for audio to finish before starting animation
+        const checkAudioProgress = () => {
+          if ($audioStore.progress >= 99) {
+            console.log('Audio finished, starting animation');
+            startAnimationForRemainingContent();
+          } else {
+            setTimeout(checkAudioProgress, 100);
+          }
+        };
+        checkAudioProgress();
+      }
     }
   }
 

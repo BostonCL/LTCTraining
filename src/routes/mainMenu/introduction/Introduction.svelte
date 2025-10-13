@@ -13,7 +13,8 @@
 		{ 
 			text: 'Hello and welcome! Our job in the Traffic Department at CBS Sports Network is to represent Advertisers and ensure that their Commercials make it to air. Covering live traffic means you will be monitoring commercial inventory in real time while ensuring that airing criteria and network guidelines are met. In other words, you will be watching different sporting events and making sure the commercials are shown on television according to a specific set of rules. Don\'t worry! We will learn all about Commercials and the rules for airing them in the course. Before we begin, here are a few basic terms to familiarize yourself with:',
 			audio: '/audio/introduction/intro_01_02_combined.mp3',
-			image: '/images/introduction/basketballBackground.jpg'
+			image: '/images/introduction/basketballBackground.jpg',
+			videoAnimation: '/images/ballSackIntroS1.mov'
 		},
 		{ 
 			text: 'Advertiser: An individual or organization that promotes products, services, or ideas to a target audience.',
@@ -89,6 +90,7 @@
 			text: 'Effectively managing inventory is crucial for the financial and overall success of CBS Sports Network. The network operates on a 24-hour clock from 6 AM to 6 AM, so our goal is to schedule and properly organize the commercials within that 24-hour period! Beware! There are many factors that contribute to the ever changing schedules of live coverage. A program can go longer than anticipated. As a result, Units can be cut. Our job is to advocate for Commercials/Units and ensure that they air on TV despite these changes. The role may appear intimidating at first, but don\'t worry. This training course will set you up for success in the CBS Traffic Department. Keep in mind there will be practice questions throughout the course, and there will be a test at the end. You must score 70% or higher on the test to proceed. Participants must take notes and prepare questions for a follow-up appointment with the Traffic Team.',
 			audio: '/audio/introduction/intro_12_13_14_15_16_combined.mp3',
 			image: '/images/introduction/basketballBackground.jpg',
+			videoAnimation: '/images/ballSackIntroS12.mov',
 			titleAudio: '/audio/introduction/intro_13_title.mp3'
 		}
 	];
@@ -101,8 +103,7 @@
 	function handlePlayClick() {
 		showPlayButton = false;
 		hasStarted = true;
-		// Start the audio playback
-		audioStore.update(state => ({ ...state, isPlaying: true }));
+		// Let BasketballAvatar control audio playback timing
 	}
 
 	onMount(() => {
@@ -159,6 +160,7 @@
 		title="Introduction" 
 		progressId="introduction"
 		nextButtonText="Continue to Module 1"
+		showAvatarOnSlide={null}
 		onNextSubmodule={() => {
 			// Navigate to Module 1 when introduction is complete
 			dispatch('navigateToNextSubmodule');

@@ -14,7 +14,8 @@ const script = [
   {
     text: 'Here is a quick term that is important during this section',
     audio: '/audio/module-2/selling-title/module2_sellingtitle_01.mp3',
-    image: '/images/introduction/basketballBackground.png'
+    image: '/images/introduction/basketballBackground.png',
+    videoAnimation: '/images/ballSackv2_yellow_unit_latest.mov'
   },
   {
     text: 'Everything found in the previous slide is also called the Selling Title. The Selling Title is the word or phrase used to identify the category of a specific commercial.',

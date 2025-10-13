@@ -586,7 +586,7 @@ onMount(() => {
         </div>
         <h2 class="excel-instructions-title">Step 1</h2>
         <div class="excel-instructions-body">
-          <div class="excel-step-hint">Find 2 minutes to Cut.<br>Complete all necessary steps to make the CUT: Write "CUT" in column A and fill all other columns red for the three National DR units that total 2 minutes. P.S. Make your life easier, CUT the larger unsold inventory first.
+          <div class="excel-step-hint">Find 2 minutes to Cut.<br>Complete all necessary steps to make the CUT: Write "CUT" in column A and fill the columns red. P.S. Make your life easier, CUT the larger unsold inventory first.
           </div>
           <button class="excel-check-btn" on:click={checkStep1}>Check</button>
           {#if checkResult1}

@@ -17,7 +17,7 @@ Your current basketball avatar uses simple CSS animations. Here are much better 
 1. Go to [Ready Player Me](https://readyplayer.me/)
 2. Create your avatar
 3. Export as glTF/GLB
-4. Use the new `EnhancedAvatar.svelte` component
+4. Use the enhanced `BasketballAvatar.svelte` component
 
 ### 2. **Live2D** (Best for 2D)
 **Why it's great:**
@@ -41,23 +41,18 @@ Your current basketball avatar uses simple CSS animations. Here are much better 
 ## 🚀 Quick Implementation
 
 ### Option 1: Use the Enhanced Component
-Replace your current `BasketballAvatar.svelte` with `EnhancedAvatar.svelte`:
+The current `BasketballAvatar.svelte` now includes enhanced features:
 
 ```svelte
 <script>
-  import EnhancedAvatar from '$lib/components/EnhancedAvatar.svelte';
-  import { avatarOptions } from '$lib/config/avatarOptions';
-  
-  // Choose your avatar
-  let selectedAvatar = avatarOptions[0]; // Professional Host
+  import BasketballAvatar from '$lib/components/BasketballAvatar.svelte';
 </script>
 
-<EnhancedAvatar 
+<BasketballAvatar 
   {scripts}
   {currentIdx}
   {onComplete}
   {showAvatar}
-  {selectedAvatar}
 />
 ```
 
@@ -155,7 +150,7 @@ export const animationPresets = {
 
 1. **Choose your preferred solution** from the options above
 2. **Create your avatar** using Ready Player Me or Live2D
-3. **Replace the current component** with `EnhancedAvatar.svelte`
+3. **Use the enhanced BasketballAvatar.svelte** component
 4. **Customize animations** based on your needs
 5. **Test with your TTS audio** to ensure smooth lip-sync
 

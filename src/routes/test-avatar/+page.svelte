@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CuteCartoonAvatar from '$lib/components/CuteCartoonAvatar.svelte';
+  import BasketballAvatar from '$lib/components/BasketballAvatar.svelte';
   import { avatarOptions } from '$lib/config/avatarOptions';
 
   // Test script
@@ -45,7 +45,7 @@
       <div class="relative h-96 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg overflow-hidden">
         <!-- Test area for avatar -->
         <div class="absolute inset-0 flex items-center justify-center">
-          <CuteCartoonAvatar 
+          <BasketballAvatar 
             scripts={testScript}
             {currentIdx}
             {onComplete}

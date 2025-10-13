@@ -5,12 +5,15 @@ import { onMount } from 'svelte';
 
 const module2Script = [
   {
-    text: "In the Ordered As column you'll see many different types of units. In this module we will go over what they all are. When moving around units this is the first column you will look at. The sold commercials are color coordinated:",
-    audio: '/audio/module-2/module2_intro_combined.mp3'
+    text: "In the Ordered As column you'll see many different types of units. In this module we will go over what they all are. When moving around units this is the first column you will look at.",
+    audio: '/audio/module-2/module2_intro.mp3',
+    image: '/images/introduction/basketballBackground.png',
+    videoAnimation: '/images/ballSackm2Intro.mov'
   },
   {
     text: "Here are the different color categories:",
     audio: '/audio/module-2/module2_slide2_combined.mp3',
+    titleAudio: '/audio/module-2/01-intro/module2_01_part1.mp3',
     whiteboardText: [
       "**__Color Coordination__**",
       "• YELLOW - Sold commercials (the important stuff)",
@@ -24,6 +27,8 @@ const module2Script = [
 $: reactiveScript = module2Script;
 
 onMount(() => {
+  console.log('Module 2 Intro - module2Script:', module2Script);
+  console.log('Module 2 Intro - First slide videoAnimation:', module2Script[0]?.videoAnimation);
   setCurrentIndex(0);
 });
 

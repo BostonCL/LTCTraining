@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMount } from 'svelte';
-import CuteCartoonAvatar from '$lib/components/CuteCartoonAvatar.svelte';
+import BasketballAvatar from '$lib/components/BasketballAvatar.svelte';
 import VideoControls from '$lib/components/VideoControls.svelte';
 import WhiteboardAnimation from '$lib/components/WhiteboardAnimation.svelte';
 import { captionEnabled, audioStore, nextClip, previousClip, setTotalClips, setCurrentIndex, loadProgress, saveProgress, audioElement } from '$lib/stores/audioStore';
@@ -17,6 +17,7 @@ import { DEV_FEATURES } from '$lib/config/dev';
     titleAudio?: string;
     imageStyle?: string;
     additionalImage?: string;
+    videoAnimation?: string;
   }> = [];
   export let title: string = '';
   export let image: string | undefined = undefined;
@@ -26,6 +27,7 @@ import { DEV_FEATURES } from '$lib/config/dev';
   export let onCompletionButtonClick: (() => void) | undefined = undefined;
   export let progressId: string;
   export let nextButtonText: string = "Next";
+  export let showAvatarOnSlide: number | null = null;
 
 $: ccEnabled = $captionEnabled;
 $: audioState = $audioStore;
@@ -297,8 +299,8 @@ function getImageSrc(imageUrl: string): string {
           on:error={handleImageError}
         />
       {/if}
-      <!-- Cute Cartoon Avatar in the center -->
-      <CuteCartoonAvatar scripts={script} currentIdx={currentIdx} showAvatar={false} />
+      <!-- Basketball Avatar in the center -->
+      <BasketballAvatar scripts={script} currentIdx={currentIdx} showAvatar={showAvatarOnSlide === null || showAvatarOnSlide === currentIdx} />
       <!-- Closed Caption Overlay -->
       {#if ccEnabled}
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none z-20">
