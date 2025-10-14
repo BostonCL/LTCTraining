@@ -1,11 +1,13 @@
 // Development configuration
 // Set this to true to enable development features
-export const DEV_MODE = true;
+// 🔧 PRODUCTION: Set to false to disable all dev features
+// 🔧 DEVELOPMENT: Set to true to enable dev features
+export const DEV_MODE = false;
 
 // Development features
 export const DEV_FEATURES = {
   // Show next/previous buttons in video controls
-  showVideoNavigationButtons: true,
+  showVideoNavigationButtons: false,
   
   // Enable additional debugging features
   enableDebugLogging: false,
@@ -14,5 +16,6 @@ export const DEV_FEATURES = {
   showDevInfo: false,
   
   // Developer mode - unlocks all slides and bypasses progress restrictions
-  developerMode: true
+  // 🔧 To re-enable: Change this to true
+  developerMode: false
 }; 
