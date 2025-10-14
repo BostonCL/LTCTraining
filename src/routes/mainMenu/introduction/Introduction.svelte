@@ -160,7 +160,6 @@
 		title="Introduction" 
 		progressId="introduction"
 		nextButtonText="Continue to Module 1"
-		showAvatarOnSlide={null}
 		onNextSubmodule={() => {
 			// Navigate to Module 1 when introduction is complete
 			dispatch('navigateToNextSubmodule');

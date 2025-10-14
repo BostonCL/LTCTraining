@@ -27,7 +27,6 @@ import { DEV_FEATURES } from '$lib/config/dev';
   export let onCompletionButtonClick: (() => void) | undefined = undefined;
   export let progressId: string;
   export let nextButtonText: string = "Next";
-  export let showAvatarOnSlide: number | null = null;
 
 $: ccEnabled = $captionEnabled;
 $: audioState = $audioStore;
@@ -300,7 +299,7 @@ function getImageSrc(imageUrl: string): string {
         />
       {/if}
       <!-- Basketball Avatar in the center -->
-      <BasketballAvatar scripts={script} currentIdx={currentIdx} showAvatar={showAvatarOnSlide === null || showAvatarOnSlide === currentIdx} />
+      <BasketballAvatar scripts={script} currentIdx={currentIdx} showAvatar={!!script[currentIdx]?.videoAnimation} />
       <!-- Closed Caption Overlay -->
       {#if ccEnabled}
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none z-20">
