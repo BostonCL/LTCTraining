@@ -99,14 +99,14 @@ $: canGoNext = DEV_FEATURES.developerMode ?
   currentIdx < script.length - 1 : 
   (currentIdx < script.length - 1 &&
   (!audioState.isPlaying && audioState.progress >= 99) &&
-  (accumulatedWhiteboardText.length === 0 || whiteboardAnimationCompleted));
+  (accumulatedWhiteboardText.length === 0 || whiteboardAnimationCompleted || audioState.progress >= 100));
 $: canGoPrevious = currentIdx > 0;
 $: showCompletionButton = DEV_FEATURES.developerMode ? 
   (currentIdx === script.length - 1 && completionButtonText && onCompletionButtonClick) :
   (currentIdx === script.length - 1 && audioState.progress >= 100 && completionButtonText && onCompletionButtonClick);
 $: showNextButton = DEV_FEATURES.developerMode ? 
   currentIdx === script.length - 1 :
-  (currentIdx === script.length - 1 && audioState.progress >= 99);
+  (currentIdx === script.length - 1 && !audioState.isPlaying && audioState.progress >= 99);
 
 $: accumulatedWhiteboardText = Array.isArray(currentScript.whiteboardText) && Array.isArray(currentScript.whiteboardText[0]) 
   ? currentScript.whiteboardText[currentScript.whiteboardText.length - 1] || []

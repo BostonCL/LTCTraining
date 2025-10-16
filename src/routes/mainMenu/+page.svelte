@@ -25,6 +25,7 @@
   import QuizTemplate from '$lib/components/QuizTemplate.svelte';
   import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
   import { audioStore, setCurrentIndex } from '$lib/stores/audioStore';
+  import { progressStore } from '$lib/stores/progressStore';
   import Module1Intro from './module-1/+page.svelte';
   import SellingTitle from './module-2/SellingTitle.svelte';
   import TheYellowUnit from './module-2/TheYellowUnit.svelte';
@@ -237,13 +238,18 @@
   }
 
   // Function to get appropriate next button text based on current location
-  function getNextButtonText(currentSection: string, currentSubIndex?: number) {
+  function getNextButtonText(currentSection: string, currentSubIndex?: number): string {
     const nextDest = getNextDestination(currentSection, currentSubIndex);
     if (!nextDest) return "Next";
     
     // Check if next destination is a test
     if (nextDest.next === 'module1test' || nextDest.next === 'module2test') {
       return "Take Test";
+    }
+    
+    // Check if next destination is the final exam
+    if (nextDest.next === 'finalexam') {
+      return "Take Final Exam";
     }
     
     // Check if next destination is the final module completion
@@ -267,12 +273,99 @@
     const playerArea = document.querySelector('[data-player-area]');
     console.log(`[${context}] Fullscreen: ${fullscreenState.isFullscreen}, Player area found: ${!!playerArea}`);
   }
+  
+  // Helper function to check if navigation is allowed
+  function canNavigateTo(section: string, subIndex?: number): boolean {
+    let progressKey: string;
+    const debugEnabled = true; // Set to true to see detailed unlock logic
+    
+    // Map section/subIndex to progress key
+    if (section === 'introduction') {
+      return true; // Introduction is always accessible
+    } else if (section === 'module1') {
+      progressKey = 'module1_intro';
+    } else if (section === 'module1sub') {
+      const submoduleKeys = [
+        'module1_programline',
+        'module1_starttimerealtime',
+        'module1_hittime',
+        'module1_eventtype',
+        'module1_length',
+        'module1_title',
+        'module1_advertiser',
+        'module1_housenumber',
+        'module1_orderedas',
+        'module1_spotendtime',
+        'module1_endtime',
+        'module1_floaters',
+        'module1_keytab'
+      ];
+      progressKey = submoduleKeys[subIndex ?? 0];
+    } else if (section === 'quiz') {
+      progressKey = 'module1_starttimerealtime_quiz';
+    } else if (section === 'lengthQuiz') {
+      progressKey = 'module1_length_quiz';
+    } else if (section === 'houseNumberQuiz') {
+      progressKey = 'module1_housenumber_quiz';
+    } else if (section === 'module1test') {
+      progressKey = 'module1_test';
+    } else if (section === 'module2') {
+      progressKey = 'module2_intro';
+    } else if (section === 'module2_sellingtitle') {
+      progressKey = 'module2_sellingtitle';
+    } else if (section === 'module2_yellowunit') {
+      progressKey = 'module2_yellowunit';
+    } else if (section === 'module2_unitprioritizationdetails') {
+      progressKey = 'module2_unitprioritizationdetails';
+    } else if (section === 'module2_greenpurpleunits') {
+      progressKey = 'module2_greenpurpleunits';
+    } else if (section === 'module2test') {
+      progressKey = 'module2_test';
+    } else if (section === 'module3') {
+      progressKey = 'module3_intro';
+    } else if (section === 'module3_brandsep') {
+      progressKey = 'module3_brandsep';
+    } else if (section === 'module3_advertiserconflicts') {
+      progressKey = 'module3_advertiserconflicts';
+    } else if (section === 'module3_standalonerule') {
+      progressKey = 'module3_standalonerule';
+    } else if (section === 'module3_commercialtimes') {
+      progressKey = 'module3_commercialtimes';
+    } else if (section === 'module3_swaps') {
+      progressKey = 'module3_swaps';
+    } else if (section === 'module3_mastercontrolemail') {
+      progressKey = 'module3_mastercontrolemail';
+    } else if (section === 'module3_localswaps') {
+      progressKey = 'module3_localswaps';
+    } else if (section === 'module3_excelsheet') {
+      progressKey = 'module3_excelsheet';
+    } else if (section === 'module3_unitcutpractice') {
+      progressKey = 'module3_unitcutpractice';
+    } else if (section === 'module3_mcemailpractice') {
+      progressKey = 'module3_mcemailpractice';
+    } else if (section === 'module3_timeoutpractice') {
+      progressKey = 'module3_timeoutpractice';
+    } else if (section === 'finalexam') {
+      progressKey = 'finalexam';
+    } else {
+      return true; // Unknown section, allow navigation (for safety)
+    }
+    
+    const isUnlocked = progressStore.isUnlocked(progressKey as any, progressState);
+    if (debugEnabled || !isUnlocked) {
+      console.log(`🔓 Checking unlock for ${section}${subIndex !== undefined ? `[${subIndex}]` : ''} (key: ${progressKey}):`, isUnlocked, 'progressState:', progressState);
+    }
+    return isUnlocked;
+  }
 
   // Function to navigate to the next destination
   function navigateToNext(currentSection: string, currentSubIndex?: number) {
     console.log('navigateToNext called with:', currentSection, currentSubIndex);
     const nextDest = getNextDestination(currentSection, currentSubIndex);
     console.log('nextDest:', nextDest);
+    
+    // Mark current section as completed before navigating
+    markCurrentSectionCompleted(currentSection, currentSubIndex);
     
     // Check if we're in fullscreen before navigation
     const fullscreenState = getFullscreenState();
@@ -328,8 +421,79 @@
       console.log('No next destination found for:', currentSection);
     }
   }
+  
+  // Helper function to mark current section as completed
+  function markCurrentSectionCompleted(currentSection: string, currentSubIndex?: number) {
+    console.log('Marking section as completed:', currentSection, currentSubIndex);
+    if (currentSection === 'module1') {
+      progressStore.markCompleted('module1_intro');
+    } else if (currentSection === 'module1sub') {
+      const submoduleKeys = [
+        'module1_programline',
+        'module1_starttimerealtime',
+        'module1_hittime',
+        'module1_eventtype',
+        'module1_length',
+        'module1_title',
+        'module1_advertiser',
+        'module1_housenumber',
+        'module1_orderedas',
+        'module1_spotendtime',
+        'module1_endtime',
+        'module1_floaters',
+        'module1_keytab'
+      ];
+      if (currentSubIndex !== undefined && submoduleKeys[currentSubIndex]) {
+        progressStore.markCompleted(submoduleKeys[currentSubIndex] as any);
+      }
+    } else if (currentSection === 'quiz') {
+      progressStore.markCompleted('module1_starttimerealtime_quiz');
+    } else if (currentSection === 'lengthQuiz') {
+      progressStore.markCompleted('module1_length_quiz');
+    } else if (currentSection === 'houseNumberQuiz') {
+      progressStore.markCompleted('module1_housenumber_quiz');
+    } else if (currentSection === 'module2') {
+      progressStore.markCompleted('module2_intro');
+    } else if (currentSection === 'module2_sellingtitle') {
+      progressStore.markCompleted('module2_sellingtitle');
+    } else if (currentSection === 'module2_yellowunit') {
+      progressStore.markCompleted('module2_yellowunit');
+    } else if (currentSection === 'module2_unitprioritizationdetails') {
+      progressStore.markCompleted('module2_unitprioritizationdetails');
+    } else if (currentSection === 'module2_greenpurpleunits') {
+      progressStore.markCompleted('module2_greenpurpleunits');
+    } else if (currentSection === 'module3') {
+      progressStore.markCompleted('module3_intro');
+    } else if (currentSection === 'module3_brandsep') {
+      progressStore.markCompleted('module3_brandsep');
+    } else if (currentSection === 'module3_advertiserconflicts') {
+      progressStore.markCompleted('module3_advertiserconflicts');
+    } else if (currentSection === 'module3_standalonerule') {
+      progressStore.markCompleted('module3_standalonerule');
+    } else if (currentSection === 'module3_commercialtimes') {
+      progressStore.markCompleted('module3_commercialtimes');
+    } else if (currentSection === 'module3_swaps') {
+      progressStore.markCompleted('module3_swaps');
+    } else if (currentSection === 'module3_mastercontrolemail') {
+      progressStore.markCompleted('module3_mastercontrolemail');
+    } else if (currentSection === 'module3_localswaps') {
+      progressStore.markCompleted('module3_localswaps');
+    } else if (currentSection === 'module3_excelsheet') {
+      progressStore.markCompleted('module3_excelsheet');
+    } else if (currentSection === 'module3_unitcutpractice') {
+      progressStore.markCompleted('module3_unitcutpractice');
+    } else if (currentSection === 'module3_mcemailpractice') {
+      progressStore.markCompleted('module3_mcemailpractice');
+    } else if (currentSection === 'module3_timeoutpractice') {
+      progressStore.markCompleted('module3_timeoutpractice');
+    }
+  }
 
   function goToIntroduction() {
+    if (!canNavigateTo('introduction')) {
+      alert('This section is locked. Please complete previous sections first.');
+      return;
+    }
     const fullscreenState = getFullscreenState();
     const wasFullscreen = fullscreenState.isFullscreen;
     mainSection = 'introduction';
@@ -347,6 +511,10 @@
 
   // Helper function to navigate to final exam (bypasses TypeScript inference issues)
   function goToFinalExam() {
+    if (!canNavigateTo('finalexam')) {
+      alert('The Final Exam is locked. Please complete all previous modules first.');
+      return;
+    }
     const fullscreenState = getFullscreenState();
     const wasFullscreen = fullscreenState.isFullscreen;
     mainSection = 'finalexam';
@@ -362,6 +530,10 @@
     }
   }
   function goToModule1Intro() {
+    if (!canNavigateTo('module1')) {
+      alert('Module 1 is locked. Please complete the Introduction first.');
+      return;
+    }
     const fullscreenState = getFullscreenState();
     const wasFullscreen = fullscreenState.isFullscreen;
     mainSection = 'module1';
@@ -377,6 +549,15 @@
     }
   }
   function goToModule1Sub(idx: number) {
+    // Check if this specific submodule is unlocked using the reactive unlock states
+    const submoduleKeys: (keyof typeof module1SubUnlockStates)[] = ['programline', 'starttimerealtime', 'hittime', 'eventtype', 'length', 'title', 'advertiser', 'housenumber', 'orderedas', 'spotendtime', 'endtime', 'floaters', 'keytab'];
+    const submoduleKey = submoduleKeys[idx];
+    if (submoduleKey && !module1SubUnlockStates[submoduleKey]) {
+      alert('This section is locked. Please complete previous sections first.');
+      console.log(`🔒 Blocked navigation to module1sub[${idx}] (${submoduleKey}): not unlocked`);
+      return;
+    }
+    console.log(`✅ Navigating to module1sub[${idx}] (${submoduleKey}): unlocked`);
     const fullscreenState = getFullscreenState();
     const wasFullscreen = fullscreenState.isFullscreen;
     mainSection = 'module1sub';
@@ -416,6 +597,9 @@
     if (mainSection === 'introduction') {
       goToModule1Intro();
     } else if (mainSection === 'module1') {
+      // Mark Module 1 intro as complete before navigating
+      progressStore.markCompleted('module1_intro');
+      
       // Go to first submodule (Program Line)
       const fullscreenState = getFullscreenState();
       const wasFullscreen = fullscreenState.isFullscreen;
@@ -589,6 +773,7 @@
     showMainResults = false;
     showExtraQuestions = false;
     showFinalSummary = false;
+    progressStore.markCompleted('module1_test');
     mainSection = 'module2';
   }
 
@@ -634,10 +819,92 @@
     showMainResults2 = false;
     showExtraQuestions2 = false;
     showFinalSummary2 = false;
+    progressStore.markCompleted('module2_test');
     mainSection = 'module3';
   }
 
   $: audioState = $audioStore;
+  $: progressState = $progressStore;
+  
+  // Force reactivity by creating derived values
+  $: {
+    // Log changes to help with debugging
+    if (progressState) {
+      console.log('📊 Progress State Updated:', {
+        introduction: progressState.introduction,
+        module1_intro: progressState.module1_intro,
+        module1_programline: progressState.module1_programline,
+        module1_starttimerealtime: progressState.module1_starttimerealtime
+      });
+    }
+  }
+  
+  // Create reactive unlock states for Module 1 submodules
+  $: module1SubUnlockStates = {
+    programline: progressStore.isUnlocked('module1_programline', progressState),
+    starttimerealtime: progressStore.isUnlocked('module1_starttimerealtime', progressState),
+    quiz: progressStore.isUnlocked('module1_starttimerealtime_quiz', progressState),
+    hittime: progressStore.isUnlocked('module1_hittime', progressState),
+    eventtype: progressStore.isUnlocked('module1_eventtype', progressState),
+    length: progressStore.isUnlocked('module1_length', progressState),
+    lengthQuiz: progressStore.isUnlocked('module1_length_quiz', progressState),
+    title: progressStore.isUnlocked('module1_title', progressState),
+    advertiser: progressStore.isUnlocked('module1_advertiser', progressState),
+    housenumber: progressStore.isUnlocked('module1_housenumber', progressState),
+    houseNumberQuiz: progressStore.isUnlocked('module1_housenumber_quiz', progressState),
+    orderedas: progressStore.isUnlocked('module1_orderedas', progressState),
+    spotendtime: progressStore.isUnlocked('module1_spotendtime', progressState),
+    endtime: progressStore.isUnlocked('module1_endtime', progressState),
+    floaters: progressStore.isUnlocked('module1_floaters', progressState),
+    keytab: progressStore.isUnlocked('module1_keytab', progressState),
+    test: progressStore.isUnlocked('module1_test', progressState)
+  }
+  
+  // Log unlock states for debugging
+  $: {
+    console.log('🔓 Module 1 Unlock States:', module1SubUnlockStates);
+  }
+  
+  // Check if entire modules are completed (all submodules + test)
+  $: module1FullyCompleted = progressState.module1_intro && 
+    progressState.module1_programline &&
+    progressState.module1_starttimerealtime &&
+    progressState.module1_starttimerealtime_quiz &&
+    progressState.module1_hittime &&
+    progressState.module1_eventtype &&
+    progressState.module1_length &&
+    progressState.module1_length_quiz &&
+    progressState.module1_title &&
+    progressState.module1_advertiser &&
+    progressState.module1_housenumber &&
+    progressState.module1_housenumber_quiz &&
+    progressState.module1_orderedas &&
+    progressState.module1_spotendtime &&
+    progressState.module1_endtime &&
+    progressState.module1_floaters &&
+    progressState.module1_keytab &&
+    progressState.module1_test;
+  
+  $: module2FullyCompleted = progressState.module2_intro &&
+    progressState.module2_sellingtitle &&
+    progressState.module2_yellowunit &&
+    progressState.module2_unitprioritizationdetails &&
+    progressState.module2_greenpurpleunits &&
+    progressState.module2_test;
+  
+  $: module3FullyCompleted = progressState.module3_intro &&
+    progressState.module3_brandsep &&
+    progressState.module3_advertiserconflicts &&
+    progressState.module3_standalonerule &&
+    progressState.module3_commercialtimes &&
+    progressState.module3_swaps &&
+    progressState.module3_mastercontrolemail &&
+    progressState.module3_localswaps &&
+    progressState.module3_excelsheet &&
+    progressState.module3_unitcutpractice &&
+    progressState.module3_mcemailpractice &&
+    progressState.module3_timeoutpractice;
+  
   // Module 2 intro logic (place near other script-level logic)
   let isModule2IntroComplete = false;
   function handleModule2Next() {
@@ -674,7 +941,47 @@
 <!-- Header -->
 <header class="w-full flex items-center justify-between py-4 px-8 bg-white shadow-sm border-b">
   <span class="text-2xl font-bold text-gray-900 tracking-tight">Live Traffic Coverage Training</span>
-  <button on:click={handleLogout} class="text-gray-500 hover:text-gray-700 text-base font-medium rounded px-4 py-2 border border-gray-200 bg-gray-50">Logout</button>
+  <div class="flex gap-2">
+    <button on:click={() => {
+      console.log('===== PROGRESS DEBUG =====');
+      console.log('Progress State:', progressState);
+      console.log('Module 1 Unlock States:', module1SubUnlockStates);
+      console.log('Introduction completed:', progressState.introduction);
+      console.log('Module 1 Intro completed:', progressState.module1_intro);
+      console.log('Program Line completed:', progressState.module1_programline);
+      console.log('Start Time completed:', progressState.module1_starttimerealtime);
+      
+      console.log('\n===== UNLOCK CHECK =====');
+      console.log('Program Line unlocked?', module1SubUnlockStates.programline);
+      console.log('Start Time unlocked?', module1SubUnlockStates.starttimerealtime);
+      
+      console.log('\n===== LOCALSTORAGE =====');
+      const stored = localStorage.getItem('ltc_training_progress');
+      if (stored) {
+        console.log('Stored progress:', JSON.parse(stored));
+      } else {
+        console.log('No stored progress found');
+      }
+      
+      let fixed = false;
+      
+      // Auto-fix: If introduction is complete but module1_intro is not, fix it
+      if (progressState.introduction && !progressState.module1_intro) {
+        console.log('🔧 AUTO-FIX: Introduction is complete but Module 1 Intro is not marked. Fixing...');
+        progressStore.markCompleted('module1_intro');
+        fixed = true;
+      }
+      
+      if (fixed) {
+        alert('Fixed! Check the console for details. The progress system should now work correctly.');
+      } else {
+        alert('Check browser console (F12) for detailed progress information');
+      }
+    }} class="text-xs text-blue-600 hover:text-blue-800 px-3 py-2 border border-blue-200 rounded bg-blue-50 hover:bg-blue-100">
+      🔍 Debug & Fix
+    </button>
+    <button on:click={handleLogout} class="text-gray-500 hover:text-gray-700 text-base font-medium rounded px-4 py-2 border border-gray-200 bg-gray-50">Logout</button>
+  </div>
 </header>
 
 <div class="flex min-h-[80vh] relative">
@@ -686,15 +993,25 @@
         <button on:click={() => (sidebarOpen = false)} class="text-gray-400 hover:text-gray-700 text-lg font-bold">×</button>
       </div>
       <nav class="flex flex-col divide-y divide-gray-100">
-        <button on:click={goToIntroduction} class="text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 text-sm w-full {mainSection === 'introduction' ? 'bg-blue-100 text-blue-700' : ''}">
+        <button on:click={goToIntroduction} class="text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 flex items-center gap-2 text-sm w-full {mainSection === 'introduction' ? 'bg-blue-100 text-blue-700' : ''} {!canNavigateTo('introduction') ? 'opacity-50 cursor-not-allowed' : ''}">
           <span class="block w-2 h-2 rounded-full {mainSection === 'introduction' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
           Introduction
+          {#if !canNavigateTo('introduction')}
+            <span class="ml-auto text-xs">🔒</span>
+          {:else if progressState.introduction}
+            <span class="ml-auto text-xs">✅</span>
+          {/if}
         </button>
         <!-- Module 1 intro -->
-        <div class="flex items-center text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === 'module1' ? 'bg-blue-100 text-blue-700' : ''}">
-          <button on:click={goToModule1Intro} class="flex items-center gap-2 flex-1 text-left">
+        <div class="flex items-center text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === 'module1' ? 'bg-blue-100 text-blue-700' : ''} {!canNavigateTo('module1') ? 'opacity-50' : ''}">
+          <button on:click={goToModule1Intro} class="flex items-center gap-2 flex-1 text-left {!canNavigateTo('module1') ? 'cursor-not-allowed' : ''}">
             <span class="block w-2 h-2 rounded-full {mainSection === 'module1' ? 'bg-blue-600' : 'bg-gray-300'}"></span>
             Module 1: Live Coverage Sheet
+            {#if !canNavigateTo('module1')}
+              <span class="ml-2 text-xs">🔒</span>
+            {:else if module1FullyCompleted}
+              <span class="ml-2 text-xs">✅</span>
+            {/if}
           </button>
           <button on:click={() => module1Collapsed = !module1Collapsed} class="text-gray-400 hover:text-gray-600 transition-transform {module1Collapsed ? 'rotate-90' : ''}" aria-label="Toggle Module 1 submodules">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -704,33 +1021,89 @@
         </div>
         {#if !module1Collapsed}
           <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
-            <button on:click={() => goToModule1Sub(0)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 0 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Program Line</button>
-            <button on:click={() => goToModule1Sub(1)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 1 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Start Time & Real Time</button>
-            <button on:click={() => mainSection = 'quiz'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'quiz' ? 'bg-green-200 text-green-800 font-semibold' : ''}">📝 Start Time & Real Time Quiz</button>
-            <button on:click={() => goToModule1Sub(2)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 2 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Hit Time</button>
-            <button on:click={() => goToModule1Sub(3)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 3 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Event Type</button>
-            <button on:click={() => goToModule1Sub(4)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 4 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Length</button>
-            <button on:click={() => mainSection = 'lengthQuiz'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'lengthQuiz' ? 'bg-green-200 text-green-800 font-semibold' : ''}">📝 Length Quiz</button>
-            <button on:click={() => goToModule1Sub(5)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 5 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Title</button>
-            <button on:click={() => goToModule1Sub(6)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 6 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Advertiser</button>
-            <button on:click={() => goToModule1Sub(7)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 7 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">House Number</button>
-            <button on:click={() => mainSection = 'houseNumberQuiz'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'houseNumberQuiz' ? 'bg-green-200 text-green-800 font-semibold' : ''}">📝 House Number Quiz</button>
-            <button on:click={() => goToModule1Sub(8)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 8 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Ordered As</button>
-            <button on:click={() => goToModule1Sub(9)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 9 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Spot End Time</button>
-            <button on:click={() => goToModule1Sub(10)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 10 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">End Time</button>
-            <button on:click={() => goToModule1Sub(11)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 11 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Floaters</button>
-            <button on:click={() => goToModule1Sub(12)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 12 ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Key Tab</button>
-            <button on:click={() => mainSection = 'module1test'} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module1test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''}">
+            <button on:click={() => goToModule1Sub(0)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 0 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.programline ? 'opacity-50 cursor-not-allowed text-gray-400' : progressState.module1_programline ? 'text-gray-700' : 'text-gray-700'}">
+              Program Line
+              {#if !module1SubUnlockStates.programline}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_programline}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(1)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 1 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.starttimerealtime ? 'opacity-50 cursor-not-allowed' : ''}">
+              Start Time & Real Time
+              {#if !module1SubUnlockStates.starttimerealtime}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_starttimerealtime}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (module1SubUnlockStates.quiz) mainSection = 'quiz'; else alert('This quiz is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'quiz' ? 'bg-green-200 text-green-800 font-semibold' : ''} {!module1SubUnlockStates.quiz ? 'opacity-50 cursor-not-allowed' : ''}">
+              📝 Start Time & Real Time Quiz
+              {#if !module1SubUnlockStates.quiz}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_starttimerealtime_quiz}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(2)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 2 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.hittime ? 'opacity-50 cursor-not-allowed' : ''}">
+              Hit Time
+              {#if !module1SubUnlockStates.hittime}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_hittime}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(3)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 3 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.eventtype ? 'opacity-50 cursor-not-allowed' : ''}">
+              Event Type
+              {#if !module1SubUnlockStates.eventtype}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_eventtype}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(4)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 4 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.length ? 'opacity-50 cursor-not-allowed' : ''}">
+              Length
+              {#if !module1SubUnlockStates.length}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_length}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (module1SubUnlockStates.lengthQuiz) mainSection = 'lengthQuiz'; else alert('This quiz is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'lengthQuiz' ? 'bg-green-200 text-green-800 font-semibold' : ''} {!module1SubUnlockStates.lengthQuiz ? 'opacity-50 cursor-not-allowed' : ''}">
+              📝 Length Quiz
+              {#if !module1SubUnlockStates.lengthQuiz}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_length_quiz}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(5)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 5 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.title ? 'opacity-50 cursor-not-allowed' : ''}">
+              Title
+              {#if !module1SubUnlockStates.title}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_title}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(6)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 6 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.advertiser ? 'opacity-50 cursor-not-allowed' : ''}">
+              Advertiser
+              {#if !module1SubUnlockStates.advertiser}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_advertiser}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(7)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 7 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.housenumber ? 'opacity-50 cursor-not-allowed' : ''}">
+              House Number
+              {#if !module1SubUnlockStates.housenumber}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_housenumber}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (module1SubUnlockStates.houseNumberQuiz) mainSection = 'houseNumberQuiz'; else alert('This quiz is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded ml-4 {mainSection === 'houseNumberQuiz' ? 'bg-green-200 text-green-800 font-semibold' : ''} {!module1SubUnlockStates.houseNumberQuiz ? 'opacity-50 cursor-not-allowed' : ''}">
+              📝 House Number Quiz
+              {#if !module1SubUnlockStates.houseNumberQuiz}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_housenumber_quiz}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(8)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 8 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.orderedas ? 'opacity-50 cursor-not-allowed' : ''}">
+              Ordered As
+              {#if !module1SubUnlockStates.orderedas}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_orderedas}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(9)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 9 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.spotendtime ? 'opacity-50 cursor-not-allowed' : ''}">
+              Spot End Time
+              {#if !module1SubUnlockStates.spotendtime}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_spotendtime}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(10)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 10 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.endtime ? 'opacity-50 cursor-not-allowed' : ''}">
+              End Time
+              {#if !module1SubUnlockStates.endtime}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_endtime}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(11)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 11 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.floaters ? 'opacity-50 cursor-not-allowed' : ''}">
+              Floaters
+              {#if !module1SubUnlockStates.floaters}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_floaters}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => goToModule1Sub(12)} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module1sub' && module1SubIdx === 12 ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!module1SubUnlockStates.keytab ? 'opacity-50 cursor-not-allowed' : ''}">
+              Key Tab
+              {#if !module1SubUnlockStates.keytab}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_keytab}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (module1SubUnlockStates.test) mainSection = 'module1test'; else alert('The Module 1 Test is locked. Please complete all previous sections first.'); }} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module1test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''} {!module1SubUnlockStates.test ? 'opacity-50 cursor-not-allowed' : ''}">
               <span class="block w-2 h-2 rounded-full {mainSection === 'module1test' ? 'bg-purple-600' : 'bg-purple-300'}"></span>
               📝 End of Module 1 Test
+              {#if !module1SubUnlockStates.test}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module1_test}<span class="ml-auto text-xs">✅</span>{/if}
             </button>
           </div>
         {/if}
         {#each modules.slice(1) as module, modIdx}
-          <div class="flex items-center text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === `module${modIdx+2}` ? 'bg-blue-100 text-blue-700' : ''}">
-            <button on:click={() => mainSection = `module${modIdx+2}`} class="flex items-center gap-2 flex-1 text-left">
+          <div class="flex items-center text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === `module${modIdx+2}` ? 'bg-blue-100 text-blue-700' : ''} {!canNavigateTo(`module${modIdx+2}`) ? 'opacity-50' : ''}">
+            <button on:click={() => { if (canNavigateTo(`module${modIdx+2}`)) mainSection = `module${modIdx+2}`; else alert('This module is locked. Please complete previous modules first.'); }} class="flex items-center gap-2 flex-1 text-left {!canNavigateTo(`module${modIdx+2}`) ? 'cursor-not-allowed' : ''}">
               <span class="block w-2 h-2 rounded-full {mainSection === `module${modIdx+2}` ? 'bg-blue-600' : 'bg-gray-300'}"></span>
               {module.title}
+              {#if !canNavigateTo(`module${modIdx+2}`)}
+                <span class="ml-2 text-xs">🔒</span>
+              {:else if modIdx === 0 && module2FullyCompleted}
+                <span class="ml-2 text-xs">✅</span>
+              {:else if modIdx === 1 && module3FullyCompleted}
+                <span class="ml-2 text-xs">✅</span>
+              {/if}
             </button>
             {#if modIdx === 0}
               <button on:click={() => module2Collapsed = !module2Collapsed} class="text-gray-400 hover:text-gray-600 transition-transform {module2Collapsed ? 'rotate-90' : ''}" aria-label="Toggle Module 2 submodules">
@@ -748,13 +1121,26 @@
           </div>
           {#if modIdx === 0 && !module2Collapsed}
             <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
-              <button on:click={() => mainSection = 'module2_sellingtitle'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_sellingtitle' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Selling Title</button>
-              <button on:click={() => mainSection = 'module2_yellowunit'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_yellowunit' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">The Yellow Unit</button>
-              <button on:click={() => mainSection = 'module2_unitprioritizationdetails'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_unitprioritizationdetails' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Unit Prioritization Details</button>
-              <button on:click={() => mainSection = 'module2_greenpurpleunits'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_greenpurpleunits' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Green & Purple Units</button>
-              <button on:click={() => mainSection = 'module2test'} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module2test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''}">
+              <button on:click={() => { if (canNavigateTo('module2_sellingtitle')) mainSection = 'module2_sellingtitle'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_sellingtitle' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module2_sellingtitle') ? 'opacity-50 cursor-not-allowed' : ''}">
+                Selling Title
+                {#if !canNavigateTo('module2_sellingtitle')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module2_sellingtitle}<span class="ml-auto text-xs">✅</span>{/if}
+              </button>
+              <button on:click={() => { if (canNavigateTo('module2_yellowunit')) mainSection = 'module2_yellowunit'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_yellowunit' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module2_yellowunit') ? 'opacity-50 cursor-not-allowed' : ''}">
+                The Yellow Unit
+                {#if !canNavigateTo('module2_yellowunit')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module2_yellowunit}<span class="ml-auto text-xs">✅</span>{/if}
+              </button>
+              <button on:click={() => { if (canNavigateTo('module2_unitprioritizationdetails')) mainSection = 'module2_unitprioritizationdetails'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_unitprioritizationdetails' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module2_unitprioritizationdetails') ? 'opacity-50 cursor-not-allowed' : ''}">
+                Unit Prioritization Details
+                {#if !canNavigateTo('module2_unitprioritizationdetails')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module2_unitprioritizationdetails}<span class="ml-auto text-xs">✅</span>{/if}
+              </button>
+              <button on:click={() => { if (canNavigateTo('module2_greenpurpleunits')) mainSection = 'module2_greenpurpleunits'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module2_greenpurpleunits' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module2_greenpurpleunits') ? 'opacity-50 cursor-not-allowed' : ''}">
+                Green & Purple Units
+                {#if !canNavigateTo('module2_greenpurpleunits')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module2_greenpurpleunits}<span class="ml-auto text-xs">✅</span>{/if}
+              </button>
+              <button on:click={() => { if (canNavigateTo('module2test')) mainSection = 'module2test'; else alert('The Module 2 Test is locked. Please complete all previous sections first.'); }} class="text-left px-3 py-2 hover:bg-purple-100 focus:bg-purple-200 transition font-medium text-purple-700 flex items-center gap-2 text-sm rounded mt-2 {mainSection === 'module2test' ? 'bg-purple-200 text-purple-900 font-semibold' : ''} {!canNavigateTo('module2test') ? 'opacity-50 cursor-not-allowed' : ''}">
                 <span class="block w-2 h-2 rounded-full {mainSection === 'module2test' ? 'bg-purple-600' : 'bg-purple-300'}"></span>
                 📝 End of Module 2 Test
+                {#if !canNavigateTo('module2test')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module2_test}<span class="ml-auto text-xs">✅</span>{/if}
               </button>
               <!-- Add more submodules here as needed -->
             </div>
@@ -762,26 +1148,64 @@
         {/each}
         {#if !module3Collapsed}
           <div class="ml-6 flex flex-col bg-blue-50/50 rounded-b-lg pb-2 pt-1">
-            <button on:click={() => mainSection = 'module3_brandsep'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_brandsep' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Brand SEP</button>
-            <button on:click={() => mainSection = 'module3_advertiserconflicts'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_advertiserconflicts' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Advertiser Conflicts</button>
-            <button on:click={() => mainSection = 'module3_standalonerule'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_standalonerule' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">STAND ALONE Rule</button>
-            <button on:click={() => mainSection = 'module3_commercialtimes'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_commercialtimes' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Commercial Times</button>
-            <button on:click={() => mainSection = 'module3_swaps'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_swaps' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Swaps</button>
-            <button on:click={() => mainSection = 'module3_mastercontrolemail'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_mastercontrolemail' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Master Control Email</button>
-            <button on:click={() => mainSection = 'module3_localswaps'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_localswaps' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Local Swaps</button>
-            <button on:click={() => mainSection = 'module3_excelsheet'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_excelsheet' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Interactive Excel Sheet</button>
-            <button on:click={() => mainSection = 'module3_unitcutpractice'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_unitcutpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Unit Cut Practice</button>
-            <button on:click={() => mainSection = 'module3_mcemailpractice'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_mcemailpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">MC Email Practice</button>
-            <button on:click={() => mainSection = 'module3_timeoutpractice'} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_timeoutpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''}">Time Out Practice</button>
+            <button on:click={() => { if (canNavigateTo('module3_brandsep')) mainSection = 'module3_brandsep'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_brandsep' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_brandsep') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Brand SEP
+              {#if !canNavigateTo('module3_brandsep')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_brandsep}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_advertiserconflicts')) mainSection = 'module3_advertiserconflicts'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_advertiserconflicts' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_advertiserconflicts') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Advertiser Conflicts
+              {#if !canNavigateTo('module3_advertiserconflicts')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_advertiserconflicts}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_standalonerule')) mainSection = 'module3_standalonerule'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_standalonerule' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_standalonerule') ? 'opacity-50 cursor-not-allowed' : ''}">
+              STAND ALONE Rule
+              {#if !canNavigateTo('module3_standalonerule')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_standalonerule}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_commercialtimes')) mainSection = 'module3_commercialtimes'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_commercialtimes' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_commercialtimes') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Commercial Times
+              {#if !canNavigateTo('module3_commercialtimes')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_commercialtimes}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_swaps')) mainSection = 'module3_swaps'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_swaps' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_swaps') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Swaps
+              {#if !canNavigateTo('module3_swaps')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_swaps}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_mastercontrolemail')) mainSection = 'module3_mastercontrolemail'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_mastercontrolemail' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_mastercontrolemail') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Master Control Email
+              {#if !canNavigateTo('module3_mastercontrolemail')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_mastercontrolemail}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_localswaps')) mainSection = 'module3_localswaps'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_localswaps' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_localswaps') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Local Swaps
+              {#if !canNavigateTo('module3_localswaps')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_localswaps}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_excelsheet')) mainSection = 'module3_excelsheet'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_excelsheet' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_excelsheet') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Interactive Excel Sheet
+              {#if !canNavigateTo('module3_excelsheet')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_excelsheet}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_unitcutpractice')) mainSection = 'module3_unitcutpractice'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_unitcutpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_unitcutpractice') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Unit Cut Practice
+              {#if !canNavigateTo('module3_unitcutpractice')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_unitcutpractice}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_mcemailpractice')) mainSection = 'module3_mcemailpractice'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_mcemailpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_mcemailpractice') ? 'opacity-50 cursor-not-allowed' : ''}">
+              MC Email Practice
+              {#if !canNavigateTo('module3_mcemailpractice')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_mcemailpractice}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
+            <button on:click={() => { if (canNavigateTo('module3_timeoutpractice')) mainSection = 'module3_timeoutpractice'; else alert('This section is locked. Please complete previous sections first.'); }} class="text-left px-3 py-2 hover:bg-blue-100 focus:bg-blue-200 transition font-medium text-gray-600 flex items-center gap-2 text-sm rounded {mainSection === 'module3_timeoutpractice' ? 'bg-blue-200 text-blue-800 font-semibold' : ''} {!canNavigateTo('module3_timeoutpractice') ? 'opacity-50 cursor-not-allowed' : ''}">
+              Time Out Practice
+              {#if !canNavigateTo('module3_timeoutpractice')}<span class="ml-auto text-xs">🔒</span>{:else if progressState.module3_timeoutpractice}<span class="ml-auto text-xs">✅</span>{/if}
+            </button>
             <!-- Add more submodules here as needed -->
           </div>
         {/if}
         
         <!-- Final Exam Section -->
-        <div class="flex items-center text-left px-3 py-2 hover:bg-green-50 focus:bg-green-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === 'finalexam' ? 'bg-green-100 text-green-700' : ''}">
-          <button on:click={() => mainSection = 'finalexam'} class="flex items-center gap-2 flex-1 text-left">
+        <div class="flex items-center text-left px-3 py-2 hover:bg-green-50 focus:bg-green-100 transition font-medium text-gray-700 gap-2 text-sm w-full {mainSection === 'finalexam' ? 'bg-green-100 text-green-700' : ''} {!canNavigateTo('finalexam') ? 'opacity-50' : ''}">
+          <button on:click={goToFinalExam} class="flex items-center gap-2 flex-1 text-left {!canNavigateTo('finalexam') ? 'cursor-not-allowed' : ''}">
             <span class="block w-2 h-2 rounded-full {mainSection === 'finalexam' ? 'bg-green-600' : 'bg-green-300'}"></span>
             📝 Final Exam
+            {#if !canNavigateTo('finalexam')}
+              <span class="ml-auto text-xs">🔒</span>
+            {:else if progressState.finalexam}
+              <span class="ml-auto text-xs">✅</span>
+            {/if}
           </button>
         </div>
         
@@ -805,6 +1229,12 @@
               <button on:click={() => mainSection = 'finalexam'} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded hover:bg-yellow-100 {mainSection === 'finalexam' ? 'bg-yellow-200 text-yellow-800' : 'text-yellow-700'}">
                 📝 Final Exam
               </button>
+              <button on:click={() => { console.log('Current Progress State:', progressState); alert('Check console for progress state'); }} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded hover:bg-red-100 text-red-700">
+                🔍 Log Progress State
+              </button>
+              <button on:click={() => { if (confirm('Reset ALL progress? This cannot be undone.')) { progressStore.reset(); alert('Progress reset! Refresh the page.'); } }} class="text-left px-3 py-2 text-sm transition font-medium flex items-center gap-2 rounded hover:bg-red-100 text-red-700">
+                🔄 Reset Progress
+              </button>
             </div>
           </div>
         {/if}
@@ -821,6 +1251,7 @@
   <main data-fullscreen-container class="flex-1 flex flex-col items-center {!sidebarOpen ? 'sidebar-collapsed' : ''}">
     {#if mainSection === 'introduction'}
       <Introduction on:navigateToNextSubmodule={() => {
+        progressStore.markCompleted('introduction');
         const fullscreenState = getFullscreenState();
         mainSection = 'module1';
         module1SubIdx = 0;
@@ -1008,7 +1439,10 @@
     {:else if mainSection === 'module3'}
       <Module3Intro progressId="module3_intro" on:navigateToNextSubmodule={() => navigateToNext('module3')} nextButtonText={getNextButtonText('module3')} />
     {:else if mainSection === 'module3_excelsheet'}
-      <Module3 on:navigateToNextSubmodule={() => mainSection = 'module3_unitcutpractice'} />
+      <Module3 on:navigateToNextSubmodule={() => { 
+        progressStore.markCompleted('module3_excelsheet');
+        mainSection = 'module3_unitcutpractice'; 
+      }} />
     {:else if mainSection === 'module3_commercialtimes'}
       <CommercialTimes progressId="module3_commercialtimes" on:navigateToNextSubmodule={() => navigateToNext('module3_commercialtimes')} nextButtonText={getNextButtonText('module3_commercialtimes')} />
     {:else if mainSection === 'module3_brandsep'}
@@ -1018,11 +1452,20 @@
     {:else if mainSection === 'module3_standalonerule'}
       <StandAloneRule on:navigateToNextSubmodule={() => navigateToNext('module3_standalonerule')} nextButtonText={getNextButtonText('module3_standalonerule')} />
     {:else if mainSection === 'module3_unitcutpractice'}
-      <UnitCutPractice on:navigateToNextSubmodule={(event) => mainSection = event.detail || 'module3_mcemailpractice'} />
+      <UnitCutPractice on:navigateToNextSubmodule={(event) => { 
+        progressStore.markCompleted('module3_unitcutpractice');
+        mainSection = event.detail || 'module3_mcemailpractice'; 
+      }} />
     {:else if mainSection === 'module3_mcemailpractice'}
-      <MCEmailPractice on:navigateToNextSubmodule={(event) => mainSection = event.detail || 'module3_timeoutpractice'} />
+      <MCEmailPractice on:navigateToNextSubmodule={(event) => { 
+        progressStore.markCompleted('module3_mcemailpractice');
+        mainSection = event.detail || 'module3_timeoutpractice'; 
+      }} />
     {:else if mainSection === 'module3_timeoutpractice'}
-      <TimeOutPractice on:navigateToNextSubmodule={goToFinalExam} nextButtonText={getNextButtonText('module3_timeoutpractice')} />
+      <TimeOutPractice on:navigateToNextSubmodule={() => { 
+        progressStore.markCompleted('module3_timeoutpractice');
+        goToFinalExam(); 
+      }} />
     {:else if mainSection === 'module3_swaps'}
       <Swaps progressId="module3_swaps" on:navigateToNextSubmodule={() => navigateToNext('module3_swaps')} nextButtonText={getNextButtonText('module3_swaps')} />
     {:else if mainSection === 'module3_mastercontrolemail'}
@@ -1030,7 +1473,10 @@
     {:else if mainSection === 'module3_localswaps'}
       <LocalSwaps progressId="module3_localswaps" on:navigateToNextSubmodule={() => navigateToNext('module3_localswaps')} nextButtonText={getNextButtonText('module3_localswaps')} />
     {:else if mainSection === 'finalexam'}
-      <FinalExam on:navigateToNextSubmodule={() => navigateToNext('finalexam')} nextButtonText="Complete Training" />
+      <FinalExam on:navigateToNextSubmodule={() => { 
+        progressStore.markCompleted('finalexam');
+        alert('Congratulations! You have completed the entire training course!');
+      }} nextButtonText="Complete Training" />
     {/if}
 
   </main>

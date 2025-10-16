@@ -52,6 +52,28 @@
   // Watch audio state for talking animation and entrance/exit
   $: isTalking = $audioStore.isPlaying;
   
+  // Sync video playback with audio controls for ALL slides with basketball videos
+  $: if (scripts[currentIdx]?.videoAnimation && basketballVideo && bounceInComplete) {
+    if ($audioStore.isPlaying) {
+      // Audio is playing, ensure video is playing
+      if (basketballVideo.paused) {
+        basketballVideo.play().catch(e => console.log('Video play error:', e));
+      }
+    } else {
+      // Audio is paused, pause the video
+      if (!basketballVideo.paused) {
+        basketballVideo.pause();
+      }
+    }
+  }
+  
+  // Detect replay: when audio currentTime becomes 0 and progress is also 0
+  $: if (scripts[currentIdx]?.videoAnimation && basketballVideo && bounceInComplete && $audioStore.currentTime === 0 && $audioStore.progress === 0 && $audioStore.isPlaying) {
+    // Reset video to beginning and play
+    basketballVideo.currentTime = 0;
+    basketballVideo.play().catch(e => console.log('Video replay error:', e));
+  }
+  
   // Determine avatar mode and video source based on current script
   $: {
     const currentScript = scripts[currentIdx];
