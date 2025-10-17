@@ -11,26 +11,29 @@ if [ -n "$VERCEL" ]; then
   echo "Running in Vercel environment"
   
   # Get the current git remote URL
-  REMOTE_URL=$(git config --get remote.origin.url || echo "")
+  REMOTE_URL=$(git config --get remote.origin.url 2>/dev/null || echo "")
   echo "Remote URL: $REMOTE_URL"
   
-  # Configure Git LFS endpoint explicitly
-  if [ -n "$REMOTE_URL" ]; then
-    # Extract the repo path from the URL
-    if [[ "$REMOTE_URL" =~ github\.com[:/](.+)\.git ]]; then
-      REPO_PATH="${BASH_REMATCH[1]}"
-      echo "Configuring LFS endpoint for repo: $REPO_PATH"
-      
-      # Set LFS endpoint using the same auth as git clone
-      git config lfs.url "https://github.com/${REPO_PATH}.git/info/lfs"
-    fi
+  # If remote URL is empty or missing, set it explicitly
+  if [ -z "$REMOTE_URL" ]; then
+    echo "Remote URL not found, setting it explicitly..."
+    git remote add origin https://github.com/BostonCL/LTCTraining.git 2>/dev/null || true
+    git remote set-url origin https://github.com/BostonCL/LTCTraining.git
+    REMOTE_URL="https://github.com/BostonCL/LTCTraining.git"
+    echo "Set remote URL to: $REMOTE_URL"
   fi
   
-  # If GITHUB_TOKEN is provided, use it for authentication
+  # Configure Git LFS endpoint
   if [ -n "$GITHUB_TOKEN" ]; then
     echo "Using GITHUB_TOKEN for authentication"
     git config lfs.url "https://${GITHUB_TOKEN}@github.com/BostonCL/LTCTraining.git/info/lfs"
+  else
+    echo "No GITHUB_TOKEN found, using public access"
+    git config lfs.url "https://github.com/BostonCL/LTCTraining.git/info/lfs"
   fi
+  
+  # Show LFS configuration
+  echo "LFS URL configured: $(git config lfs.url)"
 fi
 
 # Fetch LFS files
