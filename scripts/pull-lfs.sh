@@ -27,13 +27,12 @@ if [ -n "$VERCEL" ]; then
   if [ -n "$GITHUB_TOKEN" ]; then
     echo "Using GITHUB_TOKEN for authentication"
     git config lfs.url "https://${GITHUB_TOKEN}@github.com/BostonCL/LTCTraining.git/info/lfs"
+    echo "LFS URL configured with authentication (token hidden for security)"
   else
     echo "No GITHUB_TOKEN found, using public access"
     git config lfs.url "https://github.com/BostonCL/LTCTraining.git/info/lfs"
+    echo "LFS URL configured: $(git config lfs.url)"
   fi
-  
-  # Show LFS configuration
-  echo "LFS URL configured: $(git config lfs.url)"
 fi
 
 # Fetch LFS files
