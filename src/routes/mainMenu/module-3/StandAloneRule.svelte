@@ -3,6 +3,7 @@ import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
 
+  import { getR2Url } from '$lib/config/r2';
 const dispatch = createEventDispatcher();
 
 // Props
@@ -12,17 +13,17 @@ export let nextButtonText: string = "Next";
 const script = [
   {
     text: `Commercials for alcohol brands can never air directly before or after commercials for automotive or insurance companies.`,
-    audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_01.mp3',
+    audio: getR2Url('/audio/module-3/stand-alone-rule/module3_standalonerule_01.mp3'),
     whiteboardText: [
       '**__STAND ALONE Rule__**',
       'Commercials for alcohol brands can never air directly before or after commercials for automotive or insurance companies.'
     ],
-    titleAudio: '/audio/module-3/stand-alone-rule/module3_standalonerule_01_title.mp3',
-    image: '/images/introduction/basketballBackground.png'
+    titleAudio: getR2Url('/audio/module-3/stand-alone-rule/module3_standalonerule_01_title.mp3'),
+    image: getR2Url('/images/introduction/basketballBackground.png')
   },
   {
     text: `Not Allowed:\nAllowed:\nIn the allowed example, you can see the Hershey's unit creates the necessary separation between the insurance and alcohol units.`,
-    audio: '/audio/module-3/stand-alone-rule/module3_standalonerule_02.mp3',
+    audio: getR2Url('/audio/module-3/stand-alone-rule/module3_standalonerule_02.mp3'),
     whiteboardText: [
       'Not Allowed:',
       '![Not Allowed](/images/module-3/stand-alone-rule/NotAllowedv2.jpg)',

@@ -3,6 +3,7 @@ import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
 
+  import { getR2Url } from '$lib/config/r2';
 const dispatch = createEventDispatcher();
 
 // Props
@@ -12,8 +13,8 @@ export let nextButtonText: string = "Next";
 const script = [
   {
     text: "Before we begin this module, here are a few rules when moving units that you need to understand:",
-    audio: '/audio/module-3/intro/module3_intro_01.mp3',
-    image: '/images/introduction/basketballBackground.png'
+    audio: getR2Url('/audio/module-3/intro/module3_intro_01.mp3'),
+    image: getR2Url('/images/introduction/basketballBackground.png')
   }
 ];
 

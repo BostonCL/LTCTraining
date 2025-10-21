@@ -3,6 +3,7 @@ import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
 
+  import { getR2Url } from '$lib/config/r2';
 const dispatch = createEventDispatcher();
 
 // Props
@@ -10,7 +11,7 @@ export let progressId: string;
 export let nextButtonText: string = "Next";
 
 const script = [
-  { text: "Right next door is the Hit Time column, this will determine a Mock Schedule. We use Mock Schedules for planning placement of Commercials. Hit Times are not the actual times that commercials air, just estimated placeholders. This column is very important when moving Units around because of a rule called 'Brand SEP.' Brand SEP will be discussed further in Module 3.", audio: '/audio/module-1/03-hit-time/module1_hittime_single.mp3?v=3', image: '/images/module-1/hit-time/HitTime.jpg' }
+  { text: "Right next door is the Hit Time column, this will determine a Mock Schedule. We use Mock Schedules for planning placement of Commercials. Hit Times are not the actual times that commercials air, just estimated placeholders. This column is very important when moving Units around because of a rule called 'Brand SEP.' Brand SEP will be discussed further in Module 3.", audio: getR2Url('/audio/module-1/03-hit-time/module1_hittime_single.mp3'), image: getR2Url('/images/module-1/hit-time/HitTime.jpg') }
 ];
 
 const videoInfo = {

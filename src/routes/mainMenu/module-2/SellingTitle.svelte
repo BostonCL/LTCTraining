@@ -2,6 +2,7 @@
 import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
+import { getR2Url } from '$lib/config/r2';
 
 const dispatch = createEventDispatcher();
 
@@ -13,18 +14,18 @@ export let nextButtonText: string = "Next";
 const script = [
   {
     text: 'Here is a quick term that is important during this section',
-    audio: '/audio/module-2/selling-title/module2_sellingtitle_01.mp3',
-    image: '/images/introduction/basketballBackground.png',
-    videoAnimation: '/images/ballSackv2_yellow_unit_latest.mov'
+    audio: getR2Url('/audio/module-2/selling-title/module2_sellingtitle_01.mp3'),
+    image: getR2Url('/images/introduction/basketballBackground.png'),
+    videoAnimation: getR2Url('/images/ballSackv2_yellow_unit_latest.mov')
   },
   {
     text: 'Everything found in the previous slide is also called the Selling Title. The Selling Title is the word or phrase used to identify the category of a specific commercial.',
-    audio: '/audio/module-2/selling-title/module2_sellingtitle_02.mp3',
+    audio: getR2Url('/audio/module-2/selling-title/module2_sellingtitle_02.mp3'),
     whiteboardText: [
       '**__Selling Title__**',
       'The Selling Title is the word or phrase used to identify the category of a specific commercial.'
     ],
-    titleAudio: '/audio/module-2/selling-title/module2_sellingtitle_02_title.mp3'
+    titleAudio: getR2Url('/audio/module-2/selling-title/module2_sellingtitle_02_title.mp3')
   }
 ];
 

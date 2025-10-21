@@ -3,6 +3,7 @@ import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
 
+  import { getR2Url } from '$lib/config/r2';
 const dispatch = createEventDispatcher();
 
 // Props
@@ -12,8 +13,8 @@ export let nextButtonText: string = "Next";
 const script = [
   { 
     text: "The Advertiser column lists the companies that have purchased time slots for commercials. Compared to the Title column, the Advertiser column contains more condensed information.", 
-    audio: '/audio/module-1/05-advertiser/module1_advertiser_combined.mp3?v=' + Date.now(),
-    image: '/images/module-1/advertiser/Advertiserscreen.jpg?v=' + Date.now()
+    audio: getR2Url('/audio/module-1/05-advertiser/module1_advertiser_combined.mp3'),
+    image: getR2Url('/images/module-1/advertiser/Advertiserscreen.jpg')
   }
 ];
 

@@ -3,6 +3,7 @@ import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
 
+  import { getR2Url } from '$lib/config/r2';
 const dispatch = createEventDispatcher();
 
 // Props
@@ -10,7 +11,7 @@ export let progressId: string;
 export let nextButtonText: string = "Next";
 
 const script = [
-  { text: "The Length column tells you the duration of time for each Unit. Adding up the commercial lengths determines how long a Commercial Break will be. This is a common question for producers. Sometimes a break needs to be shorter at the last minute so knowing which units to move is very important. Note: the Program line (the grey row) is never included in the length of the break.", audio: '/audio/module-1/04-length/module1_length_combined.mp3?v=' + Date.now(), image: '/images/module-1/length/Lengthsheet.jpg?v=' + Date.now() }
+  { text: "The Length column tells you the duration of time for each Unit. Adding up the commercial lengths determines how long a Commercial Break will be. This is a common question for producers. Sometimes a break needs to be shorter at the last minute so knowing which units to move is very important. Note: the Program line (the grey row) is never included in the length of the break.", audio: getR2Url('/audio/module-1/04-length/module1_length_combined.mp3'), image: getR2Url('/images/module-1/length/Lengthsheet.jpg') }
 ];
 
 // Clear any cached progress for this module

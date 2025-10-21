@@ -3,6 +3,7 @@ import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
 
+  import { getR2Url } from '$lib/config/r2';
 const dispatch = createEventDispatcher();
 
 // Props
@@ -12,8 +13,8 @@ export let nextButtonText: string = "Next";
 const script = [
 	{
 		text: "The Event Type column represents the type of any given Unit. The different types of Units are: Commercial, Promo, Local, DRs, and PSAs. Unit Prioritization will be discussed further in Module 2.",
-		audio: '/audio/module-1/08-event-type/module1_eventtype_01.mp3',
-		image: '/images/module-1/event-type/EventTypesheet.jpg'
+		audio: getR2Url('/audio/module-1/08-event-type/module1_eventtype_01.mp3'),
+		image: getR2Url('/images/module-1/event-type/EventTypesheet.jpg')
 	}
 ];
 

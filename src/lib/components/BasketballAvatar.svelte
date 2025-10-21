@@ -3,6 +3,7 @@
   import { fly, scale, slide } from 'svelte/transition';
   import { audioStore, setAudioElement, setDuration, setCurrentIndex, setTotalClips, updateProgress, audioElement } from '$lib/stores/audioStore';
   import { browser } from '$app/environment';
+  import { getR2Url } from '$lib/config/r2';
   import { preloader } from '$lib/utils/preloader';
 
   export let scripts: { text: string; audio: string | string[]; whiteboardText?: string[] | string[][]; image?: string; titleAudio?: string; imageStyle?: string; additionalImage?: string; videoAnimation?: string; }[] = [];
@@ -26,7 +27,7 @@
   let videoPlaying = false;
   let videoCurrentTime = 0;
   let videoDuration = 0;
-  let currentVideoSrc = '/images/module2_sellingtitle_01_animation_no_background.webm'; // Default basketball animation with no background
+  let currentVideoSrc = getR2Url('/images/module2_sellingtitle_01_animation_no_background.webm'); // Default basketball animation with no background
   
   // Animation states
   let currentState = 'idle'; // 'idle', 'talking', 'excited', 'sleepy'
@@ -89,7 +90,7 @@
     } else {
       // Default to basketball video animation for all slides
       avatarMode = 'video';
-      currentVideoSrc = '/images/module2_sellingtitle_01_animation_no_background.webm';
+      currentVideoSrc = getR2Url('/images/module2_sellingtitle_01_animation_no_background.webm');
       console.log('⚠️ No videoAnimation found, using default video source:', currentVideoSrc);
     }
   }
@@ -460,7 +461,7 @@
                 {/if}
                 <!-- Fallback to image if video not supported -->
                 <img 
-                  src="/images/Ballsack.png" 
+                  src={getR2Url('/images/Ballsack.png')}
                   alt="Basketball Avatar"
                   class="w-full h-full object-contain"
                 />

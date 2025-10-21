@@ -4,12 +4,13 @@ import { audioStore } from '$lib/stores/audioStore';
 import { createEventDispatcher } from 'svelte';
 import YouTubeTemplate from '$lib/components/YouTubeTemplate.svelte';
 
+  import { getR2Url } from '$lib/config/r2';
 const module1Script = [
-  { text: 'Welcome to Module 1: Live Coverage Sheet.', audio: '/audio/module-1/01-intro/module1_intro.mp3' },
-  { text: 'This is what a live coverage sheet looks like.', audio: '/audio/module-1/01-intro/module1_01.mp3' },
-  { text: 'I know it looks intimidating now but we are going to dive into the details together.', audio: '/audio/module-1/01-intro/module1_02.mp3' },
-  { text: 'This sheet is separated by columns that we will break down in the following content.', audio: '/audio/module-1/01-intro/module1_03.mp3' },
-  { text: 'Take a moment and pause the video here so that you can take it all in.', audio: '/audio/module-1/01-intro/module1_04.mp3' }
+  { text: 'Welcome to Module 1: Live Coverage Sheet.', audio: getR2Url('/audio/module-1/01-intro/module1_intro.mp3') },
+  { text: 'This is what a live coverage sheet looks like.', audio: getR2Url('/audio/module-1/01-intro/module1_01.mp3') },
+  { text: 'I know it looks intimidating now but we are going to dive into the details together.', audio: getR2Url('/audio/module-1/01-intro/module1_02.mp3') },
+  { text: 'This sheet is separated by columns that we will break down in the following content.', audio: getR2Url('/audio/module-1/01-intro/module1_03.mp3') },
+  { text: 'Take a moment and pause the video here so that you can take it all in.', audio: getR2Url('/audio/module-1/01-intro/module1_04.mp3') }
 ];
 
 const videoInfo = {
