@@ -115,14 +115,13 @@
   }
 
   // Special timing for selling title slide and unit prioritization slide
-  $: isSellingTitleSlide = scripts[currentIdx]?.videoAnimation?.includes('ballSackv2_yellow_unit_latest.mov') || 
-                           scripts[currentIdx]?.videoAnimation?.includes('ballsackm2s3_unit_prioritization.mov') ||
-                           scripts[currentIdx]?.videoAnimation?.includes('ballsackm2s2_yellow_unit.mov') ||
-                           scripts[currentIdx]?.videoAnimation?.includes('ballsackm2s4_green_purple_units.mov') ||
-                           scripts[currentIdx]?.videoAnimation?.includes('ballsackm2_intro.mov') ||
+  $: isSellingTitleSlide = scripts[currentIdx]?.videoAnimation?.includes('ballSackv2_yellow_unit_latest.webm') || 
+                           scripts[currentIdx]?.videoAnimation?.includes('ballsackm2s3_unit_prioritization.webm') ||
+                           scripts[currentIdx]?.videoAnimation?.includes('ballsackm2s2_yellow_unit.webm') ||
+                           scripts[currentIdx]?.videoAnimation?.includes('ballsackm2s4_green_purple_units.webm') ||
                            scripts[currentIdx]?.videoAnimation?.includes('ballsackm2_intro.webm') ||
-                           scripts[currentIdx]?.videoAnimation?.includes('ballSackIntroS1.mov') ||
-                           scripts[currentIdx]?.videoAnimation?.includes('ballSackIntroS12.mov');
+                           scripts[currentIdx]?.videoAnimation?.includes('ballSackIntroS1.webm') ||
+                           scripts[currentIdx]?.videoAnimation?.includes('ballSackIntroS12.webm');
   let bounceInComplete = false;
   let videoPlayed = false;
   let bounceOutStarted = false;
@@ -454,8 +453,12 @@
                 on:timeupdate={handleVideoTimeUpdate}
                 on:ended={handleVideoEnded}
               >
-                {#if currentVideoSrc.endsWith('.mov')}
+                {#if currentVideoSrc.endsWith('.webm')}
+                  <source src={currentVideoSrc} type="video/webm">
+                {:else if currentVideoSrc.endsWith('.mov')}
                   <source src={currentVideoSrc} type="video/quicktime">
+                {:else if currentVideoSrc.endsWith('.mp4')}
+                  <source src={currentVideoSrc} type="video/mp4">
                 {:else}
                   <source src={currentVideoSrc} type="video/webm">
                 {/if}

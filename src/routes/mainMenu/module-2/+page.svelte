@@ -9,7 +9,7 @@ const module2Script = [
     text: "In the Ordered As column you'll see many different types of units. In this module we will go over what they all are. When moving around units this is the first column you will look at.",
     audio: getR2Url('/audio/module-2/module2_intro.mp3'),
     image: getR2Url('/images/introduction/basketballBackground.png'),
-    videoAnimation: getR2Url('/images/ballSackm2Intro.mov')
+    videoAnimation: getR2Url('/images/ballSackm2Intro.webm')
   },
   {
     text: "Here are the different color categories:",

@@ -7,6 +7,9 @@ export const R2_CONFIG = {
   }
 };
 
+// Development mode - serve files locally
+const DEV_MODE = true; // Set to true for local development, false for production
+
 // Helper function to get R2 URL for an asset
 export function getR2Url(path: string): string {
   // If path already starts with http, return as-is
@@ -16,6 +19,11 @@ export function getR2Url(path: string): string {
   
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  
+  // In development mode, serve files from local static directory
+  if (DEV_MODE) {
+    return `/${cleanPath}`;
+  }
   
   return `${R2_CONFIG.baseUrl}/${cleanPath}`;
 }

@@ -16,7 +16,7 @@ const script = [
     text: `Let's dive into the details regarding each one.`,
     audio: getR2Url('/audio/module-2/unit-prioritization-details/module2_unitprioritizationdetails_01.mp3'),
     image: getR2Url('/images/introduction/basketballBackground.png'),
-    videoAnimation: getR2Url('/images/ballsackm2s3_unit_prioritization.mov')
+    videoAnimation: getR2Url('/images/ballsackm2s3.mov')
   },
   {
     text: `"These units are worth the most money. They are mandatory to air. If a unit with this selling title gets CUT we save it. They are typically sold to that specific show/game, so you need to make sure it airs in that show/game with the same units in it. For example, "T.O.P.S." ("That Other Pregame Show", which is a talk show) is a show specific unit. "T.O.P.S." can only be placed within that show. So if a unit gets cut in the last break and we are immediately going to a basketball game, that "T.O.P.S."  unit CANNOT go anywhere else and is dead."`,
