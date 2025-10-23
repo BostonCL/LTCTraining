@@ -18,55 +18,55 @@
 			videoAnimation: getR2Url('/images/ballSackIntroS1.mov')
 		},
 		{ 
-			text: 'Advertiser: An individual or organization that promotes products, services, or ideas to a target audience.',
+			text: 'An individual or organization that promotes products, services, or ideas to a target audience.',
 			audio: getR2Url('/audio/introduction/intro_03.mp3'),
 			whiteboardText: ['**__Advertiser__**', 'An individual or organization that promotes products, services, or ideas to a target audience.'],
 			titleAudio: getR2Url('/audio/introduction/intro_03_title.mp3')
 		},
 		{ 
-			text: 'Commercial: A short advertisement that promotes a product or service.',
+			text: 'A short advertisement that promotes a product or service.',
 			audio: getR2Url('/audio/introduction/intro_04.mp3'),
 			whiteboardText: ['**__Commercial__**', 'A short advertisement that promotes a product or service.'],
 			titleAudio: getR2Url('/audio/introduction/intro_04_title.mp3')
 		},
 		{ 
-			text: 'Unit: Another word for Commercial. These terms are used interchangeably in the Traffic Department.',
+			text: 'Another word for Commercial. These terms are used interchangeably in the Traffic Department.',
 			audio: getR2Url('/audio/introduction/intro_05.mp3'),
 			whiteboardText: ['**__Unit__**', 'Another word for Commercial. These terms are used interchangeably in the Traffic Department.'],
 			titleAudio: getR2Url('/audio/introduction/intro_05_title.mp3')
 		},
 		{ 
-			text: 'Commercial Breaks: The planned intervals during which advertisements are aired.',
+			text: 'The planned intervals during which advertisements are aired.',
 			audio: getR2Url('/audio/introduction/intro_06.mp3'),
 			whiteboardText: ['**__Commercial Breaks__**', 'The planned intervals during which advertisements are aired.'],
 			titleAudio: getR2Url('/audio/introduction/intro_06_title.mp3')
 		},
 		{ 
-			text: 'Window: A term used in the Traffic Department for any particular program or game. Window refers specifically to the time period during which the program or game airs, encompassing the duration from its beginning to its end. For example, instead of saying "7 PM Basketball Game," we would say "7 PM Window."',
+			text: 'A term used in the Traffic Department for any particular program or game. Window refers specifically to the time period during which the program or game airs, encompassing the duration from its beginning to its end. For example, instead of saying "7 PM Basketball Game," we would say "7 PM Window."',
 			audio: getR2Url('/audio/introduction/intro_07.mp3'),
 			whiteboardText: ['**__Window__**', 'Refers to the specific scheduled time period during which a program or game airs, from start to finish.'],
 			titleAudio: getR2Url('/audio/introduction/intro_07_title.mp3')
 		},
 		{ 
-			text: 'Live Coverage Sheet: An excel spreadsheet containing all the vital information you will need in order to properly air Commercials/Units.',
+			text: 'An excel spreadsheet containing all the vital information you will need in order to properly air Commercials/Units.',
 			audio: getR2Url('/audio/introduction/intro_08.mp3'),
 			whiteboardText: ['**__Live Coverage Sheet__**', 'An excel spreadsheet containing all the vital information you will need in order to properly air Commercials/Units.'],
 			titleAudio: getR2Url('/audio/introduction/intro_08_title.mp3')
 		},
 		{ 
-			text: 'Swaps: The word for making changes on the live coverage sheet. It typically involves saving or updating a commercial unit. This process includes modifying the placement of commercials during live broadcasts to align with the timing or logistics, to ensure accurate tracking and smooth execution of the broadcast. Essentially, swaps are quick adjustments made in real-time to the coverage sheet to manage commercial placements effectively.',
+			text: 'The word for making changes on the live coverage sheet. It typically involves saving or updating a commercial unit. This process includes modifying the placement of commercials during live broadcasts to align with the timing or logistics, to ensure accurate tracking and smooth execution of the broadcast. Essentially, swaps are quick adjustments made in real-time to the coverage sheet to manage commercial placements effectively.',
 			audio: getR2Url('/audio/introduction/intro_09.mp3'),
 			whiteboardText: ['**__Swaps__**', 'Swaps refer to real-time updates you will make to the live coverage sheet to adjust commercial placements during broadcasts.'],
 			titleAudio: getR2Url('/audio/introduction/intro_09_title.mp3')
 		},
 		{ 
-			text: 'Dead: A term used in the Traffic Department to indicate that a Commercial/Unit will not air at all that day or night.',
+			text: 'A term used in the Traffic Department to indicate that a Commercial/Unit will not air at all that day or night.',
 			audio: getR2Url('/audio/introduction/intro_10.mp3'),
 			whiteboardText: ['**__Dead__**', 'Indicates that a Commercial/Unit will not air at all that day or night'],
 			titleAudio: getR2Url('/audio/introduction/intro_10_title.mp3')
 		},
 		{ 
-			text: 'Cut is a term used when a Commercial/Unit has been removed from its original spot. A Cut Commercial/Unit may still air in another show or time slot. Note: While \'Dead\' and \'Cut\' are sometimes used interchangeably, they do not mean exactly the same thing. A dead unit never airs, while a cut unit might.',
+			text: 'A term used when a Commercial/Unit has been removed from its original spot. A Cut Commercial/Unit may still air in another show or time slot. Note: While \'Dead\' and \'Cut\' are sometimes used interchangeably, they do not mean exactly the same thing. A dead unit never airs, while a cut unit might.',
 			audio: getR2Url('/audio/introduction/intro_11.mp3'),
 			whiteboardText: ['**__CUT__**', 'A term used when a Commercial/Unit has been removed from its original spot. A Cut Commercial/Unit may still air in another show or time slot.'],
 			titleAudio: getR2Url('/audio/introduction/intro_11_title.mp3')

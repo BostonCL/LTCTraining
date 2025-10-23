@@ -943,44 +943,6 @@
 <header class="w-full flex items-center justify-between py-4 px-8 bg-white shadow-sm border-b">
   <span class="text-2xl font-bold text-gray-900 tracking-tight">Live Traffic Coverage Training</span>
   <div class="flex gap-2">
-    <button on:click={() => {
-      console.log('===== PROGRESS DEBUG =====');
-      console.log('Progress State:', progressState);
-      console.log('Module 1 Unlock States:', module1SubUnlockStates);
-      console.log('Introduction completed:', progressState.introduction);
-      console.log('Module 1 Intro completed:', progressState.module1_intro);
-      console.log('Program Line completed:', progressState.module1_programline);
-      console.log('Start Time completed:', progressState.module1_starttimerealtime);
-      
-      console.log('\n===== UNLOCK CHECK =====');
-      console.log('Program Line unlocked?', module1SubUnlockStates.programline);
-      console.log('Start Time unlocked?', module1SubUnlockStates.starttimerealtime);
-      
-      console.log('\n===== LOCALSTORAGE =====');
-      const stored = localStorage.getItem('ltc_training_progress');
-      if (stored) {
-        console.log('Stored progress:', JSON.parse(stored));
-      } else {
-        console.log('No stored progress found');
-      }
-      
-      let fixed = false;
-      
-      // Auto-fix: If introduction is complete but module1_intro is not, fix it
-      if (progressState.introduction && !progressState.module1_intro) {
-        console.log('🔧 AUTO-FIX: Introduction is complete but Module 1 Intro is not marked. Fixing...');
-        progressStore.markCompleted('module1_intro');
-        fixed = true;
-      }
-      
-      if (fixed) {
-        alert('Fixed! Check the console for details. The progress system should now work correctly.');
-      } else {
-        alert('Check browser console (F12) for detailed progress information');
-      }
-    }} class="text-xs text-blue-600 hover:text-blue-800 px-3 py-2 border border-blue-200 rounded bg-blue-50 hover:bg-blue-100">
-      🔍 Debug & Fix
-    </button>
     <button on:click={handleLogout} class="text-gray-500 hover:text-gray-700 text-base font-medium rounded px-4 py-2 border border-gray-200 bg-gray-50">Logout</button>
   </div>
 </header>
