@@ -8,7 +8,7 @@ export const R2_CONFIG = {
 };
 
 // Development mode - serve files locally
-const DEV_MODE = true; // Set to true for local development, false for production
+const DEV_MODE = false; // Set to false for production to use R2 URLs
 
 // Helper function to get R2 URL for an asset
 export function getR2Url(path: string): string {

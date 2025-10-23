@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"build": "chmod +x scripts/pull-lfs.sh && ./scripts/pull-lfs.sh && svelte-kit sync && vite build",
+		"build": "svelte-kit sync && vite build",
 		"dev": "vite dev",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

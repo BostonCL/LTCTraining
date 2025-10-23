@@ -16,7 +16,7 @@ const script = [
     text: `Let's start with the basics: The Yellow Unit category. On the next slide, they are listed from most to least important. As you might remember, they are located in the "Ordered As" column on the live coverage sheet.`,
     audio: getR2Url('/audio/module-2/yellow-unit/module2_yellowunit_01.mp3'),
     image: getR2Url('/images/introduction/basketballBackground.png'),
-    videoAnimation: getR2Url('/images/ballsackm2s2.mov')
+    videoAnimation: getR2Url('/images/ballsackm2s2_yellow_unit.mov')
   },
   {
     text: `This is our Unit Prioritization List, ranked from highest to lowest importance. Starting with Show Specific, which is the highest priority.`,
